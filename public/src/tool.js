@@ -21,7 +21,6 @@ These chunks are tagged with the phrase "Mark's code" in comments.
 
 var debugging = true;	// toggle debug messages
 var verboseDebugging = false; // toggle verbose debugging messages
-var useRedBox = false;	// canvas is just a red box (for debugging)
 var useFakeSurroundings = false; // surroundings are colored boxes (for debugging)
 var artMode = "art";	// mode strings
 var gameMode = "game";
@@ -189,8 +188,16 @@ function toggleMusicPause() {
 	if (musicPaused) {
 		// play the music
 		musicAudio[musicCurrent].play();
+		// debug message
+		if (debugging) {
+			console.log("Playing music.");
+		}
 	} else { // pause the music
 		musicAudio[musicCurrent].pause();
+		// debug message
+		if (debugging) {
+			console.log("Paused music.");
+		}
 	}
 }
 
@@ -208,6 +215,10 @@ function playNextTrack() {
 		link = musicPlaylist.find("a")[musicCurrent];
 	}
 	runPlayer(link, player);
+	// debug message
+	if (debugging) {
+		console.log("Moved to next music track.");
+	}
 }
 
 // initialize the game music
@@ -226,6 +237,11 @@ function initMusic() {
 	audio[0].addEventListener("ended", function(e) {
 		playNextTrack();
 	});
+	
+	// debug message
+	if (debugging) {
+		console.log("Loaded music player and playlist.");
+	}
 }
 
 // initalize the rest of the page
@@ -256,18 +272,6 @@ function initHTML() {
 	
 	// grab the context of the hidden canvas
 	hiddenContext = hiddenCanvas.getContext("2d");
-	
-	// for debugging, set the entire canvas to red
-	if (useRedBox) {
-		var redBox = hiddenContext.createImageData(canvasWidth, canvasHeight);
-		for (var i = 0; i < redBox.data.length; i += 4) {
-			redBox.data[i+0] = 255;
-			redBox.data[i+1] = 0;
-			redBox.data[i+2] = 0;
-			redBox.data[i+3] = 255;
-		}
-		hiddenContext.putImageData(redBox, 0, 0);
-	}
 	
 	// grab the overall tool div
 	toolDiv = document.getElementById("toolDiv");
@@ -543,6 +547,7 @@ function loadButton () {
 	displayMessage("Use the dialog to select an art file to load.", svgLoadFromLocal, doNothing, false);
 }
 function submitButton () {
+	// ### Why does this submit the hiddenCanvas, especially without updating it first?
 	svgSubmitToServer(document.getElementById('hiddenCanvas'));
 }
 function undoButton() {
@@ -732,6 +737,8 @@ function putGroupInCanvas(myGroupStr, myContext, clipX, clipY, clipW, clipH, can
 		img = new Image;
 		img.onload = function(){
 			// clear the given canvas
+			// ??? still hard-coded to hiddenCanvas.width and height... oops
+			// but seems to work b/c those are maximum for all the canvases
 			myContext.clearRect(0, 0, hiddenCanvas.width, hiddenCanvas.height);
 			// draw the new image
 			myContext.drawImage(img, clipX, clipY, clipW, clipH, canvX, canvY, canvW, canvH);
@@ -742,7 +749,7 @@ function putGroupInCanvas(myGroupStr, myContext, clipX, clipY, clipW, clipH, can
 // load the current SVG into the canvas, overwriting the old data
 // version written by Toni to use the generic putGroupinCanvas function 
 function updateCanvas() {
-	putGroupInCanvas(artToString(), hiddenContext, 0, 0, canvasHeight, canvasWidth, 0, 0, canvasHeight, canvasWidth);
+	putGroupInCanvas(artToString(), hiddenContext, 0, 0, canvasWidth, canvasHeight, 0, 0, canvasWidth, canvasHeight);
 }
 
 // helper functions to convert rgb integers into a hex color string
