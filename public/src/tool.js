@@ -1070,7 +1070,7 @@ function surroundingsOnLoad(request){
 	if (request.readyState === 4){
 		if (request.status === 200 || request.status === 0) {
 			body = JSON.parse(request.responseText);
-			if (debugging){
+			if (verboseDebugging){
 				console.log("Response Body:");
 				console.log(body);
 			}
@@ -1354,11 +1354,11 @@ function svgLoadFromLocal() {
 function editSubmitCallback(request){
 	if (request.readyState === 4){
 		if (request.status === 200) {
-			if (debugging) {
+			if (verboseDebugging) {
 				console.log(request.responseText);
 			}
 		} else {
-			if (debugging) {
+			if (verboseDebugging) {
 				console.error(request.statusText);
 			}
 		}
@@ -1380,7 +1380,7 @@ function svgSubmitToServer(imgCanvas) {
 	payload["pw"] = '';
 	//add svg to payload
 	payload["svg"] = svgMinPrepend + artToString() + platformToString() + svgAppend;
-				if (debugging){
+	if (verboseDebugging){
 		console.log("Paylaod to server");
 		console.log(payload);
 	}
@@ -1403,7 +1403,7 @@ function svgPullCallback(request){
 	if (request.readyState === 4){
 		if (request.status === 200){
 			body = JSON.parse(request.responseText);
-			if (debugging){
+			if (verboseDebugging){
 				console.log(body.svg);
 			}
 			//load SVG into editable SVG region
