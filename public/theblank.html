@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+
+<!--
+
+THE BLANK
+
+an Infinite Blank Clone by
+
+OSU CS 467 Spring 2017
+Capstone Team Aries
+
+Lucia Blackwell
+Mark Dillman
+Antonina (Toni) York
+
+The original Infinite Blank was by Evan Balster:
+https://www.kickstarter.com/projects/evanbalster/infinite-blank
+http://infiniteblank.com/wordpress/?page_id=20
+
+-->
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+	<head>
+	
+		<title>THE BLANK by Capstone Team Aries</title>
+		
+		<meta http-equiv="content-type" content="text/html; charset=utf-8"></meta>
+		<link href="style/sheet.css" rel="stylesheet" type="text/css">
+		
+		<!-- library sripts -->
+		<!--<script src="js/svg.js/dist/svg.min.js"></script>
+		<script src="js/jquery-3.2.1.js"></script>-->
+		<script type="text/javascript" src="lib/crafty.js"></script>
+		
+		<!-- game scripts -->
+		<script type="text/javascript" src="src/game.js"></script>
+		<script type="text/javascript" src="src/tool.js"></script>
+
+	</head>
+
+	<body onload="initHTML()">
+	
+		<!-- GAMEPLAY DIV -->
+	
+		<div id="gameDiv"></div>
+		<script>
+			window.addEventListener('load', Game.start);
+		</script>
+
+		<!-- GAME MUSIC DIV -->
+		<!-- Reference: http://devblog.lastrose.com/html5-audio-video-playlist/ -->
+		
+		<div id="musicDiv" style="display: none">
+			<audio id="audio" preload="auto" type="audio/mpeg">
+				<source type="audio/mp3" src="aud/Thetasong.mp3">
+			</audio>
+			<ul id="playlist">
+				<li class="active">
+					<a href="aud/Thetasong.mp3"></a>
+				</li>
+				<li>
+					<a href="aud/Othersdance.mp3"></a>
+				</li>
+				<li>
+					<a href="aud/Walkabout.mp3"></a>
+				</li>
+			</ul>
+		</div>
+		
+		<!-- TILE DRAWING TOOL DIV -->
+		
+		<div id="toolDiv" style="display: none; width: 1031px; margin: auto">
+		
+			<h1 style="position: absolute; top: 5px">
+				CREATE THE BLANK --- Add your art to the world! Don't forget to create platforms before you submit your tile.
+			</h1>
+
+			<div id="theIHateHTMLDiv" style="position: absolute; width: 1030; margin: auto">
+				<form id="controls" onsubmit="return onFormSubmit(this)" style="position: absolute">
+				
+					<fieldset style="width: 235px; height: 365px; position: absolute; top: 90px">
+					
+						<legend><b>Drawing Tool Controls</b></legend>
+						
+						<div id="commonControls" style="position: absolute; width: 235px">
+							
+							<input type="button" name="save" value="SAVE"
+								style="width: 55px; position: absolute"
+								onclick="saveButton()"></input>
+							<input type="button" name="load" value="LOAD"
+								style="width: 55px; position: absolute; left: 59px"
+								onclick="loadButton()"></input>
+							<input type="button" name="submit" value="SUBMIT"
+								style="width: 80px; position: absolute; left: 118px"
+								onclick="submitButton()"></input>
+
+							<input type="button" name="undo" value="UNDO"
+								style="width: 55px; position: absolute; top: 24px"
+								onclick="undoButton()"></input>
+							<input type="button" name="redo" value="REDO"
+								style="width: 55px; position: absolute; top: 24px; left: 59px"
+								onclick="redoButton()"></input>
+							<input type="button" name="exit" value="EXIT TILE"
+								style="width: 80px; position: absolute; top: 24px; left: 118px"
+								onclick="exitButton()"></input>
+
+							<label style="position: absolute; top: 59px">
+								ZOOM AND PAN:
+							</label>
+							
+							<input type="button" name="zoomOut" value="-"
+								style="width: 30px; position: absolute; top: 89px; left: 23px"
+								onclick="zoomOutButton()"></input>
+							<input type="button" name="zoomIn" value="+"
+								style="width: 30px; position: absolute; top: 89px; left: 58px"
+								onclick="zoomInButton()"></input>
+							<input type="button" name="zoomReset" value="RESET"
+								style="width: 65px; position: absolute; top: 114px; left: 23px"
+								onclick="zoomResetButton()"></input>
+
+							<input type="button" name="panUp" value="^"
+								style="width: 30px; position: absolute; top: 77px; left: 141px"
+								onclick="panUpButton()"></input>
+							<input type="button" name="panLeft" value="<"
+								style="width: 30px; position: absolute; top: 101px; left: 123px"
+								onclick="panLeftButton()"></input>
+							<input type="button" name="panRight" value=">"
+								style="width: 30px; position: absolute; top: 101px; left: 157px"
+								onclick="panRightButton()"></input>
+							<input type="button" name="panDown" value="v"
+								style="width: 30px; position: absolute; top: 125px; left: 141px"
+								onclick="panDownButton()"></input>
+								
+							<label style="position: absolute; top: 159px">
+								TOGGLE PLATFORM TOOLS: 
+								<input type="checkbox" id="maskingToggle" name="masking" value="masking"
+									onchange="changeMasking(this.checked)"> </input>
+							</label>
+							
+							<label style="position: absolute; top: 184px">
+								SELECT STROKE WIDTH: 
+								<input type="number" id="strokeWidthInput" name="strokewidth"
+									value="5" min="1" max="50"
+									onchange="changeStrokeWidth(this.value)"> </input>
+							</label>
+							
+						</div>
+						
+						<div id="drawControls"
+							style="display: block; position: absolute; width: 235px; top: 225px">
+						
+							<label>
+								SELECT COLOR: 
+								<input type="color" name="color" id="color" value="#000000"
+									onchange="changeColor(this.value)"> </input>
+							</label>
+							
+							<label>
+								TOGGLE SHAPE FILL: 
+								<input type="checkbox" id="shapeFillInput" name="shapefill" value="shapefill"
+									onchange="changeShapeFill(this.checked)"> </input>
+							</label>
+							
+							<label>
+								SELECT TOOL TYPE:
+								<table>
+									<tr>
+										<td><input type="radio" id="tool0" name="tool" value="0" checked
+										onclick="changeTool(this.value)"> Rectangle</input></td>
+										<td><input type="radio" name="tool" value="3"
+										onclick="changeTool(this.value)"> Brush</input></td>
+									</tr>
+									<tr>
+										<td><input type="radio" name="tool" value="1"
+										onclick="changeTool(this.value)"> Ellipse</input></td>
+										<td><input type="radio" name="tool" value="4"
+										onclick="changeTool(this.value)"> Eraser</input></td>
+									</tr>
+									<tr>
+										<td><input type="radio" name="tool" value="2"
+										onclick="changeTool(this.value)"> Polygon</input></td>
+										<td><input type="radio" name="tool" value="5" id="eyeDropper"
+										onclick="changeTool(this.value)"> Eye Dropper</input></td>
+									</tr>
+									<!--<tr>
+										<td></td>
+										<td><input type="radio" name="tool" value="6"
+										onclick="changeTool(this.value)"> Paint Can</input></td>
+									</tr>-->
+								</table>
+							</label>
+						</div>
+						
+						<div id="platformControls"
+							style="display: none; position: absolute; width: 235px; top: 225px">
+						
+							<label>
+								SELECT PLATFORM TYPE:
+								<br>
+								<input type="radio" id="tool7" name="platform" value="7" checked
+									onclick="changeTool(this.value)"> Wall (solid)</input>
+								<br>
+								<input type="radio" name="platform" value="8"
+									onclick="changeTool(this.value)"> Ladder (permeable)</input>
+								<br>
+								<input type="radio" name="platform" value="9"
+									onclick="changeTool(this.value)"> Select</input>
+							</label>
+							
+							<input type="button" name="removePlatform" value="Remove Selected Platform"
+								onclick="removeSelectedPlatform(false)"></input>
+						
+						</div>
+					</fieldset>
+				</form>
+				
+				<div id="displayDiv" style="display: none; position: absolute; top: 60px; left: 275px">
+					<div id="borderArtDiv">
+						<div id="cornerArtDiv">
+							<div id="aboveLeftDiv"></div>
+							<div id="aboveRightDiv"></div>
+							<div id="belowLeftDiv"></div>
+							<div id="belowRightDiv"></div>
+						</div>
+						<div id="edgeArtDiv">
+							<div id="leftDiv"></div>
+							<div id="aboveDiv"></div>
+							<div id="rightDiv"></div>
+							<div id="belowDiv"></div>
+						</div>
+					</div>
+					<div id="centerDiv">
+						<svg xmlns="http://www.w3.org/2000/svg"
+							xmlns:xlink="http://www.w3.org/1999/xlink"
+							id="svgCanvas" width="600" height="350" viewBox="0 0 600 350"
+							onload="initSVG(evt)">
+						</svg>
+					</div>
+				</div>
+			</div>
+		</div
+		
+		<!-- AVATAR DRAWING TOOL DIV -->
+		
+		
+		
+		<!-- MESSAGE DISPLAY DIV -->
+		
+		<div id="messageDiv" style="display: none; width: 1031px; margin: auto">
+		
+			<div id="messageFormatDiv" style="width: 985px; height: 474px; position: absolute; top: 53px">
+				
+				<form id="messageControls" onsubmit="return onFormSubmit(this)" style="position: absolute">
+
+					<legend id="messageLegend"></legend>
+
+					<h1 id="messageText"
+						style="font-size: 300%; width: 1002px; text-align: center; position: absolute; top: 100px">
+					</h1>
+
+					<input type="text" id="msgTextInput" value="art.svg"
+						style="display: block; width: 235px; position: absolute; top: 350px; left: 380px">
+					</input>
+
+					<input type="button" id="msgBtnOK" onclick="doMsgBtnOK()" value="Okay"
+						style="display: block; width: 80px; position: absolute; top: 400px; left: 380px">
+					</input>
+
+					<input type="button" id="msgBtnCancel" onclick="doMsgBtnCancel()" value="Cancel"
+						style="display: block; width: 80px; position: absolute; top: 400px; left: 540px">
+					</input>
+				</form>
+			</div>
+		</div>
+		
+	</body>
+
+</html>
