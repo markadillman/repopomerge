@@ -1,0 +1,24 @@
+label {
+	display: block;
+}
+
+h1 {
+	font-size: 125%;
+}
+
+input[type=number] {
+	width: 35px;
+}
+
+#gameDiv {
+	margin: auto;
+	text-align: center;
+}
+
+.myButton:hover {
+	cursor: pointer;
+}
+
+.myText:hover {
+	cursor: default;
+}
