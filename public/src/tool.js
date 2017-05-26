@@ -1286,7 +1286,9 @@ function surroundingsOnLoad(request){
 				var canvH = clipH;
 				// if tile 1, 3, 5, or 7, save original version for zoom/pan
 				if (key == "uc" || key == "cl" || key == "cr" || key == "bm") {
-					originalEdgesDict[key] = body[key]['svg'];
+					if (!originalEdgesDict.hasOwnProperty(key)) {
+						originalEdgesDict[key] = body[key]['svg'];
+					}
 				}
 				// end Toni's code
 				putGroupInCanvas(body[key]['svg'],targetContext, clipX, clipY, clipW, clipH, 0, 0, canvW, canvH);
