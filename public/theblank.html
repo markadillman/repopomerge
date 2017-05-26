@@ -41,6 +41,7 @@ http://infiniteblank.com/wordpress/?page_id=20
 
 	<body onload="initHTML()">
 	
+
 		<!-- GAMEPLAY DIV -->
 	
 		<div id="gameDiv"></div>
@@ -48,25 +49,12 @@ http://infiniteblank.com/wordpress/?page_id=20
 			window.addEventListener('load', Game.start);
 		</script>
 
+
 		<!-- GAME MUSIC DIV -->
 		<!-- Reference: http://devblog.lastrose.com/html5-audio-video-playlist/ -->
 		
-		<div id="musicDiv" style="display: none">
-			<audio id="audio" preload="auto" type="audio/mpeg">
-				<source type="audio/mp3" src="aud/Thetasong.mp3">
-			</audio>
-			<ul id="playlist">
-				<li class="active">
-					<a href="aud/Thetasong.mp3"></a>
-				</li>
-				<li>
-					<a href="aud/Othersdance.mp3"></a>
-				</li>
-				<li>
-					<a href="aud/Walkabout.mp3"></a>
-				</li>
-			</ul>
-		</div>
+		<div id="musicDiv" style="display: none"></div>
+
 		
 		<!-- TILE DRAWING TOOL DIV -->
 		
@@ -79,9 +67,7 @@ http://infiniteblank.com/wordpress/?page_id=20
 			<div id="theIHateHTMLDiv" style="position: absolute; width: 1030; margin: auto">
 				<form id="controls" onsubmit="return onFormSubmit(this)" style="position: absolute">
 				
-					<fieldset style="width: 235px; height: 365px; position: absolute; top: 90px">
-					
-						<legend><b>Drawing Tool Controls</b></legend>
+					<fieldset style="width: 235px; height: 365px; position: absolute; top: 90px; background-color: white">
 						
 						<div id="commonControls" style="position: absolute; width: 235px">
 							
@@ -215,7 +201,8 @@ http://infiniteblank.com/wordpress/?page_id=20
 					</fieldset>
 				</form>
 				
-				<div id="displayDiv" style="display: none; position: absolute; top: 60px; left: 275px">
+				<div id="displayDiv"
+					style="display: none; position: absolute; top: 60px; left: 275px">
 					<div id="borderArtDiv">
 						<div id="cornerArtDiv">
 							<div id="aboveLeftDiv"></div>
@@ -230,7 +217,7 @@ http://infiniteblank.com/wordpress/?page_id=20
 							<div id="belowDiv"></div>
 						</div>
 					</div>
-					<div id="centerDiv">
+					<div id="centerDiv" style="background-color: white">
 						<svg xmlns="http://www.w3.org/2000/svg"
 							xmlns:xlink="http://www.w3.org/1999/xlink"
 							id="svgCanvas" width="600" height="350" viewBox="0 0 600 350"
@@ -239,12 +226,73 @@ http://infiniteblank.com/wordpress/?page_id=20
 					</div>
 				</div>
 			</div>
-		</div
+		</div>
 		
+
 		<!-- AVATAR DRAWING TOOL DIV -->
 		
+		<div id="avatarDiv" style="display: none; width: 1031px; margin: auto">
+
+			<!-- ### avatar drawing stuff goes here -->
+
+		</div>
+
+
+		<!-- MAP SCREEN DIV -->
+		
+		<div id="mapDiv" style="display: none; width: 1031px; margin: auto">
+
+			<!-- ### map stuff goes here -->
+
+		</div>
 		
 		
+		<!-- HELP SCREEN DIV -->
+
+		<div id="helpDiv" style="display: none; width: 1031px; margin: auto">
+
+			<div id="helpFormatDiv" style="width: 1000px; height 474px; position: absolute">
+
+				<form id="helpControls" onsubmit="return onFormSubmit(this)" style="position: absolute">
+
+					<p style="width: 1000px; font-family: Trebuchet MS; font-size: 20px; text-align: center">
+						THE BLANK
+					</p>
+
+					<p style="width: 1000px; font-family: Trebuchet MS; font-size: 20px; text-align: center">
+						Choose or create your avatar, then explore and create the world.
+					</p>
+
+					<p style="margin: auto; width: 270px; font-family: Trebuchet MS; font-size: 20px">
+						Arrow Keys - Move
+						<br>
+						Spacebar - Jump
+						<br><br>
+						E - Edit Current Tile
+						<br>
+						H - Toggle Help Screen
+						<br>
+						M - Toggle Map Screen
+						<br>
+						O - Skip Over Music
+						<br>
+						P - Play/Pause Music
+						<br>
+						Q - Quit to Main Menu
+						<br>
+						T - Drop Teleportation Marker
+						<br>
+						W - Toggle Wall View Mode
+					</p>
+
+					<input type="button" id="helpBtnDone" onclick="doHelpScreenDone(false)" value="Done"
+						style="width: 80px; position: absolute; top: 400px; left: 460px; background: none!important; color: inherit; border: none; padding: 0!important; cursor: pointer; font-family: Trebuchet MS; font-size: 20px">
+					</input>
+				</form>
+			</div>
+		</div>
+
+
 		<!-- MESSAGE DISPLAY DIV -->
 		
 		<div id="messageDiv" style="display: none; width: 1031px; margin: auto">
@@ -252,8 +300,6 @@ http://infiniteblank.com/wordpress/?page_id=20
 			<div id="messageFormatDiv" style="width: 985px; height: 474px; position: absolute; top: 53px">
 				
 				<form id="messageControls" onsubmit="return onFormSubmit(this)" style="position: absolute">
-
-					<legend id="messageLegend"></legend>
 
 					<h1 id="messageText"
 						style="font-size: 300%; width: 1002px; text-align: center; position: absolute; top: 100px">
@@ -273,7 +319,5 @@ http://infiniteblank.com/wordpress/?page_id=20
 				</form>
 			</div>
 		</div>
-		
 	</body>
-
 </html>

@@ -22,17 +22,22 @@ These chunks are tagged with the phrase "Mark's code" in comments.
 var debugging = true;	// toggle debug messages
 var verboseDebugging = false; // toggle verbose debugging messages
 var useFakeSurroundings = false; // surroundings are colored boxes (for debugging)
+var playing = false;	// flag set to true when player is in Crafty World scene
 var artMode = "art";	// mode strings
 var gameMode = "game";
 var avatarMode = "avatar";
+var helpMode = "help";
+var mapMode = "map";
 var mode = gameMode;	// track what mode is active: game, art, or avatar
+var previousMode = mode; // track what the previous mode was
 var masking = false;	// toggle the platform masking tools
-var musicAudio;		// variables for game music
-var musicPlaylist;
-var musicPlaylistLength;
-var musicTracks;
-var musicCurrent;
+var musicDiv;		// variables for game music
+var musicAudio;
+var musicAudioSource;
+var musicPlaylist = ["aud/Thetasong.mp3", "aud/Othersdance.mp3", "aud/Walkabout.mp3"];
+var musicCurrent = 0;
 var musicPaused = false;
+var defaultVolume = 0.5;
 var bgroundColor = "#e0fbfd"; // default background color for game stuff
 var hiddenCanvas;		// hidden canvas for getting color info
 var hiddenContext;		// the context of the hidden canvas
@@ -48,6 +53,9 @@ var defaultViewBox = "0 0 " + canvasWidth.toString() + " " + canvasHeight.toStri
 var panStep = 10;		// the number of pixels to pan by
 var drawControls;		// the drawing-specific tools
 var platformControls;	// the platform-specific tools
+var gameDiv;			// the game div
+var mapDiv;			// the map screen div
+var helpDiv;			// the help screen div
 var messageDiv;			// the message box div
 var messageText;		// the message box text field
 var msgBtnOK;			// the message OK button
@@ -92,10 +100,34 @@ var svgAppend = "</svg>"
 // keyboard event handler
 // references: http://stackoverflow.com/a/2353562
 function parseKeyHTML(evt) {
-	// only do anything if not in game mode
+	var keyID = evt.keyCode;
+	//console.log(keyID);
+
+	// handle toggling help screen no matter what mode
+	if (keyID == 72) { // h key
+		if (debugging) {
+			console.log("HTML document caught an h keypress.");
+		}
+		// toggle help screen mode
+		if (mode != helpMode) {
+			displayHelpScreen();
+		} else {
+			doHelpScreenDone();
+		}
+	}
+
+	// handle music player controls no matter what mode
+	if (keyID == 79 && !musicPaused) { // o key
+		// skip over current track if not paused
+		playNextTrack();
+	}
+	if (keyID == 80) { // p key
+		// toggle music being paused
+		toggleMusicPause();
+	}
+
+	// only do anything else if not in game mode
 	if (mode != gameMode) {
-		var keyID = evt.keyCode;
-		//console.log(keyID);
 		switch (keyID) {
 			case 8: // backspace key
 				// stop the backwards navigation
@@ -163,6 +195,46 @@ function parseKeyHTML(evt) {
 	}
 }
 
+// div hide/show helper functions
+// useful when switching screens
+function hideAllDivs() {
+	gameDiv.style.display = "none";
+	toolDiv.style.display = "none";
+	avatarDiv.style.display = "none";
+	mapDiv.style.display = "none";
+	helpDiv.style.display = "none";
+
+	// and just in case, even though it's not a mode div
+	messageDiv.style.display = "none";
+
+}
+function showDiv(mode) {
+	// hide all the divs
+	hideAllDivs();
+
+	// then display just the correct div for the given mode
+	switch(mode) {
+		case gameMode: // show game mode div
+			gameDiv.style.display = "block";
+			break;
+		case artMode: // show art tool div
+			toolDiv.style.display = "block";
+			break;
+		case avatarMode: // show avatar tool div
+			avatarDiv.style.display = "block";
+			break;
+		case mapMode: // show map mode div
+			mapDiv.style.display = "block";
+			break;
+		case helpMode: // show help screen div
+			helpDiv.style.display = "block";
+			break;
+		default: // should never get here!
+			console.log("Something went very awry with showing div based on mode.");
+			break;
+	}
+}
+
 // helper function to get individual display divs
 // assumes init() has already populated displayDivList
 // uses helper function from http://stackoverflow.com/a/28191966
@@ -173,27 +245,21 @@ function getDiv(divName) {
 	return displayDivList[getKeyByVal(displayDivDict, divName)];
 }
 
-// helper funciton to run the game music player
-// reference: http://devblog.lastrose.com/html5-audio-video-playlist/
-function runPlayer(link, player) {
-	player.src = link.attr("href");
-	var par = link.parent();
-	par.addClass("active").siblings().removeClass("active");
-	musicAudio[0].load();
-	musicAudio[0].play();
-}
-
 // helper function to toggle pause of current music track
 function toggleMusicPause() {
 	if (musicPaused) {
+		// toggle the flag
+		musicPaused = false;
 		// play the music
-		musicAudio[musicCurrent].play();
+		musicAudio.play();
 		// debug message
 		if (debugging) {
 			console.log("Playing music.");
 		}
-	} else { // pause the music
-		musicAudio[musicCurrent].pause();
+	} else { // toggle the flag
+		musicPaused = true;
+		// pause the music
+		musicAudio.pause();
 		// debug message
 		if (debugging) {
 			console.log("Paused music.");
@@ -204,17 +270,21 @@ function toggleMusicPause() {
 // helper function to move to next game music track in playlist
 // reference: http://devblog.lastrose.com/html5-audio-video-playlist/
 function playNextTrack() {
-	var link;
+
 	// move to next track
 	musicCurrent += 1;
-	if (musicCurrent == musicPlaylistLength) {
+	if (musicCurrent == musicPlaylist.length) {
 		// wrap around to beginning of playlist
 		musicCurrent = 0;
-		link = musicPlaylist.find("a")[0];
-	} else {
-		link = musicPlaylist.find("a")[musicCurrent];
 	}
-	runPlayer(link, player);
+
+	// set the url for the new track
+	musicAudioSource.src = musicPlaylist[musicCurrent];
+
+	// load and play
+	musicAudio.load();
+	musicAudio.play();
+
 	// debug message
 	if (debugging) {
 		console.log("Moved to next music track.");
@@ -224,17 +294,22 @@ function playNextTrack() {
 // initialize the game music
 // reference: http://devblog.lastrose.com/html5-audio-video-playlist/
 function initMusic() {
+
 	// init variables
-	musicCurrent = 0;
-	musicAudio = document.getElementById("audio");
-	musicPlaylist = document.getElementById("playlist");
-	musicTracks = musicPlaylist.find("li a");
-	musicPlaylistLength = musicTracks.length - 1;
+	musicDiv = document.getElementById("musicDiv");
+	musicAudio = document.createElement("audio");
+	musicAudio.id = "musicAudio";
+	musicAudio.volume = defaultVolume;
+	musicAudioSource = document.createElement("source");
+	musicAudioSource.id = "musicAudioSource";
+	musicAudioSource.src = "";
+	musicAudio.appendChild(musicAudioSource);
+	musicDiv.appendChild(musicAudio);
+	musicCurrent = -1;
 	musicPaused = false;
 
 	// set up playlist looping
-	musicAudio[0].volume = .5;
-	audio[0].addEventListener("ended", function(e) {
+	musicAudio.addEventListener("ended", function() {
 		playNextTrack();
 	});
 	
@@ -242,6 +317,9 @@ function initMusic() {
 	if (debugging) {
 		console.log("Loaded music player and playlist.");
 	}
+
+	// start the first track playing
+	playNextTrack();
 }
 
 // initalize the rest of the page
@@ -251,7 +329,17 @@ function initHTML() {
 	document.addEventListener("keydown", parseKeyHTML);
 
 	// initialize the game music
-	//initMusic();
+	initMusic();
+
+	// set the background color for the whole page
+	document.body.style.backgroundColor = bgroundColor;
+
+	// grab the game div
+	gameDiv = document.getElementById("gameDiv");
+
+	// grab and hide the map screen div
+	mapDiv = document.getElementById("mapDiv");
+	mapDiv.style.display = "none";
 	
 	// create the hidden file input element
 	myFileInput = document.createElement("input");
@@ -259,10 +347,6 @@ function initHTML() {
 	myFileInput.type = "file";
 	myFileInput.accept = ".svg";
 	myFileInput.multiple = false;
-
-	// grab text input element from the message box and hide it
-	msgTextInput = document.getElementById("msgTextInput");
-	msgTextInput.style.display = "none";
 	
 	// create the hidden canvas for getting color info
 	hiddenCanvas = document.createElement("canvas");
@@ -284,11 +368,25 @@ function initHTML() {
 	drawControls.style.display = "block";
 	platformControls.style.display = "none";
 	
-	// grab the message box elements
+	// grab the help screen div and button
+	helpDiv = document.getElementById("helpDiv");
+	helpBtnDone = document.getElementById("helpBtnDone");
+	
+	// set the background color for the help screen div
+	document.getElementById("helpFormatDiv").style.backgroundColor = bgroundColor;
+
+	// set the default visibility of the help screen div
+	helpDiv.style.display = "none";
+
+	// grab the message box div and elements
 	messageDiv = document.getElementById("messageDiv");
 	messageText = document.getElementById("messageText");
 	msgBtnOK = document.getElementById("msgBtnOK");
 	msgBtnCancel = document.getElementById("msgBtnCancel");
+	msgTextInput = document.getElementById("msgTextInput");
+	
+	// hide the text input element from the message box
+	msgTextInput.style.display = "none";
 
 	// set the background color for the message div
 	document.getElementById("messageFormatDiv").style.backgroundColor = bgroundColor;
@@ -503,6 +601,39 @@ function changeTool(newTool) {
 	}
 }
 
+// help screen functions
+function displayHelpScreen() {
+
+	// set the mode
+	previousMode = mode;
+	mode = helpMode;
+
+	// display correct div
+	showDiv(mode);
+}
+function doHelpScreenDone() {
+
+	// set the mode back to previous
+	mode = previousMode;
+	previousMode = helpMode;
+
+	// display correct div
+	showDiv(mode);
+}
+
+// quit to home screen function
+function doQuitToHomeScreen() {
+	
+	// set the mode and playing flag
+	previousMode = mode;
+	mode = gameMode;
+	playing = false;
+
+	// display correct div
+	showDiv(mode);
+}
+
+
 // display the message box with the given message
 // links up the ok and cancel functions
 // also displays text input element if boolean argument is true
@@ -601,18 +732,18 @@ function panDownButton() {
 function doTileEdit() {
 
 	// ### Mark - do tile lockout and password check stuff here
+	
+	// set the mode
+	previousMode = mode;
+	mode = artMode;
 
-	// swap the divs
-	gameDiv.style.display = "none";
-	toolDiv.style.display = "block";
+	// display correct div
+	showDiv(mode);
 
 	// get the offsets again here
 	var coords = canvas.getBoundingClientRect();
 	xOffset = coords.left;
 	yOffset = coords.top;
-	
-	// set the mode
-	mode = artMode;
 }
 
 // exits from the currently edited tile back into game mode
@@ -625,15 +756,12 @@ function doTileExit() {
 	// reset drawing tool defaults
 	svgResetDefaults();
 	
-	// hide the message box
-	messageDiv.style.display = "none";
-	
-	// swap the divs
-	gameDiv.style.display = "block";
-	toolDiv.style.display = "none";
-	
 	// set the mode
+	previousMode = mode;
 	mode = gameMode;
+
+	// display correct div
+	showDiv(mode); // handles hiding message box div
 }
 
 // update color selections from the SVG
@@ -2101,8 +2229,8 @@ function updateMouseCoords(evt) {
 
 // mouse down event handler
 function mouseDown(evt) {
-	// only do anything if not in game mode
-	if (mode != gameMode) {
+	// only do anything if in art or avatar mode
+	if (mode == artMode || mode == avatarMode) {
 		// prevent default behavior to stop weird selecting and dragging
 		// this was only necessary after refactoring the SVG to be inline
 		evt.preventDefault();
@@ -2312,8 +2440,8 @@ function mouseDown(evt) {
 
 // mouse move event handler
 function mouseMove(evt) {
-	// only do anything if not in game mode
-	if (mode != gameMode) {
+	// only do anything if in art or avatar mode
+	if (mode == artMode || mode == avatarMode) {
 		var shapeInProgress;
 		switch(toolChoice) {
 			case 0: // rectangle
@@ -2458,8 +2586,8 @@ function mouseMove(evt) {
 
 // mouse up event handler
 function mouseUp(evt) {
-	// only do anything if not in game mode
-	if (mode != gameMode) {
+	// only do anything if in art or avatar mode
+	if (mode == artMode || mode == avatarMode) {
 		// only do something if a shape is in progress
 		if (inProgress) {
 			// close out the shape that was in progress
@@ -2708,8 +2836,8 @@ function mouseUp(evt) {
 
 // mouse click event handler
 function mouseClick(evt) {
-	// only do anything if not in game mode
-	if (mode != gameMode) {
+	// only do anything if in art or avatar mode
+	if (mode == artMode || mode == avatarMode) {
 		// only do anything if the click was the left mouse button
 		if (evt.which == 1) {
 			switch(toolChoice) {
@@ -3094,8 +3222,8 @@ function doPan(xAmount, yAmount) {
 
 // scroll wheel event handler
 function scrollWheel(evt) {
-	// only do anything if not in game mode
-	if (mode != gameMode) {
+	// only do anything if in art or avatar mode
+	if (mode == artMode || mode == avatarMode) {
 		// prevent default behavior to stop weird scroll issues
 		evt.preventDefault();
 		// get mouse coordinates in the canvas
