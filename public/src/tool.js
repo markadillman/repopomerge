@@ -1292,6 +1292,7 @@ function surroundingsOnLoad(request){
 				putGroupInCanvas(body[key]['svg'],targetContext, clipX, clipY, clipW, clipH, 0, 0, canvW, canvH);
 				alreadyDrawn[key] = key;
 			}
+			console.log(originalEdgesDict);
 			for (tile in coordinatePairs){
 				//color in all tiles not yet colored in and not center tile with a blank white rectangle
 				if (!(alreadyDrawn[tile] === tile)){
