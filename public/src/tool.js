@@ -3124,7 +3124,7 @@ function borderArtZoom(xAmount, yAmount) {
 
 			// and then make sure that the width and height don't put you outside the canvas
 			if (clipX + clipW > canvW) {
-				clipX = canW - clipW;
+				clipX = canvW - clipW;
 			}
 			if (clipY + clipH > canvH) {
 				clipY = canvH - clipH;
