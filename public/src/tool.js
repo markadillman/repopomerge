@@ -3075,15 +3075,17 @@ function borderArtZoom() {
 		// try: 0+55, 277-25, 110, 25, 0, 0, 220, 50
 		var canvX = 0;
 		var canvY = 0;
-		var canvW = canvasWidth;
-		var canvH = canvasHeight;
-		var clipX = 0;
-		var clipY = 0;
-		var clipW = canvW / zoomFactor;
-		var clipH = canvH / zoomFactor;
+		var canvW;
+		var canvH;
+		var clipX;
+		var clipY;
+		var clipW;
+		var clipH;
 		if (vBoxY == 0) { // check top edge, region 1
 			// apply zoom and pan to region 1/uc
+			canvW = canvasWidth;
 			canvH = canvasEdge;
+			clipW = canvW / zoomFactor;
 			clipH = canvH / zoomFactor;
 			clipX = ((canvW - clipW) / 2) + panXOffset;
 			clipY = (canvH - clipH) + (canvasHeight - canvasEdge);
@@ -3111,7 +3113,9 @@ function borderArtZoom() {
 		if (vBoxX == 0) { // check left edge, region 3
 			// apply zoom and pan to region 3/cl
 			canvW = canvasEdge;
+			canvH = canvasHeight;
 			clipW = canvW / zoomFactor;
+			clipH = canvH / zoomFactor;
 			clipX = (canvW - clipW) + (canvasWidth - canvasEdge);
 			clipY = ((canvH - clipH) / 2) + panYOffset;
 			
@@ -3142,7 +3146,9 @@ function borderArtZoom() {
 		if (vBoxX + vBoxW == canvasWidth) { // check right edge, region 5
 			// apply zoom and pan to region 5/cr
 			canvW = canvasEdge;
+			canvH = canvasHeight;
 			clipW = canvW / zoomFactor;
+			clipH = canvH / zoomFactor;
 			clipX = 0;
 			clipY = ((canvH - clipH) / 2) + panYOffset;
 			
@@ -3168,7 +3174,9 @@ function borderArtZoom() {
 		}
 		if (vBoxY + vBoxH == canvasHeight) { // check bottom edge, region 7
 			// apply zoom and pan to region 7/bm
+			canvW = canvasWidth;
 			canvH = canvasEdge;
+			clipW = canvW / zoomFactor;
 			clipH = canvH / zoomFactor;
 			clipX = ((canvW - clipW) / 2) + panXOffset;
 			clipY = 0;
