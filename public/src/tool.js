@@ -443,44 +443,7 @@ function initHTML() {
 	}
 	
 	// load the image data into the non-center display div canvases
-	if (useFakeSurroundings) { // use a bunch of colored blocks
-		var colorBlock;
-		for (var i = 0; i < displayDivCanvasList.length; i += 1) {
-			// don't try to do anything in the center div
-			if (i != getKeyByVal(displayDivDict, "centerDiv")) {
-				// create the color block in canvas i
-				currentCanvas = displayDivCanvasList[i];
-				currentContext = displayDivContextList[i];
-				colorBlock = currentContext.createImageData(currentCanvas.width, currentCanvas.height);
-				for (var j = 0; j < colorBlock.data.length; j += 4) {
-					colorBlock.data[j+0] = 0;
-					colorBlock.data[j+1] = 0;
-					colorBlock.data[j+2] = i*17 + 100;
-					colorBlock.data[j+3] = 255;
-				}
-				currentContext.putImageData(colorBlock, 0, 0);
-			}
-		}
-	} else { // use real image data from the server
-		// xTile and yTile are the current tile
-		// so need to load: (xTile - 1, yTile - 1)	above left
-		//					(xTile, yTile - 1)		above
-		//					(xTile + 1, yTile - 1)	above right
-		//					(xTile - 1, yTile)		left
-		//					(xTile + 1, yTile)		right
-		//					(xTile - 1, yTile + 1)	below left
-		//					(xTile, yTile + 1)		below
-		//					(xTile + 1, yTile + 1)	below right
-		// also need to handle cases where one or more of these
-		// tiles doesn't exist yet (load nothing, display blank)
-		
-		// start Mark's code
-		//declare JSON object for payload
-		var readOnlyPayload = generateSurroundingsPayload();
-		//execute request
-		var request = postRequest("/readpull",readOnlyPayload,surroundingsOnLoad,postOnError);
-		//do more stuff with request response if need be, but probably not necessary
-	}
+	doLoadSurroundingsFromServer();
 	
 	// position all the other display divs inside the overall div
 	var topVal, leftVal;
@@ -736,9 +699,9 @@ function doTileEdit() {
 
 	// ### Mark - do tile lockout and password check stuff here
 	
-	// actually load the tile info from the server
-	// by copying Mark's code from init
+	// load the tile and its surroundings from the server
 	svgLoadFromServer(xTile, yTile, password);
+	doLoadSurroundingsFromServer();
 	
 	// set the mode
 	previousMode = mode;
@@ -944,6 +907,47 @@ function surroundingEyeDropper(evt) {
 	} // else do nothing
 }
 
+// helper function to stuff surroundings from server into boundary canvases
+function doLoadSurroundingsFromServer() {
+	if (useFakeSurroundings) { // use a bunch of colored blocks
+		var colorBlock;
+		for (var i = 0; i < displayDivCanvasList.length; i += 1) {
+			// don't try to do anything in the center div
+			if (i != getKeyByVal(displayDivDict, "centerDiv")) {
+				// create the color block in canvas i
+				currentCanvas = displayDivCanvasList[i];
+				currentContext = displayDivContextList[i];
+				colorBlock = currentContext.createImageData(currentCanvas.width, currentCanvas.height);
+				for (var j = 0; j < colorBlock.data.length; j += 4) {
+					colorBlock.data[j+0] = 0;
+					colorBlock.data[j+1] = 0;
+					colorBlock.data[j+2] = i*17 + 100;
+					colorBlock.data[j+3] = 255;
+				}
+				currentContext.putImageData(colorBlock, 0, 0);
+			}
+		}
+	} else { // use real image data from the server
+		// xTile and yTile are the current tile
+		// so need to load: (xTile - 1, yTile - 1)	above left
+		//					(xTile, yTile - 1)		above
+		//					(xTile + 1, yTile - 1)	above right
+		//					(xTile - 1, yTile)		left
+		//					(xTile + 1, yTile)		right
+		//					(xTile - 1, yTile + 1)	below left
+		//					(xTile, yTile + 1)		below
+		//					(xTile + 1, yTile + 1)	below right
+		// also need to handle cases where one or more of these
+		// tiles doesn't exist yet (load nothing, display blank)
+		
+		// start Mark's code
+		//declare JSON object for payload
+		var readOnlyPayload = generateSurroundingsPayload();
+		//execute request
+		var request = postRequest("/readpull",readOnlyPayload,surroundingsOnLoad,postOnError);
+		//do more stuff with request response if need be, but probably not necessary
+	}
+}
 
 /* CODE FROM SVG PORTION */
 
