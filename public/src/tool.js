@@ -3137,10 +3137,6 @@ function borderArtZoom(doingReset) {
 			if (clipY + clipH > canvasHeight) {
 				clipY = Math.abs(canvasHeight - clipH);
 			}
-			console.log(clipX);
-			console.log(clipY);
-			console.log(clipW);
-			console.log(clipH);
 			
 			// re-draw into the appropriate canvas
 			putGroupInCanvas(originalEdgesDict["cl"], displayDivContextList[3],
@@ -3262,7 +3258,7 @@ function doZoom(direction) {
 			}
 			// update zoom factor
 			zoomFactor *= zoomStep;
-			// update pan offsets
+			// update pan offsets ??? This is wrong
 			panXOffset = vBoxX;
 			panYOffset = vBoxY;
 		} // else don't zoom
@@ -3289,7 +3285,7 @@ function doZoom(direction) {
 			}
 			// update zoom factor
 			zoomFactor /= zoomStep;
-			// update pan offsets
+			// update pan offsets ??? This is wrong
 			panXOffset = vBoxX;
 			panYOffset = vBoxY;
 		} else { // don't zoom
