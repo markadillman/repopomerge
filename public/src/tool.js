@@ -732,7 +732,13 @@ function panDownButton() {
 // if the player has access to the current tile
 function doTileEdit() {
 
+	// ### make sure xTile and yTile are set correctly
+
 	// ### Mark - do tile lockout and password check stuff here
+	
+	// actually load the tile info from the server
+	// by copying Mark's code from init
+	svgLoadFromServer(xTile, yTile, password);
 	
 	// set the mode
 	previousMode = mode;
@@ -1589,6 +1595,7 @@ function svgPullCallback(request){
 
 // load drawing and platform data from the server
 // call this from the svg init function
+// and from doTileEdit
 function svgLoadFromServer(xTile, yTile, password) {
 	handleShapeInProgress();
 	svgClearAll();
