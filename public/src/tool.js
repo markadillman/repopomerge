@@ -3079,7 +3079,7 @@ function borderArtZoom(xAmount, yAmount) {
 		var canvH = canvasHeight;
 		if (vBoxY == 0) { // check top edge, region 1
 			// apply zoom and pan to region 1/uc
-			clipX -= canvasEdge;
+			clipX += canvasEdge;
 			clipY = canvasHeight - canvasEdge;
 			clipH = canvasEdge / zoomFactor;
 			canvH = canvasEdge;
@@ -3092,7 +3092,7 @@ function borderArtZoom(xAmount, yAmount) {
 		}		
 		if (vBoxX == 0) { // check left edge, region 3
 			// apply zoom and pan to region 3/cl
-			clipY -= canvasEdge;
+			clipY += canvasEdge;
 			clipX = canvasWidth - canvasEdge;
 			clipW = canvasEdge / zoomFactor;
 			canvW = canvasEdge;
@@ -3105,7 +3105,7 @@ function borderArtZoom(xAmount, yAmount) {
 		}
 		if (vBoxX + vBoxW == canvasWidth) { // check right edge, region 5
 			// apply zoom and pan to region 5/cr
-			clipY -= canvasEdge;
+			clipY += canvasEdge;
 			clipW = canvasEdge / zoomFactor;
 			canvW = canvasEdge;
 			
@@ -3117,7 +3117,7 @@ function borderArtZoom(xAmount, yAmount) {
 		}
 		if (vBoxY + vBoxH == canvasHeight) { // check bottom edge, region 7
 			// apply zoom and pan to region 7/bm
-			clipX -= canvasEdge;
+			clipX += canvasEdge;
 			clipH = canvasEdge / zoomFactor;
 			canvH = canvasEdge;
 			
