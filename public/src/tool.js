@@ -3086,14 +3086,16 @@ function borderArtZoom(xAmount, yAmount) {
 			// apply zoom and pan to region 1/uc
 			canvH = canvasEdge;
 			clipH = canvH / zoomFactor;
-			clipX += ((canvW - clipW) / 2) + panXOffset;
-			clipY += (canvH - clipH) + (canvasHeight - canvasEdge);
+			clipX = ((canvW - clipW) / 2) + panXOffset;
+			clipY = (canvH - clipH) + (canvasHeight - canvasEdge);
+			console.log(clipY);
 			
 			// make sure these are still valid points
 			clipX = Math.max(0, clipX);
 			clipX = Math.min(canvW, clipX);
 			clipY = Math.max(0, clipY);
 			clipY = Math.min(canvH, clipY);
+			console.log(clipY);
 
 			// and then make sure that the width and height don't put you outside the canvas
 			if (clipX + clipW > canvW) {
@@ -3102,6 +3104,7 @@ function borderArtZoom(xAmount, yAmount) {
 			if (clipY + clipH > canvH) {
 				clipY = canvH - clipH;
 			}
+			console.log(clipY);
 			
 			// re-draw into the appropriate canvas
 			putGroupInCanvas(originalEdgesDict["uc"], displayDivContextList[1],
@@ -3113,8 +3116,8 @@ function borderArtZoom(xAmount, yAmount) {
 			// apply zoom and pan to region 3/cl
 			canvW = canvasEdge;
 			clipW = canvW / zoomFactor;
-			clipX += (canvW - clipW) + (canvasWidth - canvasEdge);
-			clipY += ((canvH - clipH) / 2) + panYOffset;
+			clipX = (canvW - clipW) + (canvasWidth - canvasEdge);
+			clipY = ((canvH - clipH) / 2) + panYOffset;
 			
 			// make sure these are still valid points
 			clipX = Math.max(0, clipX);
@@ -3141,7 +3144,7 @@ function borderArtZoom(xAmount, yAmount) {
 			canvW = canvasEdge;
 			clipW = canvW / zoomFactor;
 			clipX = canvasWidth - canvasEdge;
-			clipY += ((canvH - clipH) / 2) + panYOffset;
+			clipY = ((canvH - clipH) / 2) + panYOffset;
 			
 			// make sure these are still valid points
 			clipX = Math.max(0, clipX);
@@ -3167,7 +3170,7 @@ function borderArtZoom(xAmount, yAmount) {
 			// apply zoom and pan to region 7/bm
 			canvH = canvasEdge;
 			clipH = canvH / zoomFactor;
-			clipX += ((canvW - clipW) / 2) + panXOffset;
+			clipX = ((canvW - clipW) / 2) + panXOffset;
 			clipY = canvasHeight - canvasEdge;
 			
 			// make sure these are still valid points
