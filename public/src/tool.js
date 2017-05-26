@@ -3087,7 +3087,7 @@ function borderArtZoom(xAmount, yAmount) {
 			canvH = canvasEdge;
 			clipH = canvH / zoomFactor;
 			clipX += ((canvW - clipW) / 2) + panXOffset;
-			clipY += (canvH - clipH);
+			clipY = canvasHeight - canvasEdge;
 			
 			// re-draw into the appropriate canvas
 			putGroupInCanvas(originalEdgesDict["uc"], displayDivContextList[1],
@@ -3099,7 +3099,7 @@ function borderArtZoom(xAmount, yAmount) {
 			// apply zoom and pan to region 3/cl
 			canvW = canvasEdge;
 			clipW = canvW / zoomFactor;
-			clipX += (canvW - clipW);
+			clipX = canvasWidth - canvasEdge;
 			clipY += ((canvH - clipH) / 2) + panYOffset;
 			
 			// re-draw into the appropriate canvas
@@ -3112,7 +3112,7 @@ function borderArtZoom(xAmount, yAmount) {
 			// apply zoom and pan to region 5/cr
 			canvW = canvasEdge;
 			clipW = canvW / zoomFactor;
-			clipX = canvasWidth - canvasEdge;
+			clipX += (canvW - clipW);
 			clipY += ((canvH - clipH) / 2) + panYOffset;
 			
 			// re-draw into the appropriate canvas
@@ -3126,7 +3126,7 @@ function borderArtZoom(xAmount, yAmount) {
 			canvH = canvasEdge;
 			clipH = canvH / zoomFactor;
 			clipX += ((canvW - clipW) / 2) + panXOffset;
-			clipY = canvasHeight - canvasEdge;
+			clipY += (canvH - clipH);
 			
 			// re-draw into the appropriate canvas
 			putGroupInCanvas(originalEdgesDict["bm"], displayDivContextList[7],
