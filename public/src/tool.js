@@ -679,6 +679,7 @@ function loadButton () {
 }
 function submitButton () {
 	// ### Why does this submit the hiddenCanvas, especially without updating it first?
+	// and yet this seems to work... maybe I'm just tired and not following what's going on
 	svgSubmitToServer(document.getElementById('hiddenCanvas'));
 }
 function undoButton() {
@@ -1521,7 +1522,8 @@ function svgSubmitToServer(imgCanvas) {
 	}
 	
 	// use message box to put up confirmation message
-	displayMessage("Your art has been submitted.", doNothing, doNothing, false)
+	// ### Mark - should we make the cancel button actually cancel this action?
+	displayMessage("Your art has been submitted.", doTileExit, doTileExit, false)
 }
 
 // start Mark's code
