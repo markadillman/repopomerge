@@ -47,6 +47,8 @@ var canvasEdge = 50;	// size of the area showing surrounding tiles
 var canvasBorder = 1;	// stroke width of the borders for the tiles
 var zoomFactor = 1;		// current actual zoom factor
 var zoomStep = 1.25;	// the zoom multiplier
+var panXOffset = 0;		// current actual pan offsets
+var panYOffset = 0;
 var minWidth = 5;		// floor of minimum values for zooming in (keeps ratios)
 var minHeight = 3;
 var defaultViewBox = "0 0 " + canvasWidth.toString() + " " + canvasHeight.toString();
@@ -78,6 +80,7 @@ var displayDivDict = {0: "aboveLeftDiv",
 					  6: "belowLeftDiv",
 					  7: "belowDiv",
 					  8: "belowRightDiv"};
+var originalEdgesDict = {};	// save original edge art for use in zoom/pan
 //MARK'S CODE: coordinates match above display dict for concise looping JSON payload formation
 var coordinatePairs = {"ul": {"x":-1,"y":-1,"canvasId":"aboveLeftDivCanvas"},//------upper left ("ul")
 					   "uc": {"x":0,"y":-1,"canvasId":"aboveDivCanvas"}, //------upper middle ("uc")
@@ -96,6 +99,11 @@ var svgPrepend = "<svg xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http:/
 var svgMinPrepend = "<svg xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\">";
 var svgAppend = "</svg>"
 // end Mark's code
+
+// stop event propagation so forms don't actually submit
+function onFormSubmit(form_element) {
+	return false;
+}
 
 // keyboard event handler
 // references: http://stackoverflow.com/a/2353562
@@ -527,9 +535,46 @@ function initHTML() {
 	}
 }
 
-// stop event propagation so form doesn't actually submit
-function onFormSubmit(form_element) {
-	return false;
+// helper function to stuff surroundings from server into boundary canvases
+function doLoadSurroundingsFromServer() {
+	if (useFakeSurroundings) { // use a bunch of colored blocks
+		var colorBlock;
+		for (var i = 0; i < displayDivCanvasList.length; i += 1) {
+			// don't try to do anything in the center div
+			if (i != getKeyByVal(displayDivDict, "centerDiv")) {
+				// create the color block in canvas i
+				currentCanvas = displayDivCanvasList[i];
+				currentContext = displayDivContextList[i];
+				colorBlock = currentContext.createImageData(currentCanvas.width, currentCanvas.height);
+				for (var j = 0; j < colorBlock.data.length; j += 4) {
+					colorBlock.data[j+0] = 0;
+					colorBlock.data[j+1] = 0;
+					colorBlock.data[j+2] = i*17 + 100;
+					colorBlock.data[j+3] = 255;
+				}
+				currentContext.putImageData(colorBlock, 0, 0);
+			}
+		}
+	} else { // use real image data from the server
+		// xTile and yTile are the current tile
+		// so need to load: (xTile - 1, yTile - 1)	above left
+		//					(xTile, yTile - 1)		above
+		//					(xTile + 1, yTile - 1)	above right
+		//					(xTile - 1, yTile)		left
+		//					(xTile + 1, yTile)		right
+		//					(xTile - 1, yTile + 1)	below left
+		//					(xTile, yTile + 1)		below
+		//					(xTile + 1, yTile + 1)	below right
+		// also need to handle cases where one or more of these
+		// tiles doesn't exist yet (load nothing, display blank)
+		
+		// start Mark's code
+		//declare JSON object for payload
+		var readOnlyPayload = generateSurroundingsPayload();
+		//execute request
+		var request = postRequest("/readpull",readOnlyPayload,surroundingsOnLoad,postOnError);
+		//do more stuff with request response if need be, but probably not necessary
+	}
 }
 
 // update option selctions from the form
@@ -907,47 +952,6 @@ function surroundingEyeDropper(evt) {
 	} // else do nothing
 }
 
-// helper function to stuff surroundings from server into boundary canvases
-function doLoadSurroundingsFromServer() {
-	if (useFakeSurroundings) { // use a bunch of colored blocks
-		var colorBlock;
-		for (var i = 0; i < displayDivCanvasList.length; i += 1) {
-			// don't try to do anything in the center div
-			if (i != getKeyByVal(displayDivDict, "centerDiv")) {
-				// create the color block in canvas i
-				currentCanvas = displayDivCanvasList[i];
-				currentContext = displayDivContextList[i];
-				colorBlock = currentContext.createImageData(currentCanvas.width, currentCanvas.height);
-				for (var j = 0; j < colorBlock.data.length; j += 4) {
-					colorBlock.data[j+0] = 0;
-					colorBlock.data[j+1] = 0;
-					colorBlock.data[j+2] = i*17 + 100;
-					colorBlock.data[j+3] = 255;
-				}
-				currentContext.putImageData(colorBlock, 0, 0);
-			}
-		}
-	} else { // use real image data from the server
-		// xTile and yTile are the current tile
-		// so need to load: (xTile - 1, yTile - 1)	above left
-		//					(xTile, yTile - 1)		above
-		//					(xTile + 1, yTile - 1)	above right
-		//					(xTile - 1, yTile)		left
-		//					(xTile + 1, yTile)		right
-		//					(xTile - 1, yTile + 1)	below left
-		//					(xTile, yTile + 1)		below
-		//					(xTile + 1, yTile + 1)	below right
-		// also need to handle cases where one or more of these
-		// tiles doesn't exist yet (load nothing, display blank)
-		
-		// start Mark's code
-		//declare JSON object for payload
-		var readOnlyPayload = generateSurroundingsPayload();
-		//execute request
-		var request = postRequest("/readpull",readOnlyPayload,surroundingsOnLoad,postOnError);
-		//do more stuff with request response if need be, but probably not necessary
-	}
-}
 
 /* CODE FROM SVG PORTION */
 
@@ -1235,8 +1239,17 @@ function surroundingsOnLoad(request){
 					currentContext.putImageData(colorBlock, 0, 0);
 				}
 			}
-			// end Toni's code
 			
+			// clear out the existing originalEdgesDict info
+			// reference: https://stackoverflow.com/questions/684575/how-to-quickly-clear-a-javascript-object
+			// using the linear-time solution b/c never more than 4 entries to delete
+			for (var prop in originalEdgesDict) {
+				if (originalEdgesDict.hasOwnProperty(prop)) {
+					delete originalEdgesDic[prop];
+				}
+			}
+			// end Toni's code			
+
 			//this will color all tiles with legit art assets
 			for (key in body){
 				//get canvas that matches up with key
@@ -1271,6 +1284,10 @@ function surroundingsOnLoad(request){
 				}
 				var canvW = clipW;
 				var canvH = clipH;
+				// if tile 1, 3, 5, or 7, save original version for zoom/pan
+				if (key == "uc" || key == "cl" || key == "cr" || key == "bm") {
+					originalEdgesDict.key = body[key]['svg'];
+				}
 				// end Toni's code
 				putGroupInCanvas(body[key]['svg'],targetContext, clipX, clipY, clipW, clipH, 0, 0, canvW, canvH);
 				alreadyDrawn[key] = key;
@@ -3032,7 +3049,8 @@ function platformClick(evt) {
 }
 
 // handle border art zooming and panning
-function borderArtZoom() {
+// xAmount and yAmount are the amounts by which to pan
+function borderArtZoom(xAmount, yAmount) {
 	if (zoomFactor != 1) { // canvas is zoomed, so handle border art
 
 		// get the current view box settings
@@ -3051,28 +3069,55 @@ function borderArtZoom() {
 
 		// display only regions the view box is still adjacent to,
 		// applying the matching zoom and pan to those regions
+		var clipX = panXOffset;
+		var clipY = panYOffset;
+		var clipW = canvasWidth / zoomFactor;
+		var clipH = canvasHeight / zoomFactor;
+		var canvW = canvasWidth;
+		var canvH = canvasHeight;
 		if (vBoxY == 0) { // check top edge, region 1
-			// apply zoom and pan to region 1
-			// ###
+			// apply zoom and pan to region 1/uc
+			clipY = canvasHeight - canvasEdge;
+			clipH = canvasEdge / zoomFactor;
+			canvH = canvasEdge;
+			
+			// re-draw into the appropriate canvas
+			putGroupInCanvas(originalEdgesDict["uc"], displayDivContextList[1],
+								clipX, clipY, clipW, clipH, 0, 0, canvW, canvH);
 			// make region 1 visible
 			edgeArtDivList[0].style.display = "block";
-			console.log("HERE");
 		}		
 		if (vBoxX == 0) { // check left edge, region 3
-			// apply zoom and pan to region 3
-			// ###
+			// apply zoom and pan to region 3/cl
+			clipX = canvasWidth - canvasEdge;
+			clipW = canvasEdge / zoomFactor;
+			canvW = canvasEdge;
+			
+			// re-draw into the appropriate canvas
+			putGroupInCanvas(originalEdgesDict["cl"], displayDivContextList[3],
+								clipX, clipY, clipW, clipH, 0, 0, canvW, canvH);
 			// make region 3 visible
 			edgeArtDivList[1].style.display = "block";
 		}
 		if (vBoxX + vBoxW == canvasWidth) { // check right edge, region 5
-			// apply zoom and pan to region 5
-			// ###
+			// apply zoom and pan to region 5/cr
+			clipW = canvasEdge / zoomFactor;
+			canvW = canvasEdge;
+			
+			// re-draw into the appropriate canvas
+			putGroupInCanvas(originalEdgesDict["cr"], displayDivContextList[5],
+								clipX, clipY, clipW, clipH, 0, 0, canvW, canvH);
 			// make region 5 visible
 			edgeArtDivList[2].style.display = "block";
 		}
 		if (vBoxY + vBoxH == canvasHeight) { // check bottom edge, region 7
-			// apply zoom and pan to region 7
-			// ###
+			// apply zoom and pan to region 7/bm
+			clipH = canvasEdge / zoomFactor;
+			canvH = canvasEdge;
+			
+			// re-draw into the appropriate canvas
+			putGroupInCanvas(originalEdgesDict["bm"], displayDivContextList[7],
+								clipX, clipY, clipW, clipH, 0, 0, canvW, canvH);
 			// make region 7 visible
 			edgeArtDivList[3].style.display = "block";
 		}
@@ -3168,7 +3213,7 @@ function doZoom(direction) {
 	canvas.setAttribute("viewBox", vBox);
 
 	// handle border art zooming
-	borderArtZoom();
+	borderArtZoom(0, 0);
 
 	// debug message
 	if (debugging) {
@@ -3192,7 +3237,7 @@ function doZoomReset() {
 		console.log("Changed zoom factor to: " + zoomFactor.toString() + " and view box to: " + vBox);
 	}
 	// handle border art zooming
-	borderArtZoom();
+	borderArtZoom(0, 0);
 }
 
 // adjust the viewbox by panning
@@ -3205,6 +3250,8 @@ function doPan(xAmount, yAmount) {
 	var vBoxH = parseFloat(vBox[3]);
 
 	// adjust by given pan amounts
+	panXOffset += xAmount;
+	panYOffset += yAmount;
 	vBoxX += xAmount;
 	vBoxY += yAmount;
 
@@ -3227,7 +3274,7 @@ function doPan(xAmount, yAmount) {
 	canvas.setAttribute("viewBox", vBox);
 
 	// handle border art
-	borderArtZoom();
+	borderArtZoom(xAmount, yAmount);
 
 	// debug message
 	if (debugging) {
