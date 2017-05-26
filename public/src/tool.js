@@ -3184,7 +3184,6 @@ function doZoomReset() {
 	borderArtZoom();
 }
 
-
 // adjust the viewbox by panning
 function doPan(xAmount, yAmount) {
 	// get the current view box settings
