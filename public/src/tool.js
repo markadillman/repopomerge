@@ -3317,10 +3317,10 @@ function doPan(xAmount, yAmount) {
 	var vBoxY = parseFloat(vBox[1]);
 	var vBoxW = parseFloat(vBox[2]);
 	var vBoxH = parseFloat(vBox[3]);
+	var origX = vBoxX;
+	var origY = vBoxY;
 
 	// adjust by given pan amounts
-	panXOffset += xAmount;
-	panYOffset += yAmount;
 	vBoxX += xAmount;
 	vBoxY += yAmount;
 
@@ -3342,6 +3342,10 @@ function doPan(xAmount, yAmount) {
 	vBox = vBoxX.toString() + " " + vBoxY.toString() + " " + vBoxW.toString() + " " + vBoxH.toString();
 	canvas.setAttribute("viewBox", vBox);
 
+	// update the offsets
+	panXOffset += (vBoxX - origX);
+	panYOffset += (vBoxY - origY);
+	
 	// handle border art
 	borderArtZoom(xAmount, yAmount);
 
