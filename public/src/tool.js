@@ -3051,8 +3051,8 @@ function platformClick(evt) {
 }
 
 // handle border art zooming and panning
-function borderArtZoom() {
-	if (zoomFactor != 1) { // canvas is zoomed, so handle border art
+function borderArtZoom(doingReset) {
+	if (zoomFactor != 1 || doingReset) { // canvas is zoomed, so handle border art
 
 		// get the current view box settings
 		var vBox = canvas.getAttribute("viewBox").split(" ");
@@ -3209,6 +3209,13 @@ function borderArtZoom() {
 			edgeArtDivList[i].style.display = "block";
 		}
 	}
+	if (doingReset) { // doing a reset, so display all the border art as normal
+		cornerArtDiv.style.display = "block";
+		edgeArtDiv.style.display = "block";
+		for (var i = 0; i < edgeArtDivList.length; i += 1) {
+			edgeArtDivList[i].style.display = "block";
+		}
+	}
 }
 
 // zoom function
@@ -3293,7 +3300,7 @@ function doZoom(direction) {
 	canvas.setAttribute("viewBox", vBox);
 
 	// handle border art zooming
-	borderArtZoom();
+	borderArtZoom(false);
 
 	// debug message
 	if (debugging) {
@@ -3317,7 +3324,7 @@ function doZoomReset() {
 		console.log("Changed zoom factor to: " + zoomFactor.toString() + " and view box to: " + vBox);
 	}
 	// handle border art zooming
-	borderArtZoom();
+	borderArtZoom(true);
 }
 
 // adjust the viewbox by panning
@@ -3358,7 +3365,7 @@ function doPan(xAmount, yAmount) {
 	panYOffset += (vBoxY - origY);
 	
 	// handle border art
-	borderArtZoom();
+	borderArtZoom(false);
 
 	// debug message
 	if (debugging) {
