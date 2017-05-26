@@ -3094,13 +3094,13 @@ function borderArtZoom(xAmount, yAmount) {
 			clipX = Math.min(canvasWidth, clipX);
 			clipY = Math.max(0, clipY);
 			clipY = Math.min(canvasHeight, clipY);
-
+			
 			// and then make sure that the width and height don't put you outside the canvas
 			if (clipX + clipW > canvasWidth) {
-				clipX = canvasWidth - clipW;
+				clipX = Math.abs(canvasWidth - clipW);
 			}
 			if (clipY + clipH > canvasHeight) {
-				clipY = canvasHeight - clipH;
+				clipY = Math.abs(canvasHeight - clipH);
 			}
 			
 			// re-draw into the appropriate canvas
@@ -3115,23 +3115,20 @@ function borderArtZoom(xAmount, yAmount) {
 			clipW = canvW / zoomFactor;
 			clipX = (canvW - clipW) + (canvasWidth - canvasEdge);
 			clipY = ((canvH - clipH) / 2) + panYOffset;
-			console.log(clipY);
 			
 			// make sure these are still valid points
 			clipX = Math.max(0, clipX);
 			clipX = Math.min(canvasWidth, clipX);
 			clipY = Math.max(0, clipY);
 			clipY = Math.min(canvasHeight, clipY);
-			console.log(clipY);
-
+			
 			// and then make sure that the width and height don't put you outside the canvas
 			if (clipX + clipW > canvasWidth) {
-				clipX = canvasWidth - clipW;
+				clipX = Math.abs(canvasWidth - clipW);
 			}
 			if (clipY + clipH > canvasHeight) {
-				clipY = canvasHeight - clipH;
+				clipY = Math.abs(canvasHeight - clipH);
 			}
-			console.log(clipY);
 			
 			// re-draw into the appropriate canvas
 			putGroupInCanvas(originalEdgesDict["cl"], displayDivContextList[3],
@@ -3151,13 +3148,13 @@ function borderArtZoom(xAmount, yAmount) {
 			clipX = Math.min(canvasWidth, clipX);
 			clipY = Math.max(0, clipY);
 			clipY = Math.min(canvasHeight, clipY);
-
+			
 			// and then make sure that the width and height don't put you outside the canvas
 			if (clipX + clipW > canvasWidth) {
-				clipX = canvasWidth - clipW;
+				clipX = Math.abs(canvasWidth - clipW);
 			}
 			if (clipY + clipH > canvasHeight) {
-				clipY = canvasHeight - clipH;
+				clipY = Math.abs(canvasHeight - clipH);
 			}
 			
 			// re-draw into the appropriate canvas
@@ -3178,13 +3175,13 @@ function borderArtZoom(xAmount, yAmount) {
 			clipX = Math.min(canvasWidth, clipX);
 			clipY = Math.max(0, clipY);
 			clipY = Math.min(canvasHeight, clipY);
-
+			
 			// and then make sure that the width and height don't put you outside the canvas
 			if (clipX + clipW > canvasWidth) {
-				clipX = canvasWidth - clipW;
+				clipX = Math.abs(canvasWidth - clipW);
 			}
 			if (clipY + clipH > canvasHeight) {
-				clipY = canvasHeight - clipH;
+				clipY = Math.abs(canvasHeight - clipH);
 			}
 			
 			// re-draw into the appropriate canvas
@@ -3237,7 +3234,7 @@ function doZoom(direction) {
 			}
 			if (vBoxY + vBoxH > canvasHeight) {
 				vBoxY = Math.abs(canvasHeight - vBoxH);
-			}		
+			}
 			// update zoom factor
 			zoomFactor *= zoomStep;
 		} // else don't zoom
