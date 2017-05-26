@@ -3244,8 +3244,8 @@ function doZoom(direction) {
 			vBoxW /= zoomStep;
 			vBoxH /= zoomStep;
 			// change corner point as necessary
-			vBoxX = Math.abs(xMouse - vBoxW / 2);
-			vBoxY = Math.abs(yMouse - vBoxH / 2);
+			vBoxX = xMouse - vBoxW / 2;
+			vBoxY = yMouse - vBoxH / 2;
 			// make sure these points are valid
 			vBoxX = Math.max(0, vBoxX);
 			vBoxX = Math.min(canvasWidth, vBoxX);
@@ -3268,8 +3268,8 @@ function doZoom(direction) {
 			vBoxW *= zoomStep;
 			vBoxH *= zoomStep;
 			// change corner point as necessary
-			vBoxX = Math.abs(xMouse - vBoxW / 2);
-			vBoxY = Math.abs(yMouse - vBoxH / 2);
+			vBoxX = xMouse - vBoxW / 2;
+			vBoxY = yMouse - vBoxH / 2;
 			// make sure these points are valid
 			vBoxX = Math.max(0, vBoxX);
 			vBoxX = Math.min(canvasWidth, vBoxX);
