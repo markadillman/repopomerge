@@ -47,12 +47,12 @@ var canvasEdge = 50;	// size of the area showing surrounding tiles
 var canvasBorder = 1;	// stroke width of the borders for the tiles
 var zoomFactor = 1;		// current actual zoom factor
 var zoomStep = 1.25;	// the zoom multiplier
-var panXOffset = 0;		// current actual pan offsets
-var panYOffset = 0;
 var minWidth = 5;		// floor of minimum values for zooming in (keeps ratios)
 var minHeight = 3;
 var defaultViewBox = "0 0 " + canvasWidth.toString() + " " + canvasHeight.toString();
 var panStep = 10;		// the number of pixels to pan by
+var panXOffset = 0;		// current actual pan offsets
+var panYOffset = 0;
 var drawControls;		// the drawing-specific tools
 var platformControls;	// the platform-specific tools
 var gameDiv;			// the game div
@@ -3089,6 +3089,20 @@ function borderArtZoom(xAmount, yAmount) {
 			clipX += ((canvW - clipW) / 2) + panXOffset;
 			clipY = canvasHeight - canvasEdge;
 			
+			// make sure these are still valid points
+			clipX = Math.max(0, clipX);
+			clipX = Math.min(canvW, clipX);
+			clipY = Math.max(0, clipY);
+			clipY = Math.min(canvH, clipY);
+
+			// and then make sure that the width and height don't put you outside the canvas
+			if (clipX + clipW > canvW) {
+				clipX = canW - clipW;
+			}
+			if (clipY + clipH > canvH) {
+				clipY = canvH - clipH;
+			}
+			
 			// re-draw into the appropriate canvas
 			putGroupInCanvas(originalEdgesDict["uc"], displayDivContextList[1],
 								clipX, clipY, clipW, clipH, 0, 0, canvW, canvH);
@@ -3101,6 +3115,20 @@ function borderArtZoom(xAmount, yAmount) {
 			clipW = canvW / zoomFactor;
 			clipX = canvasWidth - canvasEdge;
 			clipY += ((canvH - clipH) / 2) + panYOffset;
+			
+			// make sure these are still valid points
+			clipX = Math.max(0, clipX);
+			clipX = Math.min(canvW, clipX);
+			clipY = Math.max(0, clipY);
+			clipY = Math.min(canvH, clipY);
+
+			// and then make sure that the width and height don't put you outside the canvas
+			if (clipX + clipW > canvW) {
+				clipX = canW - clipW;
+			}
+			if (clipY + clipH > canvH) {
+				clipY = canvH - clipH;
+			}
 			
 			// re-draw into the appropriate canvas
 			putGroupInCanvas(originalEdgesDict["cl"], displayDivContextList[3],
@@ -3115,6 +3143,20 @@ function borderArtZoom(xAmount, yAmount) {
 			clipX += (canvW - clipW);
 			clipY += ((canvH - clipH) / 2) + panYOffset;
 			
+			// make sure these are still valid points
+			clipX = Math.max(0, clipX);
+			clipX = Math.min(canvW, clipX);
+			clipY = Math.max(0, clipY);
+			clipY = Math.min(canvH, clipY);
+
+			// and then make sure that the width and height don't put you outside the canvas
+			if (clipX + clipW > canvW) {
+				clipX = canW - clipW;
+			}
+			if (clipY + clipH > canvH) {
+				clipY = canvH - clipH;
+			}
+			
 			// re-draw into the appropriate canvas
 			putGroupInCanvas(originalEdgesDict["cr"], displayDivContextList[5],
 								clipX, clipY, clipW, clipH, 0, 0, canvW, canvH);
@@ -3127,6 +3169,20 @@ function borderArtZoom(xAmount, yAmount) {
 			clipH = canvH / zoomFactor;
 			clipX += ((canvW - clipW) / 2) + panXOffset;
 			clipY += (canvH - clipH);
+			
+			// make sure these are still valid points
+			clipX = Math.max(0, clipX);
+			clipX = Math.min(canvW, clipX);
+			clipY = Math.max(0, clipY);
+			clipY = Math.min(canvH, clipY);
+
+			// and then make sure that the width and height don't put you outside the canvas
+			if (clipX + clipW > canvW) {
+				clipX = canW - clipW;
+			}
+			if (clipY + clipH > canvH) {
+				clipY = canvH - clipH;
+			}
 			
 			// re-draw into the appropriate canvas
 			putGroupInCanvas(originalEdgesDict["bm"], displayDivContextList[7],
