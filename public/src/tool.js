@@ -3051,8 +3051,7 @@ function platformClick(evt) {
 }
 
 // handle border art zooming and panning
-// xAmount and yAmount are the amounts by which to pan
-function borderArtZoom(xAmount, yAmount) {
+function borderArtZoom() {
 	if (zoomFactor != 1) { // canvas is zoomed, so handle border art
 
 		// get the current view box settings
@@ -3129,6 +3128,10 @@ function borderArtZoom(xAmount, yAmount) {
 			if (clipY + clipH > canvasHeight) {
 				clipY = Math.abs(canvasHeight - clipH);
 			}
+			console.log(clipX);
+			console.log(clipY);
+			console.log(clipW);
+			console.log(clipH);
 			
 			// re-draw into the appropriate canvas
 			putGroupInCanvas(originalEdgesDict["cl"], displayDivContextList[3],
@@ -3282,7 +3285,7 @@ function doZoom(direction) {
 	canvas.setAttribute("viewBox", vBox);
 
 	// handle border art zooming
-	borderArtZoom(0, 0);
+	borderArtZoom();
 
 	// debug message
 	if (debugging) {
@@ -3306,7 +3309,7 @@ function doZoomReset() {
 		console.log("Changed zoom factor to: " + zoomFactor.toString() + " and view box to: " + vBox);
 	}
 	// handle border art zooming
-	borderArtZoom(0, 0);
+	borderArtZoom();
 }
 
 // adjust the viewbox by panning
@@ -3347,7 +3350,7 @@ function doPan(xAmount, yAmount) {
 	panYOffset += (vBoxY - origY);
 	
 	// handle border art
-	borderArtZoom(xAmount, yAmount);
+	borderArtZoom();
 
 	// debug message
 	if (debugging) {
