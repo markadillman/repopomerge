@@ -1363,8 +1363,10 @@ function svgClearAll() {
 	var myParent;
 	for (var j = 1; j < currentPlatform; j += 1) {
 		myObject = document.getElementById(platformStr + j.toString());
-		myParent = myObject.parentNode;
-		myParent.removeChild(myObject);
+		if (myObject != null) {
+			myParent = myObject.parentNode;
+			myParent.removeChild(myObject);
+		}
 	}
 	currentPlatform = 1;
 	
@@ -1523,6 +1525,7 @@ function svgSubmitToServer(imgCanvas) {
 	
 	// use message box to put up confirmation message
 	// ### Mark - should we make the cancel button actually cancel this action?
+	// or maybe change the displayMessage API to have an option with no Cancel button
 	displayMessage("Your art has been submitted.", doTileExit, doTileExit, false)
 }
 
