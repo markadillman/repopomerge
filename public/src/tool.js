@@ -1290,8 +1290,8 @@ function surroundingsOnLoad(request){
 						originalEdgesDict[key] = body[key]['svg'];
 					}
 				}
-				// end Toni's code
-				putGroupInCanvas(body[key]['svg'],targetContext, clipX, clipY, clipW, clipH, 0, 0, canvW, canvH);
+				// end Toni's code !!!
+				//putGroupInCanvas(body[key]['svg'],targetContext, clipX, clipY, clipW, clipH, 0, 0, canvW, canvH);
 				alreadyDrawn[key] = key;
 			}
 			for (tile in coordinatePairs){
