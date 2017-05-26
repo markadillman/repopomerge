@@ -2256,8 +2256,13 @@ function updateMouseCoords(evt) {
 	// adjust for screen offset
 	xMouse = evt.clientX - xOffset;
 	yMouse = evt.clientY - yOffset;
-	// adjust for zooom and pan
+	// adjust for zoom and pan
 	adjustMouseCoords();
+	// debug message
+	if (debugging) {
+		console.log("Mouse coordinates: (" + xMouse.toString() + ", " +
+											yMouse.toString() + ")");
+	}
 }
 
 // ??? refactor the following event handlers to reduce copy-pasta code?
