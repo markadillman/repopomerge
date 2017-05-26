@@ -1245,7 +1245,7 @@ function surroundingsOnLoad(request){
 			// using the linear-time solution b/c never more than 4 entries to delete
 			for (var prop in originalEdgesDict) {
 				if (originalEdgesDict.hasOwnProperty(prop)) {
-					delete originalEdgesDic[prop];
+					delete originalEdgesDict[prop];
 				}
 			}
 			// end Toni's code			
