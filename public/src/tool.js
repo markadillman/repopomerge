@@ -3071,18 +3071,18 @@ function borderArtZoom(xAmount, yAmount) {
 
 		// display only regions the view box is still adjacent to,
 		// applying the matching zoom and pan to those regions
-		var clipX = panXOffset;
-		var clipY = panYOffset;
+		var clipX = 0;
+		var clipY = 0;
 		var clipW = canvasWidth / zoomFactor;
 		var clipH = canvasHeight / zoomFactor;
 		var canvW = canvasWidth;
 		var canvH = canvasHeight;
 		if (vBoxY == 0) { // check top edge, region 1
 			// apply zoom and pan to region 1/uc
-			clipX += canvasEdge;
-			clipY = canvasHeight - canvasEdge;
 			clipH = canvasEdge / zoomFactor;
 			canvH = canvasEdge;
+			clipX += (clipW / 2) + panXOffset
+			clipY = canvasHeight - clipH + panYOffset;
 			
 			// re-draw into the appropriate canvas
 			putGroupInCanvas(originalEdgesDict["uc"], displayDivContextList[1],
