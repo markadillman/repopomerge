@@ -34,7 +34,7 @@ var masking = false;	// toggle the platform masking tools
 var musicDiv;		// variables for game music
 var musicAudio;
 var musicAudioSource;
-var musicPlaylist = ["aud/Thetasong.mp3", "aud/Othersdance.mp3", "aud/Walkabout.mp3"];
+var musicPlaylist = ["aud/Thetasong.mp3", "aud/Othersdance.mp3", "aud/Heartsbeat.mp3"];
 var musicCurrent = 0;
 var musicPaused = false;
 var defaultVolume = 0.5;
@@ -3074,18 +3074,20 @@ function borderArtZoom(xAmount, yAmount) {
 		// used: https://www.w3schools.com/tags/tryit.asp?filename=tryhtml5_canvas_drawimage3
 		// to play with drawImage and get this algorithm worked out
 		// try: 0+55, 277-25, 110, 25, 0, 0, 220, 50
-		var clipX = 0;
-		var clipY = 0;
-		var clipW = canvasWidth / zoomFactor;
-		var clipH = canvasHeight / zoomFactor;
+		var canvX = 0;
+		var canvY = 0;
 		var canvW = canvasWidth;
 		var canvH = canvasHeight;
+		var clipX = 0;
+		var clipY = 0;
+		var clipW = canvW / zoomFactor;
+		var clipH = canvH / zoomFactor;
 		if (vBoxY == 0) { // check top edge, region 1
 			// apply zoom and pan to region 1/uc
-			clipH = canvasEdge / zoomFactor;
 			canvH = canvasEdge;
-			clipX += (clipW / 2) + panXOffset
-			clipY = canvasHeight - clipH + panYOffset;
+			clipH = canvH / zoomFactor;
+			clipX += ((canvW - clipW) / 2) + panXOffset;
+			clipY += (canvH - clipH);
 			
 			// re-draw into the appropriate canvas
 			putGroupInCanvas(originalEdgesDict["uc"], displayDivContextList[1],
@@ -3095,10 +3097,10 @@ function borderArtZoom(xAmount, yAmount) {
 		}		
 		if (vBoxX == 0) { // check left edge, region 3
 			// apply zoom and pan to region 3/cl
-			clipY += canvasEdge;
-			clipX = canvasWidth - canvasEdge;
-			clipW = canvasEdge / zoomFactor;
 			canvW = canvasEdge;
+			clipW = canvW / zoomFactor;
+			clipX += (canvW - clipW);
+			clipY += ((canvH - clipH) / 2) + panYOffset;
 			
 			// re-draw into the appropriate canvas
 			putGroupInCanvas(originalEdgesDict["cl"], displayDivContextList[3],
@@ -3108,9 +3110,10 @@ function borderArtZoom(xAmount, yAmount) {
 		}
 		if (vBoxX + vBoxW == canvasWidth) { // check right edge, region 5
 			// apply zoom and pan to region 5/cr
-			clipY += canvasEdge;
-			clipW = canvasEdge / zoomFactor;
 			canvW = canvasEdge;
+			clipW = canvW / zoomFactor;
+			clipX = canvasWidth - canvasEdge;
+			clipY += ((canvH - clipH) / 2) + panYOffset;
 			
 			// re-draw into the appropriate canvas
 			putGroupInCanvas(originalEdgesDict["cr"], displayDivContextList[5],
@@ -3120,9 +3123,10 @@ function borderArtZoom(xAmount, yAmount) {
 		}
 		if (vBoxY + vBoxH == canvasHeight) { // check bottom edge, region 7
 			// apply zoom and pan to region 7/bm
-			clipX += canvasEdge;
-			clipH = canvasEdge / zoomFactor;
 			canvH = canvasEdge;
+			clipH = canvH / zoomFactor;
+			clipX += ((canvW - clipW) / 2) + panXOffset;
+			clipY = canvasHeight - canvasEdge;
 			
 			// re-draw into the appropriate canvas
 			putGroupInCanvas(originalEdgesDict["bm"], displayDivContextList[7],

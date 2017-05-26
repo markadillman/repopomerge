@@ -42,35 +42,53 @@ Game =
 		{
 			// Title
 			Crafty.e('myText, 2D, DOM, Text')
+
 				.attr({x: 0, y: screenHeight / 3,
+
 					   w: screenWidth, h: screenHeight})
+
 				.text(titleString)
 				.textFont({family: 'Trebuchet MS',
+
 						   size: '50px',
+
 						   weight: 'bold'})
+
 				.textColor(defaultTextColor)
+
 				.textAlign('center');
 
 			/*// Instructions
 			Crafty.e('2D, DOM, Text')
+
 				.attr({x: 0, y: (screenHeight / 3) * 2,
 					   w: screenWidth, h: screenHeight})
+
 				.text('Press Enter to begin')
+
 				.textFont({family: 'Trebuchet MS',
 						   size: '30px',
+
 						   weight: 'bold'})
 				.textColor(defaultTextColor)
 				.textAlign('center');
 			// Enter key loads avatar selection screen
 			Crafty.e('Start, 2D, Canvas, Color, Solid')
+
 				.attr({x: 200, y: 200, w: 100, h: 40})
 				.bind('KeyDown', function(e)
+
 				{
+
 					if(e.key == Crafty.keys.ENTER)
+
 					{
+
 						Crafty.enterScene('SetupScreen');
+
 					}
 				});*/
+
 			// ### Lucia - okay to delete the above commented out chunk of code?
 
 			// start Toni's code
@@ -121,11 +139,16 @@ Game =
 			// text
 			Crafty.e('myText, 2D, DOM, Text')
 				.attr({x: 0, y: canvasEdge,
+
 					   w: screenWidth, h: screenHeight})
+
 				.text(creditsText)
 				.textFont({family: 'Trebuchet MS',
+
 						   size: '18px'})
+
 				.textColor(defaultTextColor)
+
 				.textAlign('center');
 			// button to return to home screen
 			Crafty.e('myButton, 2D, DOM, Color, Mouse, Text, Button')
@@ -143,18 +166,25 @@ Game =
 		// end Toni's code
 
 		// Player setup screen scene
+
 		Crafty.defineScene('SetupScreen', function()
+
 		{
+
 			// Select avatar
+
 			// Left arrow
 			Crafty.e('2D, DOM, Color, Mouse')
 				.attr({x: screenWidth / 6, y: screenHeight / 3, w: 40, h: 40})
+
 				.color('red');
 
 			// Right arrow
 			Crafty.e('2D, DOM, Color, Mouse')
 				.attr({x: (screenWidth / 6) * 5 - 40, y: screenHeight / 3,
+
 					   w: 40, h: 40})
+
 				.color('red');
 
 			// Selected avatar
@@ -164,13 +194,20 @@ Game =
 				.attr({x: (screenWidth / 2) - 100,
 					   y: screenHeight - (canvasEdge * 2),
 					   w: 200, h: 40})
+
 				.color('#FFFFFF')
 				.text('Start!')
+
 				.textAlign('center')
+
 				.textFont({family: 'Trebuchet MS',
+
 						   size: '20px'})
+
 				.bind('Click', function(MouseEvent)
+
 				{
+
 					Crafty.enterScene('World');
 				});
 
@@ -206,6 +243,7 @@ Game =
 
 
 		// Main game world scene
+
 		Crafty.defineScene('World', function()
 		{
 			// start Toni's code
@@ -214,64 +252,98 @@ Game =
 			// end Toni's code
 
 			// Player sprite
+
 			var player = Crafty.e('2D, DOM, Color, Twoway, Gravity')
+
 				// Initial position and size
+
 				.attr({x: 0, y: 0, w: 10, h: 50})
+
 				// Color of sprite (to be replaced)
 				.color('#F00')
 				// Enable 2D movement
+
 				// ### Lucia - all movement controls should only work
+
 				// if mode == gameMode (global variable set in tool.js
+
 				.twoway(200)
 				// Set platforms to stop falling player
 				.gravity('Platform')
 				.gravityConst(600)
 				// Bind spacebar to jump action
 				.jumper(300, [Crafty.keys.SPACE])
+
 				// Allow player to drop through platforms
 				.bind('KeyDown', function(e)
+
 				{
+
 					if(e.key == Crafty.keys.DOWN_ARROW)
+
 					{
+
 						this.antigravity();
+
 						this.gravity('Platform');
+
 					}
 				})
+
 				.bind('KeyUp', function(e)
 				{
+
 					if(e.key == Crafty.keys.DOWN_ARROW)
+
 					{
+
 						this.gravity('Platform');
 					}
 
 					// start Toni's code
+
 					// bind the gameplay mode hotkeys
+
 					if (mode == gameMode) { // only read these if in gameplay mode
+
 						if (e.key == Crafty.keys.E) {
+
 							//console.log("Go go gadget edit mode!");
 							doTileEdit(); // function in tool.js
 						}
 						if (e.key == Crafty.keys.M) {
+
 							// ### switch to map mode
 							// rememnber to have map mode have a way to switch back
+
 						}
+
 						if (e.key == Crafty.keys.Q) {
+
 							// quit to home screen
 							// ### server cleanup stuff here?
 							doQuitToHomeScreen(); // tool.js cleanup
 							Crafty.enterScene('HomeScreen');
 						}
+
 						if (e.key == Crafty.keys.W) {
+
 							// ### toggle platform viewing mode
+
 						}
+
 					}
 					// end Toni's code
+
 				});
+
 
 			// Platforms
 			Crafty.e('Platform, 2D, Canvas, Color')
+
 				.attr({x: 0, y: 250, w: 250, h: 10})
 				.color('green');
+
 			Crafty.e('Platform, 2D, Canvas, Color')
 				.attr({x: 400, y: 300, w: 250, h: 10})
 				.color('green');
@@ -279,15 +351,18 @@ Game =
 				.attr({x: 130, y: 450, w: 100, h: 10})
 				.color('green');
 			Crafty.e('Platform, 2D, Canvas, Color')
+
 				.attr({x: 170, y: 540, w: 100, h: 10})
 				.color('green');
 
 			// Floor
+
 			Crafty.e('Platform, 2D, Canvas, Color')
 				.attr({x: -4000, y: 590, w: 8000, h: 10})
 				.color('green');
 
 			// Have camera follow player sprite
+
 			Crafty.viewport.follow(player, 0, 50);
 		}, function() {
 			// start Toni's code
