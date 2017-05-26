@@ -3071,6 +3071,9 @@ function borderArtZoom(xAmount, yAmount) {
 
 		// display only regions the view box is still adjacent to,
 		// applying the matching zoom and pan to those regions
+		// used: https://www.w3schools.com/tags/tryit.asp?filename=tryhtml5_canvas_drawimage3
+		// to play with drawImage and get this algorithm worked out
+		// try: 0+55, 277-25, 110, 25, 0, 0, 220, 50
 		var clipX = 0;
 		var clipY = 0;
 		var clipW = canvasWidth / zoomFactor;
