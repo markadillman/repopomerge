@@ -1290,8 +1290,8 @@ function surroundingsOnLoad(request){
 						originalEdgesDict[key] = body[key]['svg'];
 					}
 				}
-				// end Toni's code !!!
-				//putGroupInCanvas(body[key]['svg'],targetContext, clipX, clipY, clipW, clipH, 0, 0, canvW, canvH);
+				// end Toni's code
+				putGroupInCanvas(body[key]['svg'],targetContext, clipX, clipY, clipW, clipH, 0, 0, canvW, canvH);
 				alreadyDrawn[key] = key;
 			}
 			for (tile in coordinatePairs){
@@ -3087,7 +3087,7 @@ function borderArtZoom(xAmount, yAmount) {
 			canvH = canvasEdge;
 			clipH = canvH / zoomFactor;
 			clipX += ((canvW - clipW) / 2) + panXOffset;
-			clipY += (canvH - clipH);
+			clipY += (canvH - clipH) + (canvasHeight - canvasEdge);
 			
 			// make sure these are still valid points
 			clipX = Math.max(0, clipX);
@@ -3113,7 +3113,7 @@ function borderArtZoom(xAmount, yAmount) {
 			// apply zoom and pan to region 3/cl
 			canvW = canvasEdge;
 			clipW = canvW / zoomFactor;
-			clipX += (canvW - clipW);
+			clipX += (canvW - clipW) + (canvasWidth - canvasEdge);
 			clipY += ((canvH - clipH) / 2) + panYOffset;
 			
 			// make sure these are still valid points
@@ -3131,8 +3131,8 @@ function borderArtZoom(xAmount, yAmount) {
 			}
 			
 			// re-draw into the appropriate canvas
-			//putGroupInCanvas(originalEdgesDict["cl"], displayDivContextList[3],
-			//					clipX, clipY, clipW, clipH, 0, 0, canvW, canvH);
+			putGroupInCanvas(originalEdgesDict["cl"], displayDivContextList[3],
+								clipX, clipY, clipW, clipH, 0, 0, canvW, canvH);
 			// make region 3 visible
 			edgeArtDivList[1].style.display = "block";
 		}
@@ -3158,8 +3158,8 @@ function borderArtZoom(xAmount, yAmount) {
 			}
 			
 			// re-draw into the appropriate canvas
-			//putGroupInCanvas(originalEdgesDict["cr"], displayDivContextList[5],
-			//					clipX, clipY, clipW, clipH, 0, 0, canvW, canvH);
+			putGroupInCanvas(originalEdgesDict["cr"], displayDivContextList[5],
+								clipX, clipY, clipW, clipH, 0, 0, canvW, canvH);
 			// make region 5 visible
 			edgeArtDivList[2].style.display = "block";
 		}
@@ -3185,8 +3185,8 @@ function borderArtZoom(xAmount, yAmount) {
 			}
 			
 			// re-draw into the appropriate canvas
-			//putGroupInCanvas(originalEdgesDict["bm"], displayDivContextList[7],
-			//					clipX, clipY, clipW, clipH, 0, 0, canvW, canvH);
+			putGroupInCanvas(originalEdgesDict["bm"], displayDivContextList[7],
+								clipX, clipY, clipW, clipH, 0, 0, canvW, canvH);
 			// make region 7 visible
 			edgeArtDivList[3].style.display = "block";
 		}
