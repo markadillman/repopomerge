@@ -25,9 +25,12 @@ var screenWidth = tileWidth + (2 * canvasEdge);
 var screenHeight = tileHeight + (2 * canvasEdge);
 var currentCenterX = 0;
 var currentCenterY = 0;
+var currentUpperLeftX = 0;
+var currentUpperLeftY = 0;
 var spriteWidth = 10;
 var spriteHeight = 50;
 var defaultTextColor = '#373854';
+var panTime = 500; // ms
 
 
 Game =
@@ -335,7 +338,33 @@ Game =
 					}
 					// end Toni's code
 
-				});
+				})
+				
+	      		// Move camera when player leaves current tile
+	      		.bind('Moved', function()
+	      			{
+	      				if (this.x > currentUpperLeftX + tileWidth)
+	      				{
+	      					currentUpperLeftX = currentUpperLeftX + tileWidth;
+	      					Crafty.viewport.pan(tileWidth, 0, panTime);
+	      				}
+	      				else if (this.x < currentUpperLeftX)
+	      				{
+	      					currentUpperLeftX = currentUpperLeftX - tileWidth;
+      						Crafty.viewport.pan(tileWidth * -1, 0, panTime);
+	      				}
+
+	      				if (this.y > currentUpperLeftY + tileHeight)
+	      				{
+	      					currentUpperLeftY = currentUpperLeftY + tileHeight;
+	      					Crafty.viewport.pan(0, tileHeight, panTime);
+	      				}
+	      				else if (this.y < currentUpperLeftY)
+	      				{
+	      					currentUpperLeftY = currentUpperLeftY - tileHeight;
+	      					Crafty.viewport.pan(0, tileHeight * -1, panTime);
+	      				}
+	      			});
 
 
 			// Platforms
