@@ -208,7 +208,6 @@ Game =
 				// ### Lucia - all movement controls should only work
 
 				// if mode == gameMode (global variable set in tool.js
-
 				.twoway(200)
 				// Set platforms to stop falling player
 				.gravity('Platform')
@@ -314,10 +313,6 @@ Game =
 			Crafty.e('Platform, 2D, Canvas, Color')
 				.attr({x: -4000, y: 590, w: 8000, h: 10})
 				.color('green');
-
-			// Have camera follow player sprite
-
-			Crafty.viewport.follow(player, 0, 50);
 		}, function() {
 			// start Toni's code
 			// adding an uninit function
