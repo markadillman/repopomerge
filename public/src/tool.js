@@ -65,7 +65,11 @@ var displayDiv;			// the display divs
 var borderArtDiv;		// the sub-div with just the border art divs in it
 var cornerArtDiv;		// the sub-sub div with just the corner border art
 var edgeArtDiv;			// the sub-sub div with just the edge art
-var edgeArtDivList = [];
+var edgeArtDivList = []; // list of divs for edge art
+var edgeArtClipList = []; // list of current clipX and clipY values for edge art
+for (var i = 0; i < 4; i += 1) {
+	edgeArtClipList[i] = [];
+}
 var displayDivList = [];
 var displayDivCanvasList = [];
 var displayDivContextList = [];
@@ -958,19 +962,32 @@ function surroundingEyeDropper(evt) {
 		var dropperCoords = myCanvas.getBoundingClientRect();
 		var mouseX = evt.clientX - dropperCoords.left;
 		var mouseY = evt.clientY - dropperCoords.top;
-		// adjust these for the zoom
-		mouseX /= zoomFactor;
-		mouseY /= zoomFactor;
-		// also adjust for pan
-		// first get viewBox info
-		/*var vBox = canvas.getAttribute("viewBox").split(" ");
-		var vBoxX = parseFloat(vBox[0]);
-		var vBoxY = parseFloat(vBox[1]);
-		var vBoxW = parseFloat(vBox[2]);
-		var vBoxH = parseFloat(vBox[3]);
-		// then add the resulting offset
-		mouseX += vBoxX;
-		mouseY += vBoxY;*/
+		// check if zoomed
+		if (zoomFactor != 1) {
+			// adjust the coords for the zoom
+			mouseX /= zoomFactor;
+			mouseY /= zoomFactor;
+			// also adjust for pan
+			var myId;
+			switch (myCanvas.id) {
+				case "aboveDivCanvas":
+					myId = 0;
+					break;
+				case "leftDivCanvas":
+					myId = 1;
+					break;
+				case "rightDivCanvas":
+					myId = 2;
+					break;
+				case "belowDivCanvas":
+					myId = 3;
+					break;
+				default: // should never get here
+					console.log("Something went horribly awry with eye dropper in zoomed edges.");
+			}
+			mouseX += edgeArtClipList[myId][0];
+			mouseY += edgeArtClipList[myId][1];
+		}
 		// get the color at that pixel in that region
 		var color = getColorAt(myContext, mouseX, mouseY);
 		// set this as the color choice
@@ -3136,6 +3153,10 @@ function borderArtZoom(doingReset) {
 				clipY = Math.abs(canvasHeight - clipH);
 			}
 			
+			// save the resulting new clipX and clipY
+			edgeArtClipList[0][0] = clipX;
+			edgeArtClipList[0][1] = clipY;
+			
 			// re-draw into the appropriate canvas
 			putGroupInCanvas(originalEdgesDict["uc"], displayDivContextList[1],
 								clipX, clipY, clipW, clipH, 0, 0, canvW, canvH);
@@ -3164,6 +3185,10 @@ function borderArtZoom(doingReset) {
 			if (clipY + clipH > canvasHeight) {
 				clipY = Math.abs(canvasHeight - clipH);
 			}
+			
+			// save the resulting new clipX and clipY
+			edgeArtClipList[1][0] = clipX;
+			edgeArtClipList[1][1] = clipY;
 			
 			// re-draw into the appropriate canvas
 			putGroupInCanvas(originalEdgesDict["cl"], displayDivContextList[3],
@@ -3194,6 +3219,10 @@ function borderArtZoom(doingReset) {
 				clipY = Math.abs(canvasHeight - clipH);
 			}
 			
+			// save the resulting new clipX and clipY
+			edgeArtClipList[2][0] = clipX;
+			edgeArtClipList[2][1] = clipY;
+			
 			// re-draw into the appropriate canvas
 			putGroupInCanvas(originalEdgesDict["cr"], displayDivContextList[5],
 								clipX, clipY, clipW, clipH, 0, 0, canvW, canvH);
@@ -3222,6 +3251,10 @@ function borderArtZoom(doingReset) {
 			if (clipY + clipH > canvasHeight) {
 				clipY = Math.abs(canvasHeight - clipH);
 			}
+			
+			// save the resulting new clipX and clipY
+			edgeArtClipList[3][0] = clipX;
+			edgeArtClipList[3][1] = clipY;
 			
 			// re-draw into the appropriate canvas
 			putGroupInCanvas(originalEdgesDict["bm"], displayDivContextList[7],
