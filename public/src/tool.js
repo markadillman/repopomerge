@@ -963,6 +963,7 @@ function surroundingEyeDropper(evt) {
 		mouseY /= zoomFactor;
 		// also adjust for pan
 		// first get viewBox info
+		console.log(myCanvas.data);
 		var vBox = canvas.getAttribute("viewBox").split(" ");
 		var vBoxX = parseFloat(vBox[0]);
 		var vBoxY = parseFloat(vBox[1]);
