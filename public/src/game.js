@@ -289,12 +289,17 @@ Game =
 	      		// Move camera when player leaves current tile
 	      		.bind('Moved', function()
 	      			{
+	      				// MARK ADDED get current tile coordinates to orient pull
+	      				var tileX = Math.floor(currentUpperLeftX / tileWidth);
+	      				var tileY = Math.floor(currentUpperLeftY / tileHeight);
+	      				var payload = {'x' : tileX, 'y': tileY};
 	      				if (this.x > currentUpperLeftX + tileWidth)
 	      				{
 	      					currentUpperLeftX = currentUpperLeftX + tileWidth;
 	      					Crafty.viewport.pan(tileWidth, 0, panTime);
 
 	      					// Load assets in outer rightmost "ring" segment
+	      					dynamicPostRequest('/pullright',payload,dynamicPostOnLoad,dynamicError);
 	      					// Destroy assets in outer leftmost "ring" segment
 	      				}
 	      				else if (this.x < currentUpperLeftX)
@@ -303,6 +308,7 @@ Game =
       						Crafty.viewport.pan(tileWidth * -1, 0, panTime);
 
       						// Load assets in outer leftmost "ring" segment
+      						dynamicPostRequest('/pullleft',payload,dynamicPostOnLoad,dynamicError);
       						// Destroy assets in outer rightmost "ring" segment
 	      				}
 
@@ -312,6 +318,7 @@ Game =
 	      					Crafty.viewport.pan(0, tileHeight, panTime);
 
 	      					// Load assets in outer bottom-most "ring" segment
+	      					dynamicPostRequest('/pullbottom',payload,dynamicPostOnLoad,dynamicError);
 	      					// Destroy assets in outer top-most "ring" segment
 	      				}
 	      				else if (this.y < currentUpperLeftY)
@@ -320,6 +327,7 @@ Game =
 	      					Crafty.viewport.pan(0, tileHeight * -1, panTime);
 
 	      					// Load assets in outer top-most "ring" segment
+	      					dynamicPostRequest('/pulltop',payload,dynamicPostOnLoad,dynamicError);
 	      					// Destroy assets in outer bottom-most "ring" segment
 	      				}
 	      			})
@@ -330,6 +338,9 @@ Game =
 
 			//player should be in front of other graphical assets
 			player.z = 1;
+
+			//MARK ADDED pull initial art assets
+			Crafty.trigger('Spawned');
 
 			// Platforms
 			Crafty.e('Platform, 2D, Canvas, Color')
