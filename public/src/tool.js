@@ -3312,7 +3312,11 @@ function doZoom(direction) {
 	canvas.setAttribute("viewBox", vBox);
 
 	// handle border art zooming
-	borderArtZoom(false);
+	if (zoomFactor != 1) {
+		borderArtZoom(false);
+	} else {
+		borderArtZoom(true);
+	}
 
 	// debug message
 	if (debugging) {
@@ -3399,5 +3403,6 @@ function scrollWheel(evt) {
 		} else { // zoom out
 			doZoom(false);
 		}
+		console.log(xMouse, yMouse);
 	} // else do nothing
 }
