@@ -32,7 +32,7 @@ var spriteWidth = 15;
 var spriteHeight = 30;
 var playerSpawnX = canvasEdge + 374.5;
 var playerSpawnY = canvasEdge + 108;
-var defaultTextColor = '#373854';
+var titleTextColor = '#373854';
 var panTime = 500; // ms
 //MARK ADDED DATA STRUCTURE THAT OUTLINES THE ENVIRONMENT TILES LOADED
 const initPullPairs = { "-2,-2":{"x":-2,"y":-2},
@@ -83,7 +83,7 @@ Game =
 				.textFont({family: 'Trebuchet MS',
 						   size: '50px',
 						   weight: 'bold'})
-				.textColor(defaultTextColor)
+				.textColor(titleTextColor)
 				.textAlign('center');
 
 			// start Toni's code
@@ -139,7 +139,6 @@ Game =
 
 				.text(creditsText)
 				.textFont({family: 'Trebuchet MS', size: '18px'})
-				.textColor(defaultTextColor)
 				.textAlign('center');
 
 			// button to return to home screen
@@ -226,10 +225,10 @@ Game =
 			playing = true;
 			// end Toni's code
 			
-			// do background art loading first
+			// try doing background art loading first
 			initAssetRequest(0, 0);
 			
-			// Toni moved these up so they load first
+			// Toni moved these up so they load earlier
 			// and put them in an array to change their z value
 			var tempPlatformsArray = [];
 			// Platforms
@@ -249,7 +248,10 @@ Game =
 			tempPlatformsArray.push(Crafty.e('Platform, 2D, Canvas, Color')
 				.attr({x: playerSpawnX - 50, y: playerSpawnY + 90, w: 100, h: 10})
 				.color('green'));
-			// Toni added a platform to allow us to get to the top 3 tiles for now
+			// Toni added platforms to allow us to get to the top 3 tiles for now
+			tempPlatformsArray.push(Crafty.e('Platform, 2D, Canvas, Color')
+				.attr({x: playerSpawnX - 50, y: playerSpawnY - 30, w: 100, h: 10})
+				.color('green'));
 			tempPlatformsArray.push(Crafty.e('Platform, 2D, Canvas, Color')
 				.attr({x: -1000, y: 10, w: 2000, h: 10})
 				.color('green'));
@@ -262,8 +264,8 @@ Game =
 				.attr({x: -4000, y: 590, w: 8000, h: 10})
 				.color('green'));
 			// set platform z between background and avatar
-			for (item in tempPlatformsArray) {
-				item.z = 1;
+			for (var i = 0; i < tempPlatformsArray.length; i += 1) {
+				tempPlatformsArray[i].z = i;
 			}
 
 			// Player sprite
