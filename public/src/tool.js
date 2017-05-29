@@ -971,8 +971,10 @@ function surroundingEyeDropper(evt) {
 			switch (myCanvas.id) {
 				case "aboveDivCanvas":
 					mouseX += edgeArtClipList[0][0];
+					mouseY += (edgeArtClipList[0][1] - (canvasHeight - canvasEdge));
 					break;
 				case "leftDivCanvas":
+					mouseX += (edgeArtClipList[1][0] - (canvasWidth - canvasEdge));
 					mouseY += edgeArtClipList[1][1];
 					break;
 				case "rightDivCanvas":
