@@ -684,6 +684,11 @@ function loadButton () {
 	displayMessage("Use the dialog to select an art file to load.", svgLoadFromLocal, doNothing, false);
 }
 function submitButton () {
+	// make sure to toggle off platform editing mode if necessary
+	if (masking) {
+		changeMasking(false);
+	}
+	
 	// ### Why does this submit the hiddenCanvas, especially without updating it first?
 	// and yet this seems to work... maybe I'm just tired and not following what's going on
 	svgSubmitToServer(document.getElementById('hiddenCanvas'));
