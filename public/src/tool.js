@@ -3231,8 +3231,6 @@ function doZoom(direction) {
 	var vBoxY = parseFloat(vBox[1]);
 	var vBoxW = parseFloat(vBox[2]);
 	var vBoxH = parseFloat(vBox[3]);
-	var origX = vBoxX;
-	var origY = vBoxY;
 
 	// do simple zoom based on direction
 	if (direction) { // zoom in one step
@@ -3258,9 +3256,9 @@ function doZoom(direction) {
 			}
 			// update zoom factor
 			zoomFactor *= zoomStep;
-			// update pan offsets ??? This is wrong
-			//panXOffset = vBoxX;
-			//panYOffset = vBoxY;
+			// update pan offsets
+			panXOffset = vBoxX;
+			panYOffset = vBoxY;
 		} // else don't zoom
 	} else { // zoom out one step
 		// disallow zooming out farther than the default zoom
@@ -3285,9 +3283,9 @@ function doZoom(direction) {
 			}
 			// update zoom factor
 			zoomFactor /= zoomStep;
-			// update pan offsets ??? This is wrong
-			//panXOffset = vBoxX;
-			//panYOffset = vBoxY;
+			// update pan offsets
+			panXOffset = vBoxX;
+			panYOffset = vBoxY;
 		} else { // don't zoom
 			// instead reset to default to fix any rounding errors
 			vBoxX = 0;
