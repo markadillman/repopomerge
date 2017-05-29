@@ -227,6 +227,8 @@ Game =
 			// end Toni's code
 			
 			// Toni moved these up so they load first
+			// do initial tile data request
+			initAssetRequest(0, 0);
 			// Platforms
 			Crafty.e('Platform, 2D, Canvas, Color')
 				.attr({x: 0, y: 250, w: 250, h: 10})
@@ -326,7 +328,7 @@ Game =
 					}
 					// end Toni's code
 				})
-
+				
 	      		// Move camera when player leaves current tile
 	      		.bind('Moved', function()
 	      			{
@@ -380,7 +382,7 @@ Game =
 	      			})
 				//this event added by Mark to pull initial environment
 				.bind('Spawned',function(){
-					initAssetRequest(this.x,this.y);
+					//initAssetRequest(this.x,this.y);
 				});
 
 			//player should be in front of other graphical assets
