@@ -968,25 +968,22 @@ function surroundingEyeDropper(evt) {
 			mouseX /= zoomFactor;
 			mouseY /= zoomFactor;
 			// also adjust for pan
-			var myId;
 			switch (myCanvas.id) {
 				case "aboveDivCanvas":
-					myId = 0;
+					mouseX += edgeArtClipList[0][0];
 					break;
 				case "leftDivCanvas":
-					myId = 1;
+					mouseY += edgeArtClipList[1][1];
 					break;
 				case "rightDivCanvas":
-					myId = 2;
+					mouseY += edgeArtClipList[2][1];
 					break;
 				case "belowDivCanvas":
-					myId = 3;
+					mouseX += edgeArtClipList[0][0];
 					break;
 				default: // should never get here
 					console.log("Something went horribly awry with eye dropper in zoomed edges.");
 			}
-			mouseX += edgeArtClipList[myId][0];
-			mouseY += edgeArtClipList[myId][1];
 		}
 		// get the color at that pixel in that region
 		var color = getColorAt(myContext, mouseX, mouseY);
