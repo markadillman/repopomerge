@@ -348,7 +348,7 @@ Game =
 						if (this.x > currentUpperLeftX + tileWidth)
 						{
 							currentUpperLeftX = currentUpperLeftX + tileWidth;
-							Crafty.viewport.pan(tileWidth, 0, panTime);
+							Crafty.viewport.pan(tileWidth + canvasEdge, 0, panTime);
 
 							// Load assets in outer rightmost "ring" segment
 							dynamicPostRequest('/pullright',payload,dynamicPostOnLoad,dynamicError);
@@ -357,7 +357,7 @@ Game =
 						else if (this.x < currentUpperLeftX)
 						{
 							currentUpperLeftX = currentUpperLeftX - tileWidth;
-							Crafty.viewport.pan(tileWidth * -1, 0, panTime);
+							Crafty.viewport.pan((tileWidth + canvasEdge) * -1, 0, panTime);
 
 							// Load assets in outer leftmost "ring" segment
 							dynamicPostRequest('/pullleft',payload,dynamicPostOnLoad,dynamicError);
@@ -367,7 +367,7 @@ Game =
 						if (this.y > currentUpperLeftY + tileHeight)
 						{
 							currentUpperLeftY = currentUpperLeftY + tileHeight;
-							Crafty.viewport.pan(0, tileHeight, panTime);
+							Crafty.viewport.pan(0, tileHeight + canvasEdge, panTime);
 
 							// Load assets in outer bottom-most "ring" segment
 							dynamicPostRequest('/pullbottom',payload,dynamicPostOnLoad,dynamicError);
@@ -376,7 +376,7 @@ Game =
 						else if (this.y < currentUpperLeftY)
 						{
 							currentUpperLeftY = currentUpperLeftY - tileHeight;
-							Crafty.viewport.pan(0, tileHeight * -1, panTime);
+							Crafty.viewport.pan(0, (tileHeight + canvasEdge) * -1, panTime);
 
 							// Load assets in outer top-most "ring" segment
 							dynamicPostRequest('/pulltop',payload,dynamicPostOnLoad,dynamicError);
@@ -388,9 +388,10 @@ Game =
 					initAssetRequest(this.x,this.y);
 				});
 				
-			
+			// start Toni's code
 			// set platform z between background and avatar
 			Crafty('Platform').z = 1;
+			// end Toni's code, which doesn't work anyway for some reason? ###
 			
 			//player should be in front of other graphical assets
 			player.z = 2;
