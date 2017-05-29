@@ -27,8 +27,8 @@ var currentCenterX = 0;
 var currentCenterY = 0;
 var currentUpperLeftX = 0;
 var currentUpperLeftY = 0;
-var spriteWidth = 10;
-var spriteHeight = 50;
+var spriteWidth = 15;
+var spriteHeight = 30;
 var defaultTextColor = '#373854';
 var panTime = 500; // ms
 
@@ -199,7 +199,7 @@ Game =
 			var player = Crafty.e('2D, DOM, Color, Twoway, Gravity')
 
 				// Initial position and size
-				.attr({x: 0, y: 0, w: 10, h: 50})
+				.attr({x: 0, y: 0, w: spriteWidth, h: spriteHeight})
 
 				// Color of sprite (to be replaced)
 				.color('#F00')
