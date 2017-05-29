@@ -217,6 +217,8 @@ Game =
 			// end Toni's code
 		});
 
+		
+		
 		// Main game world scene
 		Crafty.defineScene('World', function()
 		{
@@ -229,51 +231,50 @@ Game =
 			initAssetRequest(0, 0);
 			
 			// Toni moved these up so they load earlier
-			// and put them in an array to change their z value
-			var tempPlatformsArray = [];
 			// Platforms
-			tempPlatformsArray.push(Crafty.e('Platform, 2D, Canvas, Color')
+			Crafty.e('Platform, 2D, Canvas, Color')
 				.attr({x: 0, y: 250, w: 250, h: 10})
-				.color('green'));
-			tempPlatformsArray.push(Crafty.e('Platform, 2D, Canvas, Color')
+				.color('green');
+			Crafty.e('Platform, 2D, Canvas, Color')
 				.attr({x: 400, y: 300, w: 250, h: 10})
-				.color('green'));
-			tempPlatformsArray.push(Crafty.e('Platform, 2D, Canvas, Color')
+				.color('green');
+			Crafty.e('Platform, 2D, Canvas, Color')
 				.attr({x: 130, y: 450, w: 100, h: 10})
-				.color('green'));
-			tempPlatformsArray.push(Crafty.e('Platform, 2D, Canvas, Color')
+				.color('green');
+			Crafty.e('Platform, 2D, Canvas, Color')
 				.attr({x: 170, y: 540, w: 100, h: 10})
-				.color('green'));
+				.color('green');
 			// Toni added a platform under the spawn point
-			tempPlatformsArray.push(Crafty.e('Platform, 2D, Canvas, Color')
+			Crafty.e('Platform, 2D, Canvas, Color')
 				.attr({x: playerSpawnX - 50, y: playerSpawnY + 90, w: 100, h: 10})
-				.color('green'));
+				.color('green');
 			// Toni added platforms to allow us to get to the top 3 tiles for now
-			tempPlatformsArray.push(Crafty.e('Platform, 2D, Canvas, Color')
+			Crafty.e('Platform, 2D, Canvas, Color')
 				.attr({x: playerSpawnX - 50, y: playerSpawnY - 30, w: 100, h: 10})
-				.color('green'));
-			tempPlatformsArray.push(Crafty.e('Platform, 2D, Canvas, Color')
+				.color('green');
+			Crafty.e('Platform, 2D, Canvas, Color')
 				.attr({x: -1000, y: 10, w: 2000, h: 10})
-				.color('green'));
+				.color('green');
 			// Toni added a platform to allow us to get to the middle 2 outside tiles for now
-			tempPlatformsArray.push(Crafty.e('Platform, 2D, Canvas, Color')
+			Crafty.e('Platform, 2D, Canvas, Color')
 				.attr({x: -1000, y: canvasHeight - canvasEdge, w: 2000, h: 10})
-				.color('green'));
+				.color('green');
 			// Floor
-			tempPlatformsArray.push(Crafty.e('Platform, 2D, Canvas, Color')
+			Crafty.e('Platform, 2D, Canvas, Color')
 				.attr({x: -4000, y: 590, w: 8000, h: 10})
-				.color('green'));
+				.color('green');
 				
 			// Player sprite
 			var player = Crafty.e('2D, DOM, Color, Twoway, Gravity')
 
 				// Initial position and size
+				// inside the hole in the tree
 				.attr({x: playerSpawnX, y: playerSpawnY, w: spriteWidth, h: spriteHeight})
 
 				// Color of sprite (to be replaced)
 				.color('#F00')
+				
 				// Enable 2D movement
-
 				// ### Lucia - all movement controls should only work
 				// if mode == gameMode and playing == true
 				// (these are global variables also used in tool.js)
@@ -390,15 +391,15 @@ Game =
 					//initAssetRequest(this.x,this.y);
 				});
 				
-			//player should be in front of other graphical assets
-			//player.z = 1;
 			
 			// set platform z between background and avatar
-			for (var i = 0; i < tempPlatformsArray.length; i += 1) {
-				tempPlatformsArray[i].z = 1;
-			}
+			Crafty("Platform").z = 1;
+			
+			//player should be in front of other graphical assets
+			player.z = 2;
 
 			//MARK ADDED pull initial art assets
+			// Toni added a call to initAssetRequest(0, 0) earlier in this function
 			//Crafty.trigger('Spawned');
 				
 		}, function() {
