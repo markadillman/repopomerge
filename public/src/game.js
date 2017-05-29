@@ -124,8 +124,6 @@ Game =
 				.textAlign('Center')
 				.textFont({family: 'Trebuchet MS', size: '20px'})
 				.bind('Click', function(MouseEvent) {
-					// do initial tile data request nice and early
-					initAssetRequest(0, 0);
 					Crafty.enterScene('SetupScreen');
 				});
 			// end Toni's code
@@ -187,6 +185,8 @@ Game =
 				.textFont({family: 'Trebuchet MS', size: '20px'})
 				.bind('Click', function(MouseEvent)
 				{
+					// do initial tile data request nice and early
+					initAssetRequest(0, 0);
 					Crafty.enterScene('World');
 				});
 
