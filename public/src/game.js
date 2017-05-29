@@ -456,7 +456,7 @@ Game =
 					var tempX = assets[asset]['xcoord'] * tileWidth + canvasEdge;
 					var tempY = assets[asset]['ycoord'] * tileHeight + canvasEdge;
 					Crafty.e('Background, 2D, DOM, Image')
-					.attr({x: tempX, y : tempY, w: tileWidth, h: tileHeight, tileX: asset['xcoord'], tileY : asset['ycoord']})
+					.attr({x: tempX, y : tempY, w: tileWidth, h: tileHeight, tileX: asset['xcoord'], tileY : asset['ycoord'], z: 0})
 					.image(url);
 				//};
 				if (verboseDebugging) {
