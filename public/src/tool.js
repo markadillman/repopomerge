@@ -1242,6 +1242,7 @@ function surroundingsOnLoad(request){
 					currentContext.putImageData(colorBlock, 0, 0);
 				}
 			}*/
+			// whoops, Mark actually already did this lower down in this function
 			
 			// clear out the existing originalEdgesDict info
 			// reference: https://stackoverflow.com/questions/684575/how-to-quickly-clear-a-javascript-object
@@ -1304,7 +1305,7 @@ function surroundingsOnLoad(request){
 					if (!(coordinatePairs[tile]["canvasId"] === "svgCanvas")){
 						var blankCanvas = document.getElementById(coordinatePairs[tile]["canvasId"]);
 						var blankContext = blankCanvas.getContext("2d");
-						putGroupInCanvas("<rect width=\"600\" height=\"350\" fill=\"white\"></rect>",blankContext, 0, 0, canvasHeight, canvasWidth, 0, 0, canvasHeight, canvasWidth);
+						putGroupInCanvas("<rect width=\"600\" height=\"350\" fill=\"white\"></rect>",blankContext, 0, 0, canvasWidth, canvasHeight, 0, 0, canvasWidth, canvasHeight);
 					}
 				}
 			}
