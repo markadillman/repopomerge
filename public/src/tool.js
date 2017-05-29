@@ -3092,7 +3092,8 @@ function borderArtZoom(doingReset) {
 			canvH = canvasEdge;
 			clipW = canvW / zoomFactor;
 			clipH = canvH / zoomFactor;
-			clipX = ((canvW - clipW) / 2) + panXOffset;
+			//clipX = ((canvW - clipW) / 2) + panXOffset;
+			clipX = vBoxX;
 			clipY = (canvH - clipH) + (canvasHeight - canvasEdge);
 			
 			// make sure these are still valid points
@@ -3122,7 +3123,8 @@ function borderArtZoom(doingReset) {
 			clipW = canvW / zoomFactor;
 			clipH = canvH / zoomFactor;
 			clipX = (canvW - clipW) + (canvasWidth - canvasEdge);
-			clipY = ((canvH - clipH) / 2) + panYOffset;
+			//clipY = ((canvH - clipH) / 2) + panYOffset;
+			clipY = vBoxY;
 			
 			// make sure these are still valid points
 			clipX = Math.max(0, clipX);
@@ -3151,7 +3153,8 @@ function borderArtZoom(doingReset) {
 			clipW = canvW / zoomFactor;
 			clipH = canvH / zoomFactor;
 			clipX = 0;
-			clipY = ((canvH - clipH) / 2) + panYOffset;
+			//clipY = ((canvH - clipH) / 2) + panYOffset;
+			clipY = vBoxY;
 			
 			// make sure these are still valid points
 			clipX = Math.max(0, clipX);
@@ -3179,7 +3182,8 @@ function borderArtZoom(doingReset) {
 			canvH = canvasEdge;
 			clipW = canvW / zoomFactor;
 			clipH = canvH / zoomFactor;
-			clipX = ((canvW - clipW) / 2) + panXOffset;
+			//clipX = ((canvW - clipW) / 2) + panXOffset;
+			clipX = vBoxX;
 			clipY = 0;
 			
 			// make sure these are still valid points
