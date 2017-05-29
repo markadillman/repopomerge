@@ -185,8 +185,6 @@ Game =
 				.textFont({family: 'Trebuchet MS', size: '20px'})
 				.bind('Click', function(MouseEvent)
 				{
-					// do initial tile data request nice and early
-					initAssetRequest(0, 0);
 					Crafty.enterScene('World');
 				});
 
@@ -244,7 +242,7 @@ Game =
 				.color('green');
 			// Toni added a platform under the spawn point
 			Crafty.e('Platform, 2D, Canvas, Color')
-				.attr({x: playerSpawnX - 50, y: playerSpawnY + 30, w: 100, h: 10})
+				.attr({x: playerSpawnX - 50, y: playerSpawnY + 70, w: 100, h: 10})
 				.color('green');
 			// Toni added a platform to allow us to get to the top 3 tiles for now
 			Crafty.e('Platform, 2D, Canvas, Color')
@@ -382,7 +380,7 @@ Game =
 	      			})
 				//this event added by Mark to pull initial environment
 				.bind('Spawned',function(){
-					//initAssetRequest(this.x,this.y);
+					initAssetRequest(this.x,this.y);
 				});
 
 			//player should be in front of other graphical assets
