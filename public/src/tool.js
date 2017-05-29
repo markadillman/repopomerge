@@ -962,31 +962,8 @@ function surroundingEyeDropper(evt) {
 		var dropperCoords = myCanvas.getBoundingClientRect();
 		var mouseX = evt.clientX - dropperCoords.left;
 		var mouseY = evt.clientY - dropperCoords.top;
-		// check if zoomed
-		/*if (zoomFactor != 1) {
-			// adjust the coords for the zoom
-			mouseX /= zoomFactor;
-			mouseY /= zoomFactor;
-			// also adjust for pan
-			switch (myCanvas.id) {
-				case "aboveDivCanvas":
-					mouseX += edgeArtClipList[0][0];
-					mouseY += (edgeArtClipList[0][1] - (canvasHeight - canvasEdge));
-					break;
-				case "leftDivCanvas":
-					mouseX += (edgeArtClipList[1][0] - (canvasWidth - canvasEdge));
-					mouseY += edgeArtClipList[1][1];
-					break;
-				case "rightDivCanvas":
-					mouseY += edgeArtClipList[2][1];
-					break;
-				case "belowDivCanvas":
-					mouseX += edgeArtClipList[0][0];
-					break;
-				default: // should never get here
-					console.log("Something went horribly awry with eye dropper in zoomed edges.");
-			}
-		}*/
+		// do not need to adjust for zoom/pan, because the function that reads
+		// the color data uses the current context, not the pre-zoom/pan context
 		// get the color at that pixel in that region
 		var color = getColorAt(myContext, mouseX, mouseY);
 		// set this as the color choice
