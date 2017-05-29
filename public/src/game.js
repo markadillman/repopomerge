@@ -391,7 +391,7 @@ Game =
 				});
 				
 			//player should be in front of other graphical assets
-			player.z = 1;
+			//player.z = 1;
 			
 			// set platform z between background and avatar
 			for (var i = 0; i < tempPlatformsArray.length; i += 1) {
