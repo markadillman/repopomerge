@@ -227,9 +227,6 @@ Game =
 			playing = true;
 			// end Toni's code
 			
-			// try doing background art loading first
-			initAssetRequest(0, 0);
-			
 			// Toni moved these up so they load earlier
 			// Platforms
 			Crafty.e('Platform, 2D, Canvas, Color')
@@ -388,7 +385,7 @@ Game =
 					})
 				//this event added by Mark to pull initial environment
 				.bind('Spawned',function(){
-					//initAssetRequest(this.x,this.y);
+					initAssetRequest(this.x,this.y);
 				});
 				
 			
@@ -399,8 +396,7 @@ Game =
 			player.z = 2;
 
 			//MARK ADDED pull initial art assets
-			// Toni added a call to initAssetRequest(0, 0) earlier in this function
-			//Crafty.trigger('Spawned');
+			Crafty.trigger('Spawned');
 				
 		}, function() {
 			// start Toni's code
