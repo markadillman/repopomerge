@@ -31,7 +31,36 @@ var spriteWidth = 15;
 var spriteHeight = 30;
 var defaultTextColor = '#373854';
 var panTime = 500; // ms
+//MARK ADDED DATA STRUCTURE THAT OUTLINES THE ENVIRONMENT TILES LOADED
+const initPullPairs = { "-2,-2":{"x":-2,"y":-2},
+						"-2,-1":{"x":-2,"y":-1},
+						"-2,0":{"x":-2,"y":0},
+						"-2,1":{"x":-2,"y":1},
+						"-2,2":{"x":-2,"y":2},
+						"-1,-2":{"x":-1,"y":-2},
+						"-1,-1":{"x":-1,"y":-1},
+						"-1,0":{"x":-1,"y":0},
+						"-1,1":{"x":-1,"y":1},
+						"-1,2":{"x":-1,"y":2},
+						"0,-2":{"x":0,"y":-2},
+						"0,-1":{"x":0,"y":-1},
+						"0,0":{"x":0,"y":0}, //CENTER TILE, ALL OTHERS RELATIVE TO THIS
+						"0,1":{"x":0,"y":1},
+						"0,2":{"x":0,"y":2},
+						"1,-2":{"x":1,"y":-2},
+						"1,-1":{"x":1,"y":-1},
+						"1,0":{"x":1,"y":0},
+						"1,1":{"x":1,"y":1},
+						"1,2":{"x":1,"y":2},
+						"2,-2":{"x":2,"y":-2},
+						"2,-1":{"x":2,"y":-1},
+						"2,0":{"x":2,"y":0},
+						"2,1":{"x":2,"y":1},
+						"2,2":{"x":2,"y":2},
+					};
 
+var svgPrefix = "<svg xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\">";
+var svgPostfix = "</svg>";
 
 Game =
 {
@@ -293,7 +322,14 @@ Game =
 	      					// Load assets in outer top-most "ring" segment
 	      					// Destroy assets in outer bottom-most "ring" segment
 	      				}
-	      			});
+	      			})
+				//this event added by Mark to pull initial environment
+				.bind('Spawned',function(){
+					initAssetRequest(this.x,this.y);
+				});
+
+			//player should be in front of other graphical assets
+			player.z = 1;
 
 			// Platforms
 			Crafty.e('Platform, 2D, Canvas, Color')
@@ -320,6 +356,107 @@ Game =
 			playing = false;
 			// end Toni's code
 		});
+
+		/*start Mark's code, helper functions to fetch rows of 5 assets:
+			"top pull" : {{-2,-3},{-1,-3},{0,-3},{1,-3},{2,-3}}, URL: /pulltop
+			"bottom pull" : {{-2,3},{-1,3},{0,3},{1,3},{2,3}},   URL: /pullbottom
+			"left pull" : {{-3,-2},{-3,-1},{-3,0},{-3,1},{-3,2}},URL: /pullleft
+			"right pull" : {{3,-2},{3,-1},{3,0},{3,1},{3,2}}     URL: /pullright
+			onload will render the environment into the correct coordinates. Must pass
+		    the data structure key as an arg to the callback ("top pull", etc.)
+		*/
+		function dynamicPostRequest(url,payload,onload,error){
+			console.log("Dynamic post payload:");
+			console.log(payload);
+			var request = new XMLHttpRequest();
+			request.open("POST",url,true);
+			request.setRequestHeader('Content-Type','application/json; charset=UTF-8');
+			//request.responseType = "json";
+			request.onload = function(){
+				if (request.readyState === 4){
+					if (request.status === 200 || request.status === 242) {
+						onload(request);
+					} else {
+						console.error(request.statusText);
+						error(request);
+					}
+				}
+			};
+			request.onerror = function(){
+				error(request);
+			};
+			request.send(JSON.stringify(payload));
+		}
+
+		//this will render assets formatted as a returned query from the server
+		function assetRender(assets){
+			for (asset in assets){
+				//SVG tags added so that it can be a standalone, valid XML file for URL
+				console.log("svg");
+				console.log(assets[asset]['svg']);
+				var myGroupString = svgPrefix + assets[asset]['svg'] + svgPostfix;
+				console.log("svg string in text");
+				console.log(myGroupString);
+				//generate a URL for this svg grouping
+				var blobSvg = new Blob([myGroupString],{type:"image/svg+xml;charset=utf-8"}),
+				domURL = self.URL || self.webkitURL || self,
+				url = domURL.createObjectURL(blobSvg),
+				img = new Image;
+				img.onload = function(){
+					console.log("asset url");
+					console.log(url);
+					//adjust coordinates
+					var tempX = asset['xcoord'] * tileWidth;
+					var tempY = asset['ycoord'] * tileHeight;
+					Crafty.e('Background, 2D, DOM, Image')
+					.attr({x: tempX, y : tempY, w: tileWidth, h: tileHeight, tileX: asset['xcoord'], tileY : asset['ycoord']})
+					.image(url);
+				};
+				console.log("blob svg");
+				console.log(blobSvg);
+				img.src = url;
+			}
+		}
+
+		//request responsetext will be in the format of assets
+		function dynamicPostOnLoad(request){
+			console.log("response:");
+			var body = JSON.parse(request.responseText);
+			console.log(body);
+			//render new assets in respective tiles
+			assetRender(body);
+		}
+
+		function dynamicError(request){
+			console.log("ERROR");
+			console.log("REQUEST");
+			console.log(request);
+			console.log("REQUEST STATUS");
+			console.log(request.status);
+			console.log(request.getAllResponseHeaders());
+			console.error(request.statusText);
+		}
+
+		function initAssetRequest(playerX,playerY){
+			//update player tile (if teleport, this should be called post teleport coords)
+			var playerTileX = Math.floor(playerX/tileWidth);
+			var playerTileY= Math.floor(playerY/tileHeight);
+			var body = {};
+			body.x = playerTileX;
+			body.y = playerTileY;
+			console.log("Init request center tile:");
+			console.log(body);
+			dynamicPostRequest('/initpull',body,initAssetRender,dynamicError);
+		}
+
+		function initAssetRender(request){
+			//parse the response body and render it
+			console.log("response:");
+			var body = JSON.parse(request.responseText);
+			console.log(body);
+			//render new assets in respective tiles
+			assetRender(body);
+		}
 
 		// Start game on home screen
 		Crafty.enterScene('HomeScreen');

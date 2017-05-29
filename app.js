@@ -10,7 +10,7 @@ var xmlParse = require('xml2js').parseString;
 const util = require('util');
 var MongoClient = require('mongodb').MongoClient, assert = require('assert');
 //database url
-var dbUrl = 'mongodb://172.31.34.164:27017/test'
+var dbUrl = 'mongodb://127.0.0.1:27017/test'
 
 var index = require('./routes/index');
 var users = require('./routes/users');
@@ -43,6 +43,39 @@ const coordinatePairs = {"ul": {"x":-1,"y":-1,"canvasId":"aboveLeftDivCanvas"},/
 					     "bm": {"x":0,"y":1,"canvasId":"belowDivCanvas"},      //------bottom middle ("bm")
 					     "br": {"x":1,"y":1,"canvasId":"belowRightDivCanvas"}  //------bottom right ("br")
 					};
+					//all coordinates below are actually adjustment factors and not hard coded coords
+const initPullPairs = { "-2,-2":{"x":-2,"y":-2},
+						"-2,-1":{"x":-2,"y":-1},
+						"-2,0":{"x":-2,"y":0},
+						"-2,1":{"x":-2,"y":1},
+						"-2,2":{"x":-2,"y":2},
+						"-1,-2":{"x":-1,"y":-2},
+						"-1,-1":{"x":-1,"y":-1},
+						"-1,0":{"x":-1,"y":0},
+						"-1,1":{"x":-1,"y":1},
+						"-1,2":{"x":-1,"y":2},
+						"0,-2":{"x":0,"y":-2},
+						"0,-1":{"x":0,"y":-1},
+						"0,0":{"x":0,"y":0},
+						"0,1":{"x":0,"y":1},
+						"0,2":{"x":0,"y":2},
+						"1,-2":{"x":1,"y":-2},
+						"1,-1":{"x":1,"y":-1},
+						"1,0":{"x":1,"y":0},
+						"1,1":{"x":1,"y":1},
+						"1,2":{"x":1,"y":2},
+						"2,-2":{"x":2,"y":-2},
+						"2,-1":{"x":2,"y":-1},
+						"2,0":{"x":2,"y":0},
+						"2,1":{"x":2,"y":1},
+						"2,2":{"x":2,"y":2},
+				};
+				//these are used for movement-triggered pulls to maintain a memory buffer in the client
+const pullSets = {	"top pull" : {0:{"x":-2,"y":-3},1:{"x":-1,"y":-3},2:{"x":0,"y":-3},3:{"x":1,"y":-3},4:{"x":2,"y":-3}},
+					"bottom pull" : {0:{"x":-2,"y":3},1:{"x":-1,"y":3},2:{"x":0,"y":3},3:{"x":1,"y":3},4:{"x":2,"y":3}},
+					"left pull" : {0:{"x":-3,"y":-2},1:{"x":-3,"y":-1},2:{"x":-3,"y":0},3:{"x":-3,"y":1},4:{"x":-3,"y":2}},
+					"right pull" : {0:{"x":3,"y":-2},1:{"x":3,"y":-1},2:{"x":3,"y":0},3:{"x":3,"y":1},4:{"x":3,"y":2}}
+				};
 
 //HELPER FUNCTION FOR SVG VALIDITY
 function isValidSvg(svgString){
@@ -130,7 +163,7 @@ var insertCallback = function(db,res){
 	res.sendStatus(200);
 }
 
-var findDocument = function(db,query,req,res,callback,initCoords){
+var findDocument = function(db,query,req,res,callback,initCoords,setname){
 	var collection = db.collection('tiles');
 	console.log(util.inspect(query));
 	collection.find(query).toArray(function(err,docs){
@@ -140,7 +173,10 @@ var findDocument = function(db,query,req,res,callback,initCoords){
 		//console.log(docs);
 		//console.log("Size of docs:");
 		//console.log(docs.length);
-		if (initCoords){
+		if (initCoords && setname){
+			callback(db,req,res,docs,initCoords,setname);
+		}
+		else if (initCoords){
 			callback(db,req,res,docs,initCoords);
 		} else {
 			callback(db,req,res,docs);
@@ -247,7 +283,7 @@ app.post('/readpull',function(req,res){
 	console.log(util.inspect(variableArray));
 	query['$or'] = variableArray;
 	console.log(util.inspect(query));
-		MongoClient.connect(dbUrl,function(err,db){
+	MongoClient.connect(dbUrl,function(err,db){
 		//test for errors, pop out if there are errors present
 		assert.equal(null,err);
 		console.log("connected succesfully to server");
@@ -255,6 +291,133 @@ app.post('/readpull',function(req,res){
 		findDocument(db,query,req,res,readSurroundingsCallback,initCoords);
 	});
 	return;
+});
+
+//callback function for the initial pull of 25 tile assets
+var initPullCallback = function(db,req,res,docs,initCoords){
+	//send response
+	res.setHeader('Content-Type','application/json');
+	res.status(200);
+	console.log("res status:");
+	console.log(JSON.stringify(res._headers));
+	console.log("docs:");
+	console.log(util.inspect(docs));
+	console.log("response body:");
+	console.log(JSON.stringify(docs));
+	res.status(200).send(JSON.stringify(docs));
+}
+
+/*this pulls a block of 25 tiles surrounding the current tile. Used for origin pull
+  at start of game, or when a user enacts teleportation. The data packet is simpy the
+  tile cooridnate of the central tile in the 25 tile array.*/
+app.post('/initpull',function(req,res){
+	//log request body for debug
+	console.log(util.inspect(req.body));
+	//constuct query argument
+	var query = {};
+	var variableArray = new Array();
+	var initCoords = {};
+	initCoords.x = req.body.x;
+	initCoords.y = req.body.y;
+	for (key in initPullPairs){
+		var tempCoords = {};
+		//apply adjustment factor for every tile in the 25 tile buffer, then add to query
+		tempCoords['xcoord'] = Number.parseInt(initCoords.x) + initPullPairs[key]['x'];
+		tempCoords['ycoord'] = Number.parseInt(initCoords.y) + initPullPairs[key]['y'];
+		variableArray.push(tempCoords);
+	}
+	console.log(util.inspect(variableArray));
+	query['$or'] = variableArray;
+	console.log(util.inspect(query));
+	MongoClient.connect(dbUrl,function(err,db){
+		//test for errors, pop out if there are errors present
+		assert.equal(null,err);
+		console.log("connected succesfully to server");
+		//perform lookup
+		findDocument(db,query,req,res,initPullCallback,initCoords);
+	});
+	return;
+});
+
+//callback function that populates the adjusted coordinates
+var dynamicPullCallback = function(db,req,res,docs,initCoords,setname){
+	console.log("init coords");
+	console.log(initCoords);
+	//send response
+	res.setHeader('Content-Type','application/json');
+	res.status(200);
+	console.log("res status:");
+	console.log(JSON.stringify(res._headers));
+	console.log(JSON.stringify(docs));
+	res.status(200).send(JSON.stringify(docs));
+};
+
+//helper function that takes a type of pull and init coords as arguments; then pulls the correct set
+var pullHelper = function(req,res,setname,initCoords){
+	console.log("target set:");
+	console.log(util.inspect(pullSets[setname]));
+	console.log();
+	var query = {};
+	var variableArray = new Array();
+	for (var i = 0 ; i < 5 ; i += 1){
+		var tempCoords = {};
+		tempCoords['xcoord'] = Number.parseInt(initCoords.x) + pullSets[setname][i]['x'];
+		tempCoords['ycoord'] = Number.parseInt(initCoords.y) + pullSets[setname][i]['y'];
+		console.log("temp coords");
+		console.log(util.inspect(tempCoords));
+		variableArray.push(tempCoords);
+	}
+	console.log(util.inspect(variableArray));
+	query['$or'] = variableArray;
+	console.log(util.inspect(query));
+	MongoClient.connect(dbUrl,function(err,db){
+		//test for errors, pop out if there are errors present
+		assert.equal(null,err);
+		console.log("connected succesfully to server");
+		//perform lookup
+		findDocument(db,query,req,res,dynamicPullCallback,initCoords,setname);
+	});
+};
+
+//multiple routes using helper function.
+app.post('/pulltop',function(req,res){
+	console.log(req.body);
+	console.log(req.body.x);
+	console.log(req.body.y);
+	var initCoords = {};
+	initCoords.x = req.body.x;
+	initCoords.y = req.body.y;
+	pullHelper(req,res,'top pull',initCoords);
+});
+
+app.post('/pullbottom',function(req,res){
+	console.log(req.body);
+	console.log(req.body.x);
+	console.log(req.body.y);
+	var initCoords = {};
+	initCoords.x = req.body.x;
+	initCoords.y = req.body.y;
+	pullHelper(req,res,'bottom pull',initCoords);
+});
+
+app.post('/pullleft',function(req,res){
+	console.log(req.body);
+	console.log(req.body.x);
+	console.log(req.body.y);
+	var initCoords = {};
+	initCoords.x = req.body.x;
+	initCoords.y = req.body.y;
+	pullHelper(req,res,'left pull',initCoords);
+});
+
+app.post('/pullright',function(req,res){
+	console.log(req.body);
+	console.log(req.body.x);
+	console.log(req.body.y);
+	var initCoords = {};
+	initCoords.x = req.body.x;
+	initCoords.y = req.body.y;
+	pullHelper(req,res,'right pull',initCoords);
 });
 
 // catch 404 and forward to error handler

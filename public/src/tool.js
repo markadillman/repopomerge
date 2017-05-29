@@ -736,10 +736,15 @@ function panDownButton() {
 
 // switches from game mode into tile edit mode
 // if the player has access to the current tile
-function doTileEdit() {
+// Mark had to add args
+function doTileEdit(currentX,currentY) {
 
 	// ### make sure xTile and yTile are set correctly
-
+	if (currentX && currentY){
+		console.log("changing tile editing.");
+		xTile = currentX;
+		yTile = currentY;
+	}
 	// ### Mark - do tile lockout and password check stuff here
 	
 	// load the tile and its surroundings from the server
