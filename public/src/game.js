@@ -422,8 +422,8 @@ Game =
 					console.log("asset url");
 					console.log(url);
 					//adjust coordinates
-					var tempX = assets[asset]['xcoord'] * tileWidth;
-					var tempY = assets[asset]['ycoord'] * tileHeight;
+					var tempX = assets[asset]['xcoord'] * tileWidth - canvasEdge;
+					var tempY = assets[asset]['ycoord'] * tileHeight - canvasEdge;
 					Crafty.e('Background, 2D, DOM, Image')
 					.attr({x: tempX, y : tempY, w: tileWidth, h: tileHeight, tileX: asset['xcoord'], tileY : asset['ycoord']})
 					.image(url);
