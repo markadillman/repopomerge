@@ -1225,7 +1225,7 @@ function surroundingsOnLoad(request){
 			// start Toni's code
 			// fill all the boundary regions with white pixels manually
 			// so blank tiles will read white to the eye dropper tool
-			var colorBlock;
+			/*var colorBlock;
 			for (var i = 0; i < displayDivCanvasList.length; i += 1) {
 				// don't try to do anything in the center div
 				if (i != getKeyByVal(displayDivDict, "centerDiv")) {
@@ -1241,7 +1241,7 @@ function surroundingsOnLoad(request){
 					}
 					currentContext.putImageData(colorBlock, 0, 0);
 				}
-			}
+			}*/
 			
 			// clear out the existing originalEdgesDict info
 			// reference: https://stackoverflow.com/questions/684575/how-to-quickly-clear-a-javascript-object
