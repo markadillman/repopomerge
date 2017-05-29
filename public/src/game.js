@@ -29,6 +29,8 @@ var currentUpperLeftX = 0;
 var currentUpperLeftY = 0;
 var spriteWidth = 15;
 var spriteHeight = 30;
+var playerSpawnX = 374.5;
+var playerSpawnY = 108;
 var defaultTextColor = '#373854';
 var panTime = 500; // ms
 //MARK ADDED DATA STRUCTURE THAT OUTLINES THE ENVIRONMENT TILES LOADED
@@ -216,7 +218,6 @@ Game =
 		});
 
 		// Main game world scene
-
 		Crafty.defineScene('World', function()
 		{
 			// start Toni's code
@@ -228,15 +229,15 @@ Game =
 			var player = Crafty.e('2D, DOM, Color, Twoway, Gravity')
 
 				// Initial position and size
-				.attr({x: 0, y: 0, w: spriteWidth, h: spriteHeight})
+				.attr({x: playerSpawnX, y: playerSpawnY, w: spriteWidth, h: spriteHeight})
 
 				// Color of sprite (to be replaced)
 				.color('#F00')
 				// Enable 2D movement
 
 				// ### Lucia - all movement controls should only work
-
-				// if mode == gameMode (global variable set in tool.js
+				// if mode == gameMode and playing == true
+				// (these are global variables also used in tool.js)
 				.twoway(200)
 				// Set platforms to stop falling player
 				.gravity('Platform')
@@ -264,17 +265,19 @@ Game =
 					// bind the gameplay mode hotkeys
 					if (mode == gameMode) { // only read these if in gameplay mode
 						if (e.key == Crafty.keys.E) {
-							//console.log("Go go gadget edit mode!");
-							//console.log("Go go gadget edit mode!");
-							console.log("current (x,y)");
-							console.log(Math.floor(currentUpperLeftX / tileWidth));
-							console.log(Math.floor(currentUpperLeftY / tileHeight));
+							if (verboseDebugging) {
+								//console.log("Go go gadget edit mode!");
+								console.log("current (x,y)");
+								console.log(Math.floor(currentUpperLeftX / tileWidth));
+								console.log(Math.floor(currentUpperLeftY / tileHeight));
+							}
+							// call function in tool.js
 							doTileEdit(Math.floor(currentUpperLeftX / tileWidth),
-									   Math.floor(currentUpperLeftY / tileHeight)); // function in tool.js// function in tool.js
+									   Math.floor(currentUpperLeftY / tileHeight));
 						}
 						if (e.key == Crafty.keys.M) {
 							// ### switch to map mode
-							// rememnber to have map mode have a way to switch back
+							// remember to have map mode have a way to switch back
 						}
 
 						if (e.key == Crafty.keys.Q) {
@@ -297,6 +300,12 @@ Game =
 	      				// MARK ADDED get current tile coordinates to orient pull
 	      				var tileX = Math.floor(currentUpperLeftX / tileWidth);
 	      				var tileY = Math.floor(currentUpperLeftY / tileHeight);
+						// start Toni's code
+						// make the global versions of these from tool.js match
+						// ### but consider merging them instead at some point
+						xTile = tileX;
+						yTile = tileY;
+						// end Toni's code
 	      				var payload = {'x' : tileX, 'y': tileY};
 	      				if (this.x > currentUpperLeftX + tileWidth)
 	      				{
@@ -382,8 +391,10 @@ Game =
 		    the data structure key as an arg to the callback ("top pull", etc.)
 		*/
 		function dynamicPostRequest(url,payload,onload,error){
-			console.log("Dynamic post payload:");
-			console.log(payload);
+			if (verboseDebugging) {
+				console.log("Dynamic post payload:");
+				console.log(payload);
+			}
 			var request = new XMLHttpRequest();
 			request.open("POST",url,true);
 			request.setRequestHeader('Content-Type','application/json; charset=UTF-8');
@@ -408,19 +419,23 @@ Game =
 		function assetRender(assets){
 			for (asset in assets){
 				//SVG tags added so that it can be a standalone, valid XML file for URL
-				console.log("svg");
-				console.log(assets[asset]['svg']);
 				var myGroupString = svgPrefix + assets[asset]['svg'] + svgPostfix;
-				console.log("svg string in text");
-				console.log(myGroupString);
+				if (verboseDebugging) {
+					console.log("svg");
+					console.log(assets[asset]['svg']);
+					console.log("svg string in text");
+					console.log(myGroupString);
+				}
 				//generate a URL for this svg grouping
 				var blobSvg = new Blob([myGroupString],{type:"image/svg+xml;charset=utf-8"}),
 				domURL = self.URL || self.webkitURL || self,
 				url = domURL.createObjectURL(blobSvg),
 				img = new Image;
 				//img.onload = function(){
-					console.log("asset url");
-					console.log(url);
+					if (verboseDebugging) {
+						console.log("asset url");
+						console.log(url);
+					}
 					//adjust coordinates
 					var tempX = assets[asset]['xcoord'] * tileWidth + canvasEdge;
 					var tempY = assets[asset]['ycoord'] * tileHeight + canvasEdge;
@@ -428,17 +443,21 @@ Game =
 					.attr({x: tempX, y : tempY, w: tileWidth, h: tileHeight, tileX: asset['xcoord'], tileY : asset['ycoord']})
 					.image(url);
 				//};
-				console.log("blob svg");
-				console.log(blobSvg);
+				if (verboseDebugging) {
+					console.log("blob svg");
+					console.log(blobSvg);
+				}
 				img.src = url;
 			}
 		}
 
 		//request responsetext will be in the format of assets
 		function dynamicPostOnLoad(request){
-			console.log("response:");
 			var body = JSON.parse(request.responseText);
-			console.log(body);
+			if (verboseDebugging) {
+				console.log("response:");
+				console.log(body);
+			}
 			//render new assets in respective tiles
 			assetRender(body);
 		}
@@ -460,16 +479,20 @@ Game =
 			var body = {};
 			body.x = playerTileX;
 			body.y = playerTileY;
-			console.log("Init request center tile:");
-			console.log(body);
+			if (verboseDebugging) {
+				console.log("Init request center tile:");
+				console.log(body);
+			}
 			dynamicPostRequest('/initpull',body,initAssetRender,dynamicError);
 		}
 
 		function initAssetRender(request){
 			//parse the response body and render it
-			console.log("response:");
 			var body = JSON.parse(request.responseText);
-			console.log(body);
+			if (verboseDebugging) {
+				console.log("response:");
+				console.log(body);
+			}
 			//render new assets in respective tiles
 			assetRender(body);
 		}
