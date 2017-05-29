@@ -351,7 +351,7 @@ Game =
 				});
 
 			//player should be in front of other graphical assets
-			player.z = 1;
+			player.z = 3;
 
 			//MARK ADDED pull initial art assets
 			Crafty.trigger('Spawned');
@@ -371,7 +371,7 @@ Game =
 				.color('green');
 			// Toni added a platform under the spawn point
 			Crafty.e('Platform, 2D, Canvas, Color')
-				.attr({x: playerSpawnX + 30, y: playerSpawnY - 50, w: 100, h: 10})
+				.attr({x: playerSpawnX - 50, y: playerSpawnY + 30, w: 100, h: 10})
 				.color('green');
 			// Toni added a platform to allow us to get to the top 3 tiles for now
 			Crafty.e('Platform, 2D, Canvas, Color')
@@ -382,6 +382,9 @@ Game =
 			Crafty.e('Platform, 2D, Canvas, Color')
 				.attr({x: -4000, y: 590, w: 8000, h: 10})
 				.color('green');
+			
+			// put hard-coded platforms in front of art but behind player
+			Platform.z = 2;
 		}, function() {
 			// start Toni's code
 			// adding an uninit function
