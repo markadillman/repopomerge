@@ -413,7 +413,7 @@ Game =
 				domURL = self.URL || self.webkitURL || self,
 				url = domURL.createObjectURL(blobSvg),
 				img = new Image;
-				img.onload = function(){
+				//img.onload = function(){
 					console.log("asset url");
 					console.log(url);
 					//adjust coordinates
@@ -422,7 +422,7 @@ Game =
 					Crafty.e('Background, 2D, DOM, Image')
 					.attr({x: tempX, y : tempY, w: tileWidth, h: tileHeight, tileX: asset['xcoord'], tileY : asset['ycoord']})
 					.image(url);
-				};
+				//};
 				console.log("blob svg");
 				console.log(blobSvg);
 				img.src = url;
