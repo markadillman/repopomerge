@@ -770,7 +770,7 @@ function doTileEdit(currentX, currentY) {
 	
 	// debug message
 	if (debugging) {
-		console.log("Loaded editor for tile (" xTile.toString() + ", " + yTile.toString() + ").");
+		console.log("Loaded editor for tile (" + xTile.toString() + ", " + yTile.toString() + ").");
 	}
 }
 
