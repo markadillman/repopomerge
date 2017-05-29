@@ -380,7 +380,7 @@ Game =
 				.color('green');
 			// Toni added a platform to allow us to get to the middle 2 outside tiles for now
 			Crafty.e('Platform, 2D, Canvas, Color')
-				.attr({x: -1000, y: canvasHeight*1.5, w: 2000, h: 10})
+				.attr({x: -1000, y: canvasHeight - canvasEdge, w: 2000, h: 10})
 				.color('green');
 
 			// Floor
