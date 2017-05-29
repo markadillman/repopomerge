@@ -51,8 +51,6 @@ var minWidth = 5;		// floor of minimum values for zooming in (keeps ratios)
 var minHeight = 3;
 var defaultViewBox = "0 0 " + canvasWidth.toString() + " " + canvasHeight.toString();
 var panStep = 10;		// the number of pixels to pan by
-var panXOffset = 0;		// current actual pan offsets
-var panYOffset = 0;
 var drawControls;		// the drawing-specific tools
 var platformControls;	// the platform-specific tools
 var gameDiv;			// the game div
@@ -3092,7 +3090,6 @@ function borderArtZoom(doingReset) {
 			canvH = canvasEdge;
 			clipW = canvW / zoomFactor;
 			clipH = canvH / zoomFactor;
-			//clipX = ((canvW - clipW) / 2) + panXOffset;
 			clipX = vBoxX;
 			clipY = (canvH - clipH) + (canvasHeight - canvasEdge);
 			
@@ -3123,7 +3120,6 @@ function borderArtZoom(doingReset) {
 			clipW = canvW / zoomFactor;
 			clipH = canvH / zoomFactor;
 			clipX = (canvW - clipW) + (canvasWidth - canvasEdge);
-			//clipY = ((canvH - clipH) / 2) + panYOffset;
 			clipY = vBoxY;
 			
 			// make sure these are still valid points
@@ -3153,7 +3149,6 @@ function borderArtZoom(doingReset) {
 			clipW = canvW / zoomFactor;
 			clipH = canvH / zoomFactor;
 			clipX = 0;
-			//clipY = ((canvH - clipH) / 2) + panYOffset;
 			clipY = vBoxY;
 			
 			// make sure these are still valid points
@@ -3182,7 +3177,6 @@ function borderArtZoom(doingReset) {
 			canvH = canvasEdge;
 			clipW = canvW / zoomFactor;
 			clipH = canvH / zoomFactor;
-			//clipX = ((canvW - clipW) / 2) + panXOffset;
 			clipX = vBoxX;
 			clipY = 0;
 			
@@ -3260,9 +3254,6 @@ function doZoom(direction) {
 			}
 			// update zoom factor
 			zoomFactor *= zoomStep;
-			// update pan offsets
-			panXOffset = vBoxX;
-			panYOffset = vBoxY;
 		} // else don't zoom
 	} else { // zoom out one step
 		// disallow zooming out farther than the default zoom
@@ -3288,8 +3279,6 @@ function doZoom(direction) {
 			// update zoom factor
 			zoomFactor /= zoomStep;
 			// update pan offsets
-			panXOffset = vBoxX;
-			panYOffset = vBoxY;
 		} else { // don't zoom
 			// instead reset to default to fix any rounding errors
 			vBoxX = 0;
@@ -3303,9 +3292,6 @@ function doZoom(direction) {
 			vBoxH = Math.floor(vBoxH);
 			// reset zoom factor
 			zoomFactor = 1;
-			// reset pan offsets
-			panXOffset = 0;
-			panYOffset = 0;
 		}
 	}
 
@@ -3334,9 +3320,6 @@ function doZoomReset() {
 	canvas.setAttribute("viewBox", vBox);
 	// reset zoom factor
 	zoomFactor = 1;
-	// reset pan as well just in case
-	panXOffset = 0;
-	panYOffset = 0;
 	// debug message
 	if (debugging) {
 		console.log("Changed zoom factor to: " + zoomFactor.toString() + " and view box to: " + vBox);
@@ -3377,10 +3360,6 @@ function doPan(xAmount, yAmount) {
 	// set the new view box settings
 	vBox = vBoxX.toString() + " " + vBoxY.toString() + " " + vBoxW.toString() + " " + vBoxH.toString();
 	canvas.setAttribute("viewBox", vBox);
-
-	// update the offsets
-	panXOffset += (vBoxX - origX);
-	panYOffset += (vBoxY - origY);
 	
 	// handle border art
 	borderArtZoom(false);
