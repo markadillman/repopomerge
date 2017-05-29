@@ -369,6 +369,14 @@ Game =
 			Crafty.e('Platform, 2D, Canvas, Color')
 				.attr({x: 170, y: 540, w: 100, h: 10})
 				.color('green');
+			// Toni added a platform under the spawn point
+			Crafty.e('Platform, 2D, Canvas, Color')
+				.attr({x: playerSpawnX + 30, y: playerSpawnY - 50, w: 100, h: 10})
+				.color('green');
+			// Toni added a platform to allow us to get to the top 3 tiles for now
+			Crafty.e('Platform, 2D, Canvas, Color')
+				.attr({x: -1000, y: 10, w: 2000, h: 10})
+				.color('green');
 
 			// Floor
 			Crafty.e('Platform, 2D, Canvas, Color')
