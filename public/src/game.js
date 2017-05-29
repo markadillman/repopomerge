@@ -18,10 +18,10 @@ var creditsText = titleString + "<br>" +
 	"GAME MUSIC<br>" +
 	"Antonina (Toni) York";
 
-// these are set in tool.js already, shouldn't need to do it here now
-/*var tileWidth = 600;
+
+var tileWidth = 600;
 var tileHeight = 350;
-var canvasEdge = 50;*/
+var canvasEdge = 50;
 var screenWidth = tileWidth + (2 * canvasEdge);
 var screenHeight = tileHeight + (2 * canvasEdge);
 var currentCenterX = 0;
