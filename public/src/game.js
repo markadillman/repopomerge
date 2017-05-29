@@ -71,9 +71,6 @@ Game =
 	{
 		Crafty.init(screenWidth, screenHeight, document.getElementById('gameDiv'));
 		Crafty.background(bgroundColor)
-		
-		// do initial tile data request nice and early
-		initAssetRequest(0, 0);
 
 		// Start screen scene
 		Crafty.defineScene('HomeScreen', function()
@@ -127,6 +124,8 @@ Game =
 				.textAlign('Center')
 				.textFont({family: 'Trebuchet MS', size: '20px'})
 				.bind('Click', function(MouseEvent) {
+					// do initial tile data request nice and early
+					initAssetRequest(0, 0);
 					Crafty.enterScene('SetupScreen');
 				});
 			// end Toni's code
