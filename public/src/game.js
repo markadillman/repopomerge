@@ -393,7 +393,7 @@ Game =
 				
 			
 			// set platform z between background and avatar
-			Crafty("Platform").z = 1;
+			Crafty('Platform').z = 1;
 			
 			//player should be in front of other graphical assets
 			player.z = 2;
