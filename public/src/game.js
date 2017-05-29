@@ -349,7 +349,7 @@ Game =
 						var payload = {'x' : tileX, 'y': tileY};
 						if (this.x > currentUpperLeftX + tileWidth)
 						{
-							currentUpperLeftX = currentUpperLeftX + tileWidth + canvasEdge;
+							currentUpperLeftX = currentUpperLeftX + tileWidth;
 							Crafty.viewport.pan(tileWidth, 0, panTime);
 
 							// Load assets in outer rightmost "ring" segment
@@ -358,7 +358,7 @@ Game =
 						}
 						else if (this.x < currentUpperLeftX)
 						{
-							currentUpperLeftX = currentUpperLeftX - tileWidth - canvasEdge;
+							currentUpperLeftX = currentUpperLeftX - tileWidth;
 							Crafty.viewport.pan(tileWidth * -1, 0, panTime);
 
 							// Load assets in outer leftmost "ring" segment
@@ -368,7 +368,7 @@ Game =
 
 						if (this.y > currentUpperLeftY + tileHeight)
 						{
-							currentUpperLeftY = currentUpperLeftY + tileHeight + canvasEdge;
+							currentUpperLeftY = currentUpperLeftY + tileHeight;
 							Crafty.viewport.pan(0, tileHeight, panTime);
 
 							// Load assets in outer bottom-most "ring" segment
@@ -377,7 +377,7 @@ Game =
 						}
 						else if (this.y < currentUpperLeftY)
 						{
-							currentUpperLeftY = currentUpperLeftY - tileHeight - canvasEdge;
+							currentUpperLeftY = currentUpperLeftY - tileHeight;
 							Crafty.viewport.pan(0, tileHeight * -1, panTime);
 
 							// Load assets in outer top-most "ring" segment
@@ -394,9 +394,9 @@ Game =
 			player.z = 1;
 			
 			// set platform z between background and avatar
-			//for (var i = 0; i < tempPlatformsArray.length; i += 1) {
-			//	tempPlatformsArray[i].z = 1;
-			//}
+			for (var i = 0; i < tempPlatformsArray.length; i += 1) {
+				tempPlatformsArray[i].z = 1;
+			}
 
 			//MARK ADDED pull initial art assets
 			//Crafty.trigger('Spawned');
