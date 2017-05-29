@@ -213,7 +213,7 @@ Game =
 				.gravity('Platform')
 				.gravityConst(600)
 				// Bind spacebar to jump action
-				.jumper(300, [Crafty.keys.SPACE])
+				.jumper(400, [Crafty.keys.SPACE])
 
 				// Allow player to drop through platforms
 				.bind('KeyDown', function(e)
