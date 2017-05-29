@@ -742,14 +742,14 @@ function panDownButton() {
 // switches from game mode into tile edit mode
 // if the player has access to the current tile
 // Mark had to add args
-function doTileEdit(currentX,currentY) {
+function doTileEdit(currentX, currentY) {
 
-	// ### make sure xTile and yTile are set correctly
-	if (currentX && currentY){
-		console.log("changing tile editing.");
+	// make sure xTile and yTile are set correctly
+	if (currentX && currentY) {
 		xTile = currentX;
 		yTile = currentY;
 	}
+	
 	// ### Mark - do tile lockout and password check stuff here
 	
 	// load the tile and its surroundings from the server
@@ -767,6 +767,11 @@ function doTileEdit(currentX,currentY) {
 	var coords = canvas.getBoundingClientRect();
 	xOffset = coords.left;
 	yOffset = coords.top;
+	
+	// debug message
+	if (debugging) {
+		console.log("Loaded editor for tile (" xTile.toString() + ", " + yTile.toString() + ").");
+	}
 }
 
 // exits from the currently edited tile back into game mode
@@ -786,7 +791,7 @@ function doTileExit() {
 	// display correct div
 	showDiv(mode); // handles hiding message box div
 	
-	// make crafty reload the art asset for that tile
+	// make crafty reload the art assets for this tile
 	initAssetRequest(xTile, yTile);
 }
 
