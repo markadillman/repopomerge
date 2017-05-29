@@ -786,8 +786,8 @@ function doTileExit() {
 	// display correct div
 	showDiv(mode); // handles hiding message box div
 	
-	// make crafty reload the scene
-	Crafty.enterScene('World');
+	// make crafty reload the art asset for that tile
+	initAssetRequest(xTile, yTile);
 }
 
 // update color selections from the SVG
