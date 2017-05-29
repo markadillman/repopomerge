@@ -407,6 +407,7 @@ Game =
 		});
 
 		// Mark's code was here until Toni moved it down below
+		// now we can call those helper functions from tool.js as well
 
 		// Start game on home screen
 		Crafty.enterScene('HomeScreen');

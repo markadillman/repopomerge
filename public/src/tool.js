@@ -1043,7 +1043,7 @@ function svgResetDefaults() {
 	document.getElementById("maskingToggle").checked = masking;
 	document.getElementById("strokeWidthInput").value = strokeWidthChoice;
 	document.getElementById("color").value = colorChoice;
-	document.getElementById("shapeFillInput").value = shapeFillChoice;
+	document.getElementById("shapeFillInput").checked = shapeFillChoice;
 	document.getElementById("tool0").checked = true;
 	document.getElementById("tool7").checked = true;
 }
