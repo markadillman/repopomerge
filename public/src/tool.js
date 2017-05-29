@@ -961,6 +961,16 @@ function surroundingEyeDropper(evt) {
 		// adjust these for the zoom
 		mouseX /= zoomFactor;
 		mouseY /= zoomFactor;
+		// also adjust for pan
+		// first get viewBox info
+		var vBox = canvas.getAttribute("viewBox").split(" ");
+		var vBoxX = parseFloat(vBox[0]);
+		var vBoxY = parseFloat(vBox[1]);
+		var vBoxW = parseFloat(vBox[2]);
+		var vBoxH = parseFloat(vBox[3]);
+		// then add the resulting offset
+		mouseX += vBoxX;
+		mouseY += vBoxY;
 		// get the color at that pixel in that region
 		var color = getColorAt(myContext, mouseX, mouseY);
 		// set this as the color choice
