@@ -18,9 +18,10 @@ var creditsText = titleString + "<br>" +
 	"GAME MUSIC<br>" +
 	"Antonina (Toni) York";
 
-var tileWidth = 600;
+// these are set in tool.js already, shouldn't need to do it here now
+/*var tileWidth = 600;
 var tileHeight = 350;
-var canvasEdge = 50;
+var canvasEdge = 50;*/
 var screenWidth = tileWidth + (2 * canvasEdge);
 var screenHeight = tileHeight + (2 * canvasEdge);
 var currentCenterX = 0;
@@ -29,8 +30,8 @@ var currentUpperLeftX = 0;
 var currentUpperLeftY = 0;
 var spriteWidth = 15;
 var spriteHeight = 30;
-var playerSpawnX = 374.5;
-var playerSpawnY = 108;
+var playerSpawnX = canvasEdge + 374.5;
+var playerSpawnY = canvasEdge + 108;
 var defaultTextColor = '#373854';
 var panTime = 500; // ms
 //MARK ADDED DATA STRUCTURE THAT OUTLINES THE ENVIRONMENT TILES LOADED
