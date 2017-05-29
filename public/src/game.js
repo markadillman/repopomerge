@@ -262,148 +262,145 @@ Game =
 			// Floor
 			tempPlatformsArray.push(Crafty.e('Platform, 2D, Canvas, Color')
 				.attr({x: -4000, y: 590, w: 8000, h: 10})
-				.color('green'))
-				// Toni added this event and put all the other stuff for this
-				// scene inside of it to try to affect load order
-				.bind('PlatformsLoaded', function (){
-					// Player sprite
-					var player = Crafty.e('2D, DOM, Color, Twoway, Gravity')
+				.color('green'));
+				
+			// Player sprite
+			var player = Crafty.e('2D, DOM, Color, Twoway, Gravity')
 
-						// Initial position and size
-						.attr({x: playerSpawnX, y: playerSpawnY, w: spriteWidth, h: spriteHeight})
+				// Initial position and size
+				.attr({x: playerSpawnX, y: playerSpawnY, w: spriteWidth, h: spriteHeight})
 
-						// Color of sprite (to be replaced)
-						.color('#F00')
-						// Enable 2D movement
+				// Color of sprite (to be replaced)
+				.color('#F00')
+				// Enable 2D movement
 
-						// ### Lucia - all movement controls should only work
-						// if mode == gameMode and playing == true
-						// (these are global variables also used in tool.js)
-						// also, d appears to make the avatar move to the right?
-						.twoway(200)
-						// Set platforms to stop falling player
-						.gravity('Platform')
-						.gravityConst(600)
-						// Bind spacebar to jump action
-						.jumper(400, [Crafty.keys.SPACE])
+				// ### Lucia - all movement controls should only work
+				// if mode == gameMode and playing == true
+				// (these are global variables also used in tool.js)
+				// also, d appears to make the avatar move to the right?
+				.twoway(200)
+				// Set platforms to stop falling player
+				.gravity('Platform')
+				.gravityConst(600)
+				// Bind spacebar to jump action
+				.jumper(400, [Crafty.keys.SPACE])
 
-						// Allow player to drop through platforms
-						.bind('KeyDown', function(e)
+				// Allow player to drop through platforms
+				.bind('KeyDown', function(e)
+				{
+					if(e.key == Crafty.keys.DOWN_ARROW)
+					{
+						this.antigravity();
+						this.gravity('Platform');
+					}
+				})
+				.bind('KeyUp', function(e)
+				{
+					if(e.key == Crafty.keys.DOWN_ARROW)
+					{
+						this.gravity('Platform');
+					}
+
+					// start Toni's code
+					// bind the gameplay mode hotkeys
+					if (mode == gameMode) { // only read these if in gameplay mode
+						if (e.key == Crafty.keys.E) {
+							if (verboseDebugging) {
+								//console.log("Go go gadget edit mode!");
+								console.log("current (x,y)");
+								console.log(Math.floor(currentUpperLeftX / tileWidth));
+								console.log(Math.floor(currentUpperLeftY / tileHeight));
+							}
+							// call function in tool.js
+							doTileEdit(Math.floor(currentUpperLeftX / tileWidth),
+									   Math.floor(currentUpperLeftY / tileHeight));
+						}
+						if (e.key == Crafty.keys.M) {
+							// ### switch to map mode
+							// remember to have map mode have a way to switch back
+						}
+
+						if (e.key == Crafty.keys.Q) {
+							// quit to home screen
+							// ### server cleanup stuff here?
+							doQuitToHomeScreen(); // tool.js cleanup
+							Crafty.enterScene('HomeScreen');
+						}
+
+						if (e.key == Crafty.keys.W) {
+							// ### toggle platform viewing mode
+						}
+					}
+					// end Toni's code
+				})
+				
+				// Move camera when player leaves current tile
+				.bind('Moved', function()
+					{
+						// MARK ADDED get current tile coordinates to orient pull
+						var tileX = Math.floor(currentUpperLeftX / tileWidth);
+						var tileY = Math.floor(currentUpperLeftY / tileHeight);
+						// start Toni's code
+						// make the global versions of these from tool.js match
+						// ### but consider merging them instead at some point
+						xTile = tileX;
+						yTile = tileY;
+						// end Toni's code
+						var payload = {'x' : tileX, 'y': tileY};
+						if (this.x > currentUpperLeftX + tileWidth)
 						{
-							if(e.key == Crafty.keys.DOWN_ARROW)
-							{
-								this.antigravity();
-								this.gravity('Platform');
-							}
-						})
-						.bind('KeyUp', function(e)
+							currentUpperLeftX = currentUpperLeftX + tileWidth;
+							Crafty.viewport.pan(tileWidth, 0, panTime);
+
+							// Load assets in outer rightmost "ring" segment
+							dynamicPostRequest('/pullright',payload,dynamicPostOnLoad,dynamicError);
+							// Destroy assets in outer leftmost "ring" segment
+						}
+						else if (this.x < currentUpperLeftX)
 						{
-							if(e.key == Crafty.keys.DOWN_ARROW)
-							{
-								this.gravity('Platform');
-							}
+							currentUpperLeftX = currentUpperLeftX - tileWidth;
+							Crafty.viewport.pan(tileWidth * -1, 0, panTime);
 
-							// start Toni's code
-							// bind the gameplay mode hotkeys
-							if (mode == gameMode) { // only read these if in gameplay mode
-								if (e.key == Crafty.keys.E) {
-									if (verboseDebugging) {
-										//console.log("Go go gadget edit mode!");
-										console.log("current (x,y)");
-										console.log(Math.floor(currentUpperLeftX / tileWidth));
-										console.log(Math.floor(currentUpperLeftY / tileHeight));
-									}
-									// call function in tool.js
-									doTileEdit(Math.floor(currentUpperLeftX / tileWidth),
-											   Math.floor(currentUpperLeftY / tileHeight));
-								}
-								if (e.key == Crafty.keys.M) {
-									// ### switch to map mode
-									// remember to have map mode have a way to switch back
-								}
+							// Load assets in outer leftmost "ring" segment
+							dynamicPostRequest('/pullleft',payload,dynamicPostOnLoad,dynamicError);
+							// Destroy assets in outer rightmost "ring" segment
+						}
 
-								if (e.key == Crafty.keys.Q) {
-									// quit to home screen
-									// ### server cleanup stuff here?
-									doQuitToHomeScreen(); // tool.js cleanup
-									Crafty.enterScene('HomeScreen');
-								}
+						if (this.y > currentUpperLeftY + tileHeight)
+						{
+							currentUpperLeftY = currentUpperLeftY + tileHeight;
+							Crafty.viewport.pan(0, tileHeight, panTime);
 
-								if (e.key == Crafty.keys.W) {
-									// ### toggle platform viewing mode
-								}
-							}
-							// end Toni's code
-						})
-						
-						// Move camera when player leaves current tile
-						.bind('Moved', function()
-							{
-								// MARK ADDED get current tile coordinates to orient pull
-								var tileX = Math.floor(currentUpperLeftX / tileWidth);
-								var tileY = Math.floor(currentUpperLeftY / tileHeight);
-								// start Toni's code
-								// make the global versions of these from tool.js match
-								// ### but consider merging them instead at some point
-								xTile = tileX;
-								yTile = tileY;
-								// end Toni's code
-								var payload = {'x' : tileX, 'y': tileY};
-								if (this.x > currentUpperLeftX + tileWidth)
-								{
-									currentUpperLeftX = currentUpperLeftX + tileWidth;
-									Crafty.viewport.pan(tileWidth, 0, panTime);
+							// Load assets in outer bottom-most "ring" segment
+							dynamicPostRequest('/pullbottom',payload,dynamicPostOnLoad,dynamicError);
+							// Destroy assets in outer top-most "ring" segment
+						}
+						else if (this.y < currentUpperLeftY)
+						{
+							currentUpperLeftY = currentUpperLeftY - tileHeight;
+							Crafty.viewport.pan(0, tileHeight * -1, panTime);
 
-									// Load assets in outer rightmost "ring" segment
-									dynamicPostRequest('/pullright',payload,dynamicPostOnLoad,dynamicError);
-									// Destroy assets in outer leftmost "ring" segment
-								}
-								else if (this.x < currentUpperLeftX)
-								{
-									currentUpperLeftX = currentUpperLeftX - tileWidth;
-									Crafty.viewport.pan(tileWidth * -1, 0, panTime);
-
-									// Load assets in outer leftmost "ring" segment
-									dynamicPostRequest('/pullleft',payload,dynamicPostOnLoad,dynamicError);
-									// Destroy assets in outer rightmost "ring" segment
-								}
-
-								if (this.y > currentUpperLeftY + tileHeight)
-								{
-									currentUpperLeftY = currentUpperLeftY + tileHeight;
-									Crafty.viewport.pan(0, tileHeight, panTime);
-
-									// Load assets in outer bottom-most "ring" segment
-									dynamicPostRequest('/pullbottom',payload,dynamicPostOnLoad,dynamicError);
-									// Destroy assets in outer top-most "ring" segment
-								}
-								else if (this.y < currentUpperLeftY)
-								{
-									currentUpperLeftY = currentUpperLeftY - tileHeight;
-									Crafty.viewport.pan(0, tileHeight * -1, panTime);
-
-									// Load assets in outer top-most "ring" segment
-									dynamicPostRequest('/pulltop',payload,dynamicPostOnLoad,dynamicError);
-									// Destroy assets in outer bottom-most "ring" segment
-								}
-							})
-						//this event added by Mark to pull initial environment
-						.bind('Spawned',function(){
-							//initAssetRequest(this.x,this.y);
-						});
-						
-					//player should be in front of other graphical assets
-					player.z = 1;
-					
-					// set platform z between background and avatar
-					//for (var i = 0; i < tempPlatformsArray.length; i += 1) {
-					//	tempPlatformsArray[i].z = 1;
-					//}
-
-					//MARK ADDED pull initial art assets
-					//Crafty.trigger('Spawned');
+							// Load assets in outer top-most "ring" segment
+							dynamicPostRequest('/pulltop',payload,dynamicPostOnLoad,dynamicError);
+							// Destroy assets in outer bottom-most "ring" segment
+						}
+					})
+				//this event added by Mark to pull initial environment
+				.bind('Spawned',function(){
+					//initAssetRequest(this.x,this.y);
 				});
-				Crafty.trigger('PlatformsLoaded');
+				
+			//player should be in front of other graphical assets
+			player.z = 1;
+			
+			// set platform z between background and avatar
+			//for (var i = 0; i < tempPlatformsArray.length; i += 1) {
+			//	tempPlatformsArray[i].z = 1;
+			//}
+
+			//MARK ADDED pull initial art assets
+			//Crafty.trigger('Spawned');
+				
 		}, function() {
 			// start Toni's code
 			// adding an uninit function
