@@ -263,10 +263,6 @@ Game =
 			tempPlatformsArray.push(Crafty.e('Platform, 2D, Canvas, Color')
 				.attr({x: -4000, y: 590, w: 8000, h: 10})
 				.color('green'));
-			// set platform z between background and avatar
-			for (var i = 0; i < tempPlatformsArray.length; i += 1) {
-				tempPlatformsArray[i].z = i;
-			}
 
 			// Player sprite
 			var player = Crafty.e('2D, DOM, Color, Twoway, Gravity')
@@ -393,9 +389,14 @@ Game =
 				.bind('Spawned',function(){
 					//initAssetRequest(this.x,this.y);
 				});
-
+				
 			//player should be in front of other graphical assets
 			player.z = 2;
+			
+			// set platform z between background and avatar
+			for (var i = 0; i < tempPlatformsArray.length; i += 1) {
+				tempPlatformsArray[i].z = 1;
+			}
 
 			//MARK ADDED pull initial art assets
 			Crafty.trigger('Spawned');
