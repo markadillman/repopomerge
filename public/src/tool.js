@@ -785,6 +785,9 @@ function doTileExit() {
 
 	// display correct div
 	showDiv(mode); // handles hiding message box div
+	
+	// make crafty reload the scene
+	Crafty.enterScene('World');
 }
 
 // update color selections from the SVG
