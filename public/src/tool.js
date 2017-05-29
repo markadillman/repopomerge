@@ -963,7 +963,7 @@ function surroundingEyeDropper(evt) {
 		var mouseX = evt.clientX - dropperCoords.left;
 		var mouseY = evt.clientY - dropperCoords.top;
 		// check if zoomed
-		if (zoomFactor != 1) {
+		/*if (zoomFactor != 1) {
 			// adjust the coords for the zoom
 			mouseX /= zoomFactor;
 			mouseY /= zoomFactor;
@@ -986,7 +986,7 @@ function surroundingEyeDropper(evt) {
 				default: // should never get here
 					console.log("Something went horribly awry with eye dropper in zoomed edges.");
 			}
-		}
+		}*/
 		// get the color at that pixel in that region
 		var color = getColorAt(myContext, mouseX, mouseY);
 		// set this as the color choice
