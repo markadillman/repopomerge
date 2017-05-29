@@ -393,12 +393,12 @@ Game =
 						});
 						
 					//player should be in front of other graphical assets
-					player.z = 2;
+					player.z = 1;
 					
 					// set platform z between background and avatar
-					for (var i = 0; i < tempPlatformsArray.length; i += 1) {
-						tempPlatformsArray[i].z = 1;
-					}
+					//for (var i = 0; i < tempPlatformsArray.length; i += 1) {
+					//	tempPlatformsArray[i].z = 1;
+					//}
 
 					//MARK ADDED pull initial art assets
 					//Crafty.trigger('Spawned');
