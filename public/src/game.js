@@ -71,6 +71,9 @@ Game =
 	{
 		Crafty.init(screenWidth, screenHeight, document.getElementById('gameDiv'));
 		Crafty.background(bgroundColor)
+		
+		// do initial tile data request nice and early
+		initAssetRequest(0, 0);
 
 		// Start screen scene
 		Crafty.defineScene('HomeScreen', function()
@@ -227,8 +230,6 @@ Game =
 			// end Toni's code
 			
 			// Toni moved these up so they load first
-			// do initial tile data request
-			initAssetRequest(0, 0);
 			// Platforms
 			Crafty.e('Platform, 2D, Canvas, Color')
 				.attr({x: 0, y: 250, w: 250, h: 10})
