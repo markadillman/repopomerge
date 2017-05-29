@@ -229,32 +229,32 @@ Game =
 			// Toni moved these up so they load first
 			// Platforms
 			Crafty.e('Platform, 2D, Canvas, Color')
-				.attr({x: 0, y: 250, w: 250, h: 10, z: 2})
+				.attr({x: 0, y: 250, w: 250, h: 10})
 				.color('green');
 			Crafty.e('Platform, 2D, Canvas, Color')
-				.attr({x: 400, y: 300, w: 250, h: 10, z: 2})
+				.attr({x: 400, y: 300, w: 250, h: 10})
 				.color('green');
 			Crafty.e('Platform, 2D, Canvas, Color')
-				.attr({x: 130, y: 450, w: 100, h: 10, z: 2})
+				.attr({x: 130, y: 450, w: 100, h: 10})
 				.color('green');
 			Crafty.e('Platform, 2D, Canvas, Color')
-				.attr({x: 170, y: 540, w: 100, h: 10, z: 2})
+				.attr({x: 170, y: 540, w: 100, h: 10})
 				.color('green');
 			// Toni added a platform under the spawn point
 			Crafty.e('Platform, 2D, Canvas, Color')
-				.attr({x: playerSpawnX - 50, y: playerSpawnY + 30, w: 100, h: 10, z: 2})
+				.attr({x: playerSpawnX - 50, y: playerSpawnY + 30, w: 100, h: 10})
 				.color('green');
 			// Toni added a platform to allow us to get to the top 3 tiles for now
 			Crafty.e('Platform, 2D, Canvas, Color')
-				.attr({x: -1000, y: 10, w: 2000, h: 10, z: 2})
+				.attr({x: -1000, y: 10, w: 2000, h: 10})
 				.color('green');
 			// Toni added a platform to allow us to get to the middle 2 outside tiles for now
 			Crafty.e('Platform, 2D, Canvas, Color')
-				.attr({x: -1000, y: canvasHeight - canvasEdge, w: 2000, h: 10, z: 2})
+				.attr({x: -1000, y: canvasHeight - canvasEdge, w: 2000, h: 10})
 				.color('green');
 			// Floor
 			Crafty.e('Platform, 2D, Canvas, Color')
-				.attr({x: -4000, y: 590, w: 8000, h: 10, z: 2})
+				.attr({x: -4000, y: 590, w: 8000, h: 10})
 				.color('green');
 
 			// Player sprite
@@ -384,7 +384,7 @@ Game =
 				});
 
 			//player should be in front of other graphical assets
-			player.z = 3;
+			player.z = 1;
 
 			//MARK ADDED pull initial art assets
 			Crafty.trigger('Spawned');
