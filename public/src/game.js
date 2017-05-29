@@ -357,7 +357,7 @@ Game =
 						else if (this.x < currentUpperLeftX)
 						{
 							currentUpperLeftX = currentUpperLeftX - tileWidth;
-							Crafty.viewport.pan((tileWidth + canvasEdge) * -1, 0, panTime);
+							Crafty.viewport.pan(tileWidth*-1 + canvasEdge, 0, panTime);
 
 							// Load assets in outer leftmost "ring" segment
 							dynamicPostRequest('/pullleft',payload,dynamicPostOnLoad,dynamicError);
@@ -376,7 +376,7 @@ Game =
 						else if (this.y < currentUpperLeftY)
 						{
 							currentUpperLeftY = currentUpperLeftY - tileHeight;
-							Crafty.viewport.pan(0, (tileHeight + canvasEdge) * -1, panTime);
+							Crafty.viewport.pan(0, tileHeight*-1 + canvasEdge, panTime);
 
 							// Load assets in outer top-most "ring" segment
 							dynamicPostRequest('/pulltop',payload,dynamicPostOnLoad,dynamicError);
