@@ -173,23 +173,21 @@ Game =
 
 			// Selected avatar
 
-			// Ready/enter world button
-			Crafty.e('2D, DOM, Color, Mouse, Text')
-				.attr({x: (screenWidth / 2) - 100,
-					   y: screenHeight - (canvasEdge * 2),
-					   w: 200, h: 40})
-				.color('#FFFFFF')
-				.text('Start!')
-				.textAlign('center')
-				.textFont({family: 'Trebuchet MS', size: '20px'})
-				.bind('Click', function(MouseEvent)
-				{
-					Crafty.enterScene('World');
-				});
-
 			// start Toni's code
 			// add help and quit clickable buttons to this scene
 			// because honestly the hotkeys were a nightmare in the world / gameplay scene
+			// button to enter game world
+			Crafty.e('myButton, 2D, DOM, Color, Mouse, Text, Button')
+				.attr({x: (screenWidth / 2) - 50,
+					y: screenHeight - canvasEdge - canvasEdge/2,
+					w: 100, h: 25})
+				.color(bgroundColor)
+				.text('Start')
+				.textAlign('Center')
+				.textFont({family: 'Trebuchet MS', size: '20px'})
+				.bind('Click', function(MouseEvent) {
+					Crafty.enterScene('World');
+				});
 			// button to return to home screen
 			Crafty.e('myButton, 2D, DOM, Color, Mouse, Text, Button')
 				.attr({x: (screenWidth / 2) - 50,
@@ -205,7 +203,7 @@ Game =
 			// button to return to home screen
 			Crafty.e('myButton, 2D, DOM, Color, Mouse, Text, Button')
 				.attr({x: (screenWidth / 2) - 50,
-					y: screenHeight - canvasEdge/2,
+					y: screenHeight - canvasEdge + canvasEdge/2,
 					w: 100, h: 25})
 				.color(bgroundColor)
 				.text('Quit')
@@ -216,8 +214,6 @@ Game =
 				});
 			// end Toni's code
 		});
-
-		
 		
 		// Main game world scene
 		Crafty.defineScene('World', function()

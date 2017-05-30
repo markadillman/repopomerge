@@ -51,18 +51,15 @@ http://infiniteblank.com/wordpress/?page_id=20
 
 
 		<!-- GAME MUSIC DIV -->
-		<!-- Reference: http://devblog.lastrose.com/html5-audio-video-playlist/ -->
 		
 		<div id="musicDiv" style="display: none"></div>
 
 		
-		<!-- TILE DRAWING TOOL DIV -->
+		<!-- DRAWING TOOL DIV -->
 		
 		<div id="toolDiv" style="display: none; width: 1031px; margin: auto">
 		
-			<h1 style="position: absolute; top: 5px">
-				CREATE THE BLANK --- Add your art to the world! Don't forget to create platforms before you submit your tile.
-			</h1>
+			<h1 id="drawingToolHeader" style="position: absolute; top: 5px"></h1>
 
 			<div id="theIHateHTMLDiv" style="position: absolute; width: 1030; margin: auto">
 				<form id="controls" onsubmit="return onFormSubmit(this)" style="position: absolute">
@@ -225,16 +222,11 @@ http://infiniteblank.com/wordpress/?page_id=20
 						</svg>
 					</div>
 				</div>
+				
+				<div id="avatarDisplayDiv""
+					style="display: none; position: absolute; top: 60px; left: 275px">
+				</div>
 			</div>
-		</div>
-		
-
-		<!-- AVATAR DRAWING TOOL DIV -->
-		
-		<div id="avatarDiv" style="display: none; width: 1031px; margin: auto">
-
-			<!-- ### avatar drawing stuff goes here -->
-
 		</div>
 
 

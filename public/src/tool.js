@@ -25,7 +25,6 @@ var useFakeSurroundings = false; // surroundings are colored boxes (for debuggin
 var playing = false;	// flag set to true when player is in Crafty World scene
 var artMode = "art";	// mode strings
 var gameMode = "game";
-var avatarMode = "avatar";
 var helpMode = "help";
 var mapMode = "map";
 var mode = gameMode;	// track what mode is active: game, art, or avatar
@@ -60,6 +59,9 @@ var messageDiv;			// the message box div
 var messageText;		// the message box text field
 var msgBtnOK;			// the message OK button
 var msgBtnCancel;		// the message Cancel button
+var pageHeader;			// the h1 tag for the drawing tool
+var drawingHeader = "CREATE THE BLANK --- Add your art to the world! Don't forget to create platforms before you submit your tile.";
+var avatarHeader = "CHOOSE YOUR AVATAR --- Select an existing avatar or draw a new one. For best results, draw to the oval's edges.";
 var toolDiv;			// the div for the entire drawing tool
 var displayDiv;			// the display divs
 var borderArtDiv;		// the sub-div with just the border art divs in it
@@ -210,7 +212,6 @@ function parseKeyHTML(evt) {
 function hideAllDivs() {
 	gameDiv.style.display = "none";
 	toolDiv.style.display = "none";
-	avatarDiv.style.display = "none";
 	mapDiv.style.display = "none";
 	helpDiv.style.display = "none";
 
@@ -229,9 +230,6 @@ function showDiv(mode) {
 			break;
 		case artMode: // show art tool div
 			toolDiv.style.display = "block";
-			break;
-		case avatarMode: // show avatar tool div
-			avatarDiv.style.display = "block";
 			break;
 		case mapMode: // show map mode div
 			mapDiv.style.display = "block";
@@ -334,6 +332,10 @@ function initMusic() {
 
 // initalize the rest of the page
 function initHTML() {
+	
+	// set the page header (defaults to avatar mode since that's used first)
+	pageHeader = document.getElementById("drawingToolHeader");
+	pageHeader.innerHTML = avatarHeader;
 	
 	// add the keybard event listener
 	document.addEventListener("keydown", parseKeyHTML);
@@ -520,16 +522,16 @@ function initHTML() {
 		displayDivList[i].style.height = currentHeight + "px";
 	}
 	
-	// make the overall display div visible
-	displayDiv.style.display = "block";
+	// make the overall display div invisible because the default is avatar mode
+	displayDiv.style.display = "none";
 	
 	// get the offsets here insetad because these scripts ran in the
 	// opposite order I thought they did after the refactoring
 	// this is broken after refactoring to integrate with gameplay...
 	// need to update these coords when switching into edit mode
-	var coords = canvas.getBoundingClientRect();
+	/*var coords = canvas.getBoundingClientRect();
 	xOffset = coords.left;
-	yOffset = coords.top;
+	yOffset = coords.top;*/
 
 	// debug message
 	if (debugging) {
@@ -743,6 +745,31 @@ function panDownButton() {
 	doPan(0, panStep);
 }
 
+// makes sure the drawing tool is set up to enter avatar mode
+function doAvatarEdit() {
+	
+	// set the mode
+	previousMode = mode;
+	mode = artMode;
+	
+	// display correct divs and header
+	pageHeader.innerHTML = avatarHeader;
+	displayDiv.style.display = "none";
+	avatarDisplayDiv.style.display = "block";
+	showDiv(mode);
+
+	// get the offsets again here
+	var coords = canvas.getBoundingClientRect();
+	xOffset = coords.left;
+	yOffset = coords.top;
+	
+	// debug message
+	if (debugging) {
+		console.log("Loaded editor for avatar creation.");
+	}
+	
+}
+
 // switches from game mode into tile edit mode
 // if the player has access to the current tile
 // Mark had to add args
@@ -764,7 +791,10 @@ function doTileEdit(currentX, currentY) {
 	previousMode = mode;
 	mode = artMode;
 
-	// display correct div
+	// display correct divs and header
+	pageHeader.innerHTML = drawingHeader;
+	avatarDisplayDiv.style.display = "none";
+	displayDiv.style.display = "block";
 	showDiv(mode);
 
 	// get the offsets again here
@@ -2290,7 +2320,7 @@ function updateMouseCoords(evt) {
 // mouse down event handler
 function mouseDown(evt) {
 	// only do anything if in art or avatar mode
-	if (mode == artMode || mode == avatarMode) {
+	if (mode == artMode) {
 		// prevent default behavior to stop weird selecting and dragging
 		// this was only necessary after refactoring the SVG to be inline
 		evt.preventDefault();
@@ -2501,7 +2531,7 @@ function mouseDown(evt) {
 // mouse move event handler
 function mouseMove(evt) {
 	// only do anything if in art or avatar mode
-	if (mode == artMode || mode == avatarMode) {
+	if (mode == artMode) {
 		var shapeInProgress;
 		switch(toolChoice) {
 			case 0: // rectangle
@@ -2647,7 +2677,7 @@ function mouseMove(evt) {
 // mouse up event handler
 function mouseUp(evt) {
 	// only do anything if in art or avatar mode
-	if (mode == artMode || mode == avatarMode) {
+	if (mode == artMode) {
 		// only do something if a shape is in progress
 		if (inProgress) {
 			// close out the shape that was in progress
@@ -2897,7 +2927,7 @@ function mouseUp(evt) {
 // mouse click event handler
 function mouseClick(evt) {
 	// only do anything if in art or avatar mode
-	if (mode == artMode || mode == avatarMode) {
+	if (mode == artMode) {
 		// only do anything if the click was the left mouse button
 		if (evt.which == 1) {
 			switch(toolChoice) {
@@ -3411,7 +3441,7 @@ function doPan(xAmount, yAmount) {
 // scroll wheel event handler
 function scrollWheel(evt) {
 	// only do anything if in art or avatar mode
-	if (mode == artMode || mode == avatarMode) {
+	if (mode == artMode) {
 		// prevent default behavior to stop weird scroll issues
 		evt.preventDefault();
 		// get mouse coordinates in the canvas
