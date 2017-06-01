@@ -133,7 +133,12 @@ Game =
 
 		// start Toni's code
 		// credits screen
-		Crafty.defineScene('CreditsScreen', function() {
+		Crafty.defineScene('CreditsScreen', function() {	
+			// debug message
+			if (debugging) {
+				console.log("Displayed credits scene.");
+			}
+			
 			// text
 			Crafty.e('myText, 2D, DOM, Text')
 				.attr({x: 0, y: canvasEdge, w: screenWidth, h: screenHeight})
@@ -152,6 +157,11 @@ Game =
 				.textFont({family: 'Trebuchet MS', size: '20px'})
 				.bind('Click', function(MouseEvent) {
 					Crafty.enterScene('HomeScreen');
+	
+					// debug message
+					if (debugging) {
+						console.log("Hid credits scene.");
+					}
 				});
 		});
 		// end Toni's code
