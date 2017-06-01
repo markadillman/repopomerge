@@ -646,8 +646,9 @@ function initAssetRender(request){
 	//render new assets in respective tiles
 	assetRender(body);
 }
+// end Mark's code
 
-
+// start Toni's code
 // avatar carousel helper functions
 function loadMyAvatarsToCarousel() {
 	console.log("Loaded My Avatars to avatar carousel.");
@@ -671,3 +672,4 @@ function submitAvatarToLibrary() {
 	// should have a confirmation message
 	// ###
 }
+// end Toni's code

@@ -762,6 +762,11 @@ function panDownButton() {
 // makes sure the drawing tool is set up to enter avatar mode
 function doAvatarEdit() {
 	
+	// clear out everything from drawing area just in case
+	svgClearAll();
+	
+	// load requested avatar if necessary
+	
 	// set the mode
 	previousMode = mode;
 	mode = artMode;
@@ -773,6 +778,7 @@ function doAvatarEdit() {
 
 	// set the submit button's function
 	document.getElementById("artSubmitBtn").onclick = submitAvatarButton;
+	// ### Mark? and/or Toni
 
 	// get the offsets again here
 	var coords = canvas.getBoundingClientRect();
@@ -820,6 +826,10 @@ function doTileEdit(currentX, currentY) {
 	}
 	
 	// ### Mark - do tile lockout and password check stuff here
+	
+	
+	// clear out everything from drawing area just in case
+	svgClearAll();
 	
 	// load the tile and its surroundings from the server
 	svgLoadFromServer(xTile, yTile, password);
