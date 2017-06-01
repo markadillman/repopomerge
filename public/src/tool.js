@@ -101,9 +101,10 @@ var coordinatePairs = {"ul": {"x":-1,"y":-1,"canvasId":"aboveLeftDivCanvas"},//-
 //end MARK'S CODE
 var myFileInput;		// HTML input element for handling files
 // start Mark's code, slightly modified by Toni to add the white rectangle
-var svgPrepend = "<svg xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" width=\"600\" height=\"350\" viewBox=\"0 0 600 350\"> <rect width=\"600\" height=\"350\" fill=\"white\"></rect>"
-var svgMinPrepend = "<svg xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\">";
-var svgAppend = "</svg>"
+// modified again by Toni to add the avatar clip path definition
+var svgPrepend = "<svg xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" width=\"600\" height=\"350\" viewBox=\"0 0 600 350\">  <clipPath id=\"avatarClipPath\"><ellipse cx=\"300\" cy=\"175\" rx=\"87\" ry=\"174\"></ellipse></clipPath> <rect width=\"600\" height=\"350\" fill=\"white\"></rect>";
+var svgMinPrepend = "<svg xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\"> <clipPath id=\"avatarClipPath\"><ellipse cx=\"300\" cy=\"175\" rx=\"87\" ry=\"174\"></ellipse></clipPath>";
+var svgAppend = "</svg>";
 // end Mark's code
 
 // stop event propagation so forms don't actually submit
@@ -367,6 +368,15 @@ function initHTML() {
 	hiddenCanvas.id = "hiddenCanvas";
 	hiddenCanvas.width = canvasWidth;
 	hiddenCanvas.height = canvasHeight;
+	
+	// create the avatar ellipse, but don't append it anywhere yet
+	avatarEllipse = document.createElementNS(svgns, "ellipse");
+	avatarEllipse.setAttribute("id", "avatarEllipse");
+	avatarEllipse.setAttribute("cx", canvasWidth/2);
+	avatarEllipse.setAttribute("cy", canvasHeight/2);
+	avatarEllipse.setAttribute("rx", spriteWidth * avatarMultiplier);
+	avatarEllipse.setAttribute("ry", spriteHeight * avatarMultiplier);
+	avatarEllipse.setAttribute("style", "fill: none; stroke: black");
 	
 	// grab the context of the hidden canvas
 	hiddenContext = hiddenCanvas.getContext("2d");
@@ -792,6 +802,7 @@ function doAvatarEdit() {
 	svgClearAll();
 	
 	// load requested avatar if necessary
+	// ###
 	
 	// set the mode
 	previousMode = mode;
@@ -799,13 +810,6 @@ function doAvatarEdit() {
 	avatarEditing = true;
 	
 	// display correct divs and header
-	avatarEllipse = document.createElementNS(svgns, "ellipse");
-	avatarEllipse.setAttribute("id", "avatarEllipse");
-	avatarEllipse.setAttribute("cx", canvasWidth/2);
-	avatarEllipse.setAttribute("cy", canvasHeight/2);
-	avatarEllipse.setAttribute("rx", spriteWidth * avatarMultiplier);
-	avatarEllipse.setAttribute("ry", spriteHeight * avatarMultiplier);
-	avatarEllipse.setAttribute("style", "fill: none; stroke: black");
 	drawingGroup.appendChild(avatarEllipse);
 	drawingGroup.setAttribute("clip-path", "url(#avatarClipPath)");
 	maskingToggleDiv.style.display = "none";
@@ -815,7 +819,6 @@ function doAvatarEdit() {
 
 	// set the submit button's function
 	document.getElementById("artSubmitBtn").onclick = submitAvatarButton;
-	// ### Mark? and/or Toni
 
 	// get the offsets again here
 	var coords = canvas.getBoundingClientRect();
@@ -884,6 +887,7 @@ function doTileEdit(currentX, currentY) {
 	// set the mode
 	previousMode = mode;
 	mode = artMode;
+	avatarEditing = false;
 
 	// display correct divs and header
 	maskingToggleDiv.style.display = "block";
@@ -1459,6 +1463,11 @@ function saveToFile(filename, textdata) {
 function svgSaveToLocal() {
 	handleShapeInProgress();
 
+	// if avatars, remove ellipse
+	if (avatarEditing) {
+		drawingGroup.removeChild(avatarEllipse);
+	}
+	
 	// generate the file string
 	var myFileString = svgFileHeader +
 						svgMinPrepend +
@@ -1477,6 +1486,11 @@ function svgSaveToLocal() {
 
 	// call helper function
 	saveToFile(myFileName, myFileString);
+	
+	// if avatars, replace ellipse
+	if (avatarEditing) {
+		drawingGroup.appendChild(avatarEllipse);
+	}
 	
 	// debug message
 	if (debugging) {
