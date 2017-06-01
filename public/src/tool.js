@@ -810,7 +810,7 @@ function doAvatarEdit() {
 	avatarEditing = true;
 	
 	// display correct divs and header
-	drawingGroup.appendChild(avatarEllipse);
+	canvas.appendChild(avatarEllipse);
 	drawingGroup.setAttribute("clip-path", "url(#avatarClipPath)");
 	maskingToggleDiv.style.display = "none";
 	pageHeader.innerHTML = avatarHeader;
@@ -848,7 +848,7 @@ function doAvatarExit() {
 	avatarEditing = false;
 
 	// display correct div
-	drawingGroup.removeChild(avatarEllipse);
+	canvas.removeChild(avatarEllipse);
 	drawingGroup.setAttribute("clip-path", "");
 	borderArtDiv.style.display = "block";
 	showDiv(mode); // handles hiding message box div
@@ -1462,11 +1462,6 @@ function saveToFile(filename, textdata) {
 // references: https://www.html5rocks.com/en/tutorials/file/dndfiles/
 function svgSaveToLocal() {
 	handleShapeInProgress();
-
-	// if avatars, remove ellipse
-	if (avatarEditing) {
-		drawingGroup.removeChild(avatarEllipse);
-	}
 	
 	// generate the file string
 	var myFileString = svgFileHeader +
@@ -1486,11 +1481,6 @@ function svgSaveToLocal() {
 
 	// call helper function
 	saveToFile(myFileName, myFileString);
-	
-	// if avatars, replace ellipse
-	if (avatarEditing) {
-		drawingGroup.appendChild(avatarEllipse);
-	}
 	
 	// debug message
 	if (debugging) {

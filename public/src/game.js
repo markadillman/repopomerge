@@ -30,12 +30,13 @@ var currentUpperLeftX = 0;
 var currentUpperLeftY = 0;
 var spriteWidth = 15;
 var spriteHeight = 30;
-var avatarMultiplier = 5.8;
-var playerSpawnX = canvasEdge + 374.5;
+var avatarMultiplier = 5.8; // factor between avatar size and size of oval in drawing tool
+var playerSpawnX = canvasEdge + 374.5;	// spawn in hole in tree
 var playerSpawnY = canvasEdge + 108;
 var titleTextColor = '#373854';
 var selectedButtonColor = '#99CCFF';
 var panTime = 500; // ms
+
 //MARK ADDED DATA STRUCTURE THAT OUTLINES THE ENVIRONMENT TILES LOADED
 const initPullPairs = { "-2,-2":{"x":-2,"y":-2},
 						"-2,-1":{"x":-2,"y":-1},
@@ -63,16 +64,38 @@ const initPullPairs = { "-2,-2":{"x":-2,"y":-2},
 						"2,1":{"x":2,"y":1},
 						"2,2":{"x":2,"y":2},
 					};
-
 var svgPrefix = "<svg xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\">";
 var svgPostfix = "</svg>";
+
+// Toni added variables for the avatar carousel
+var carouselStage;
+var carouselData = [];
+var carouselIndex = 0;
+// Toni is very sorry this is so ugly, but it's an easy way to have the svg string for the New Avatar image
+const newAvatarImg = "<svg xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\">" +
+		"<clipPath id=\"avatarClipPath\"><ellipse cx=\"300\" cy=\"175\" rx=\"87\" ry=\"174\">" + 
+		"</ellipse></clipPath><g xmlns=\"http://www.w3.org/2000/svg\" id=\"drawingGroup\" " +
+		"style=\"opacity: 1\" clip-path=\"url(#avatarClipPath)\"><polyline id=\"o1\" " +
+		"points=\"234.5 252 229.5 117 264.5 249 266.5 118\" style=\"fill: none; stroke: " +
+		"#000000; stroke-width: 5\"/><polyline id=\"o2\" points=\"307.5 170 278.5 169 278.5 245 " +
+		"304.5 243\" style=\"fill: none; stroke: #000000; stroke-width: 5\"/><polyline id=\"o3\" " +
+		"points=\"278.5 207 294.5 207\" style=\"fill: none; stroke: #000000; stroke-width: 5\"/>" +
+		"<polyline id=\"o4\" points=\"319.5 162 324.5 243 342.5 205 358.5 241 375.5 163\" " +
+		"style=\"fill: none; stroke: #000000; stroke-width: 5\"/><polygon id=\"o5\" points=\"267.5 " +
+		"56 324.5 130 336.5 121 278.5 45\" style=\"fill: none; fill-rule: evenodd; stroke: #000000; " +
+		"stroke-width: 5\"/><polygon id=\"o6\" points=\"323.5 129 348.5 149 336.5 120\" style=\"fill: " +
+		"#000000; fill-rule: evenodd; stroke: #000000; stroke-width: 5\"/><polygon id=\"o7\" points=\"259.5 " +
+		"49 272.5 36 276.5 45 267.5 54\" style=\"fill: #000000; fill-rule: evenodd; stroke: #000000; " +
+		"stroke-width: 5\"/><polyline id=\"o8\" points=\"243.5 269 357.5 267\" style=\"fill: none; " +
+		"stroke: #000000; stroke-width: 5\"/></g><g xmlns=\"http://www.w3.org/2000/svg\" " +
+		"id=\"platformsGroup\" style=\"visibility: hidden\"/></svg>";
 
 Game =
 {
 	start: function()
 	{
 		Crafty.init(screenWidth, screenHeight, document.getElementById('gameDiv'));
-		Crafty.background(bgroundColor)
+		Crafty.background(bgroundColor);
 
 		// Start screen scene
 		Crafty.defineScene('HomeScreen', function()
@@ -181,13 +204,6 @@ Game =
 					w: 40, h: 40})
 				.color('red');
 
-			// placeholder avatar spot
-			// probably will delete, just using it for now to find good placement/size
-			Crafty.e('2D, DOM, Color, Mouse')
-				.attr({x: screenWidth/2 - 45, y: screenHeight / 3 + canvasEdge + 15 - 65,
-					w: spriteWidth*avatarMultiplier, h: spriteHeight*avatarMultiplier})
-				.color('blue');
-
 			// Right arrow
 			Crafty.e('2D, DOM, Color, Mouse')
 				.attr({x: (screenWidth / 6) * 5 - 40, y: screenHeight / 3 + canvasEdge + 15,
@@ -200,31 +216,14 @@ Game =
 			// button to load the carousel with "My Avatars" data
 			// these are the user-drawn avatars stored via cookie
 			Crafty.e('myButton, myAvatarButton, 2D, DOM, Color, Mouse, Text, Button')
-				.attr({x: canvasEdge*3,
+				.attr({x: canvasEdge*2,
 					y: 10,
 					w: 200, h: 25})
 				.color(selectedButtonColor)
 				.text('Viewing My Avatars')
 				.textAlign('Center')
 				.textFont({family: 'Trebuchet MS', size: '20px'})
-				.bind('Click', function(MouseEvent) {
-					// swap view buttons
-					Crafty('myLibraryButton').color(bgroundColor);
-					Crafty('myLibraryButton').text('View Avatar Library');
-					Crafty('myAvatarButton').color(selectedButtonColor);
-					Crafty('myAvatarButton').text('Viewing My Avatars');
-
-					// turn on delte and submit avatar buttons
-					Crafty('myDeleteButton').bind('Click', deleteLocalAvatar);
-					Crafty('myDeleteButton').text('Delete Avatar');
-					Crafty('myDeleteButton').addComponent('myButton');
-					Crafty('mySubmitButton').bind('Click', submitAvatarToLibrary);
-					Crafty('mySubmitButton').text('Submit Avatar to Public Library');
-					Crafty('mySubmitButton').addComponent('myButton');
-
-					// load data to carousel
-					loadMyAvatarsToCarousel();
-				});
+				.bind('Click', myAvatarButtonClick);
 
 			// button to load the carousel with "Avatar Library" data
 			// the default avatars we're offering will always be the first of the ones shown here
@@ -236,24 +235,7 @@ Game =
 				.text('View Avatar Library')
 				.textAlign('Center')
 				.textFont({family: 'Trebuchet MS', size: '20px'})
-				.bind('Click', function(MouseEvent) {
-					// swap view buttons
-					Crafty('myAvatarButton').color(bgroundColor);
-					Crafty('myAvatarButton').text('View My Avatars');
-					Crafty('myLibraryButton').color(selectedButtonColor);
-					Crafty('myLibraryButton').text('Viewing Avatar Library');
-
-					// turn off delete and submit avatar buttons
-					Crafty('myDeleteButton').unbind('Click');
-					Crafty('myDeleteButton').text('');
-					Crafty('myDeleteButton').removeComponent('myButton');
-					Crafty('mySubmitButton').unbind('Click');
-					Crafty('mySubmitButton').text('');
-					Crafty('mySubmitButton').removeComponent('myButton');
-
-					// load data to carousel
-					loadLibraryAvatarsToCarousel();
-				});			
+				.bind('Click', myLibraryButtonClick);			
 
 			// button to edit the avatar currently selected in the carousel
 			// if the "new avatar" element then load editor blank
@@ -292,7 +274,7 @@ Game =
 				.text('Delete Avatar')
 				.textAlign('Center')
 				.textFont({family: 'Trebuchet MS', size: '20px'})
-				.bind('Click', submitAvatarToLibrary);
+				.bind('Click', deleteLocalAvatar);
 
 			// add help and quit clickable buttons to this scene
 			// because honestly the hotkeys were a nightmare in the world / gameplay scene
@@ -305,9 +287,7 @@ Game =
 				.text('Help')
 				.textAlign('Center')
 				.textFont({family: 'Trebuchet MS', size: '20px'})
-				.bind('Click', function(MouseEvent) {
-					displayHelpScreen();
-				});
+				.bind('Click', displayHelpScreen);
 
 			// button to return to home screen
 			Crafty.e('myButton, 2D, DOM, Color, Mouse, Text, Button')
@@ -589,7 +569,7 @@ function assetRender(assets){
 		//generate a URL for this svg grouping
 		var blobSvg = new Blob([myGroupString],{type:"image/svg+xml;charset=utf-8"}),
 		domURL = self.URL || self.webkitURL || self,
-		url = domURL.createObjectURL(blobSvg),
+		url = domURL.createObjectURL(blobSvg),	// ### Mark - this and the 2 lines above have commas?
 		img = new Image;
 		//img.onload = function(){
 			if (verboseDebugging) {
@@ -660,27 +640,169 @@ function initAssetRender(request){
 // end Mark's code
 
 // start Toni's code
-// avatar carousel helper functions
+// avatar carousel scene helper functions
+function myAvatarButtonClick() {
+	// swap view buttons
+	Crafty('myLibraryButton').color(bgroundColor);
+	Crafty('myLibraryButton').text('View Avatar Library');
+	Crafty('myAvatarButton').color(selectedButtonColor);
+	Crafty('myAvatarButton').text('Viewing My Avatars');
+
+	// correspondingly toggle delete and submit buttons
+	turnOnDeleteSubmitButtons();
+
+	// load data to carousel
+	loadMyAvatarsToCarousel();
+}
+function myLibraryButtonClick() {
+	// swap view buttons
+	Crafty('myAvatarButton').color(bgroundColor);
+	Crafty('myAvatarButton').text('View My Avatars');
+	Crafty('myLibraryButton').color(selectedButtonColor);
+	Crafty('myLibraryButton').text('Viewing Avatar Library');
+
+	// correspondingly toggle delete and submit buttons
+	turnOffDeleteSubmitButtons();
+
+	// load data to carousel
+	loadLibraryAvatarsToCarousel();
+}
+function turnOffDeleteSubmitButtons() {
+	// turn off delete and submit avatar buttons
+	Crafty('myDeleteButton').unbind('Click');
+	Crafty('myDeleteButton').text('');
+	Crafty('myDeleteButton').removeComponent('myButton');
+	Crafty('mySubmitButton').unbind('Click');
+	Crafty('mySubmitButton').text('');
+	Crafty('mySubmitButton').removeComponent('myButton');
+}
+function turnOnDeleteSubmitButtons() {
+	// turn on delete and submit avatar buttons
+	Crafty('myDeleteButton').bind('Click', deleteLocalAvatar);
+	Crafty('myDeleteButton').text('Delete Avatar');
+	Crafty('myDeleteButton').addComponent('myButton');
+	Crafty('mySubmitButton').bind('Click', submitAvatarToLibrary);
+	Crafty('mySubmitButton').text('Submit Avatar to Public Library');
+	Crafty('mySubmitButton').addComponent('myButton');
+}
+function turnOffViewButtons() {
+	// turn button functionality off
+	Crafty('myAvatarButton').unbind('Click');
+	Crafty('myAvatarButton').removeComponent('myButton');
+	Crafty('myLibraryButton').unbind('Click');
+	Crafty('myLibraryButton').removeComponent('myButton');	
+}
+function turnOnViewButtons() {
+	// turn button functionality back on
+	Crafty('myAvatarButton').bind('Click', myAvatarButtonClick);
+	Crafty('myAvatarButton').addComponent('myButton');
+	Crafty('myLibraryButton').bind('Click', myLibraryButtonClick);
+	Crafty('myLibraryButton').addComponent('myButton');
+
+	// also make sure message box is hidden
+	messageDiv.style.display = "none";
+}
+function displayAvatarInCarousel (myString) {
+	// references from Mark's assetRender function
+	// displays the given svg data string in the selected position of the carousel
+
+	// generate a URL	
+	myString = svgPrefix + myString + svgPostfix; // just in case the server ones need it
+	var blobSvg = new Blob([myString],{type:"image/svg+xml;charset=utf-8"});
+	var domURL = self.URL || self.webkitURL || self;
+	var url = domURL.createObjectURL(blobSvg);
+
+	// put it in the scene
+	// reference: http://craftyjs.com/api/Crafty-sprite.html
+	// reference: https://github.com/craftyjs/Crafty/issues/1077
+	var mySprite = Crafty.sprite(url, {myImage: [0, 0, tileWidth, tileHeight]});
+	carouselStage = Crafty.e('2D, DOM, myImage')
+		.attr({x: 0, y: 0, w: tileWidth, h: tileHeight, z: 1});
+}
 function loadMyAvatarsToCarousel() {
-	console.log("Loaded My Avatars to avatar carousel.");
-	// ###
+
+	// clear out current carouselData
+	carouselData = [];
+
+	// set the blank/new element as first
+	carouselData[0] = newAvatarImg;	
+
+	// ### Load from cookie storage.
+	// need to fill the rest of the carouselData array with results from cookie data
+	
+
+	// load carouselData[0] into the carousel's selected position
+	carouselIndex = 0;
+	displayAvatarInCarousel(carouselData[carouselIndex]);
+
+	// debug message
+	if (debugging) {
+		console.log("Loaded My Avatars to avatar carousel.");
+	}
 }
 function loadLibraryAvatarsToCarousel() {
-	console.log("Loaded Public Avatar Library to avatar carousel.");
-	// ###
+
+	// ### Mark - your code probably goes here.
+	// need to fill carouselData array with results from server
+	// our default avatars should be the early indexed items, e.g. carouselData[0] is Mr Stick
+	// just load everything, or dynamically load in chunks sorta like the tile data?
+	
+
+	// load carouselData[0] into the carousel's selected position
+	carouselIndex = 0;
+	displayAvatarInCarousel(carouselData[carouselIndex]);
+
+	// debug message
+	if (debugging) {
+		console.log("Loaded Public Avatar Library to avatar carousel.");
+	}
 }
 function deleteLocalAvatar() {
-	console.log("Deleted avatar.");
-	// should use an are you sure? message
-	// ###
+	// are you sure? message
+	turnOffViewButtons();
+	displayMessage("Are you sure you want to permanently delete this avatar from your computer?", doDeleteAvatar, turnOnViewButtons, false);
+}
+function doDeleteAvatar() {
+
+	// hide message box div
+	messageDiv.style.display = "none";
+
+	// turn view buttons back on
+	turnOnViewButtons();
+
+	// ### Delete from cookie storage.
+
+	// debug message
+	if (debugging) {
+		console.log("Deleted avatar.");
+	}
 
 	// cause carousel to reload
+	// this also serves as confirmation
 	loadMyAvatarsToCarousel();
 }
 function submitAvatarToLibrary() {
-	console.log("Submited avatar to library.");
-	// maybe use an are you sure message?
-	// should have a confirmation message
-	// ###
+	// are you sure? message
+	turnOffViewButtons();
+	displayMessage("Are you sure you want to submit this avatar to the public library?", doSubmitAvatar, turnOnViewButtons, false);
+}
+function doSubmitAvatar() {
+
+	// hide message box div
+	messageDiv.style.display = "none";
+
+	// turn view buttons back on
+	turnOnViewButtons();
+
+	// ### Mark - your code probably goes here.
+
+	// confirmation message
+	turnOffViewButtons();
+	displayMessage("Your avatar has been submitted to the public library.", turnOnViewButtons, turnOnViewButtons, false);
+
+	// debug message
+	if (debugging) {
+		console.log("Submited avatar to library.");
+	}
 }
 // end Toni's code
