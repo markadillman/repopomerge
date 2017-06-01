@@ -9,7 +9,7 @@ tool.js
 This file includes the onload initialization function for the main body of the
 game's html page: initHTML()
 
-This draws heavily from examples found at:
+The SVG code in this file draws heavily from examples found at:
 https://github.com/oreillymedia/svg-essentials-examples
 
 Also includes several chunks of code by fellow Team Aries member Mark Dillman.
@@ -27,7 +27,7 @@ var artMode = "art";	// mode strings
 var gameMode = "game";
 var helpMode = "help";
 var mapMode = "map";
-var mode = gameMode;	// track what mode is active: game, art, or avatar
+var mode = gameMode;	// track what mode is active
 var previousMode = mode; // track what the previous mode was
 var masking = false;	// toggle the platform masking tools
 var musicDiv;		// variables for game music
@@ -59,9 +59,10 @@ var messageDiv;			// the message box div
 var messageText;		// the message box text field
 var msgBtnOK;			// the message OK button
 var msgBtnCancel;		// the message Cancel button
+//var 
 var pageHeader;			// the h1 tag for the drawing tool
 var drawingHeader = "CREATE THE BLANK --- Add your art to the world! Don't forget to create platforms before you submit your tile.";
-var avatarHeader = "CHOOSE YOUR AVATAR --- Select an existing avatar or draw a new one. For best results, draw to the oval's edges.";
+var avatarHeader = "CREATE YOUR AVATAR --- Edit an existing avatar or draw a new one. For best results, draw to the oval's edges.";
 var toolDiv;			// the div for the entire drawing tool
 var displayDiv;			// the display divs
 var borderArtDiv;		// the sub-div with just the border art divs in it
@@ -373,12 +374,14 @@ function initHTML() {
 	toolDiv = document.getElementById("toolDiv");
 	
 	// grab the different groups of tools
+	maskingToggleDiv = document.getElementById("maskingToggleDiv");
 	drawControls = document.getElementById("drawControls");
 	platformControls = document.getElementById("platformControls");
 	
 	// set the default visibility of the tool groups
 	drawControls.style.display = "block";
 	platformControls.style.display = "none";
+	maskingToggleDiv.style.display = "none"; // because avatars happen first
 	
 	// grab the help screen div and button
 	helpDiv = document.getElementById("helpDiv");
@@ -522,8 +525,8 @@ function initHTML() {
 		displayDivList[i].style.height = currentHeight + "px";
 	}
 	
-	// make the overall display div invisible because the default is avatar mode
-	displayDiv.style.display = "none";
+	// make the overall display div visible
+	displayDiv.style.display = "block";
 	
 	// get the offsets here insetad because these scripts ran in the
 	// opposite order I thought they did after the refactoring
@@ -689,13 +692,24 @@ function saveButton() {
 function loadButton () {
 	displayMessage("Use the dialog to select an art file to load.", svgLoadFromLocal, doNothing, false);
 }
-function submitButton () {
+function submitAvatarButton () {
+	// this always submits to local storage
+	// even if the user was editing an avatar that came from the library
+	// submitting to the library is handled by a helper function in game.js
+	// ###
+
+	// use message box to put up confirmation message
+	// ### Mark - should we make the cancel button actually cancel this action?
+	// or maybe change the displayMessage API to have an option with no Cancel button
+	displayMessage("Your avatar has been saved to your computer.", doAvatarExit, doAvatarExit, false)
+}
+function submitTileButton () {
 	// make sure to toggle off platform editing mode if necessary
 	if (masking) {
 		changeMasking(false);
 	}
 	
-	// ### Why does this submit the hiddenCanvas, especially without updating it first?
+	// ### Why does this submit hiddenCanvas, especially without updating it first?
 	// and yet this seems to work... maybe I'm just tired and not following what's going on
 	svgSubmitToServer(document.getElementById('hiddenCanvas'));
 }
@@ -753,10 +767,12 @@ function doAvatarEdit() {
 	mode = artMode;
 	
 	// display correct divs and header
+	maskingToggleDiv.style.display = "none";
 	pageHeader.innerHTML = avatarHeader;
-	displayDiv.style.display = "none";
-	avatarDisplayDiv.style.display = "block";
 	showDiv(mode);
+
+	// set the submit button's function
+	document.getElementById("artSubmitBtn").onclick = submitAvatarButton;
 
 	// get the offsets again here
 	var coords = canvas.getBoundingClientRect();
@@ -768,6 +784,28 @@ function doAvatarEdit() {
 		console.log("Loaded editor for avatar creation.");
 	}
 	
+}
+
+// exits from the currently edited avatar back into game mode
+// does not save the current edits!
+function doAvatarExit() {
+	
+	// clear out all the current SVG
+	svgClearAll();
+	
+	// reset drawing tool defaults
+	svgResetDefaults();
+	
+	// set the mode
+	previousMode = mode;
+	mode = gameMode;
+
+	// display correct div
+	showDiv(mode); // handles hiding message box div
+	
+	// make crafty reload the art assets for the carousel
+	// and put the carousel into My Avatars mode regardless of previous mode
+	Crafty("myAvatarButton").trigger("Click");
 }
 
 // switches from game mode into tile edit mode
@@ -792,10 +830,12 @@ function doTileEdit(currentX, currentY) {
 	mode = artMode;
 
 	// display correct divs and header
+	maskingToggleDiv.style.display = "block";
 	pageHeader.innerHTML = drawingHeader;
-	avatarDisplayDiv.style.display = "none";
-	displayDiv.style.display = "block";
 	showDiv(mode);
+
+	// set the submit button's function
+	document.getElementById("artSubmitBtn").onclick = submitTileButton;
 
 	// get the offsets again here
 	var coords = canvas.getBoundingClientRect();
@@ -1089,12 +1129,9 @@ function svgResetDefaults() {
 // initial setup of SVG
 function initSVG(evt) {
 	
-	// select the empty svg object, get its namespace and offsets
+	// select the empty svg object, get its namespace
 	canvas = document.getElementById("svgCanvas");
 	svgns = canvas.namespaceURI;
-	/*var coords = canvas.getBoundingClientRect();
-	xOffset = coords.left;
-	yOffset = coords.top;*/ // moved into initHTML() because of page load order
 	
 	// create the drawn objects group
 	drawingGroup = document.createElementNS(svgns, "g");
@@ -1236,27 +1273,6 @@ function postOnError(request){
 		console.error(request.statusText);
 	}
 }
-//KEEP: HELPER FUNCTION: load into center, editing SVG environment
-// ### Mark - this never gets called. Do we need it?
-/*function svgEditOnLoad(request){
-	if (request.readyState === 4){
-		if (request.status === 200) {
-			body = JSON.parse(request.responseText);
-			if (debugging){
-				console.log(body.svg);
-			}
-			//remove existing draw and platform groups
-			drawingGroup.remove();
-			platformGroup.remove();
-			//use svg.js load to load into main svg
-			var draw = SVG('svgCanvas');
-			//load the svg xml as string
-			draw.svg(body.svg);
-		} else {
-			console.error(request.statusText);
-		}
-	}
-}*/
 //KEEP: HELPER FUNCTION: ASYNCH LOAD INTO SURROUNDING TILES
 function surroundingsOnLoad(request){
 	if (request.readyState === 4){
@@ -1269,28 +1285,7 @@ function surroundingsOnLoad(request){
 			var alreadyDrawn = {};
 			
 			// start Toni's code
-			// fill all the boundary regions with white pixels manually
-			// so blank tiles will read white to the eye dropper tool
-			/*var colorBlock;
-			for (var i = 0; i < displayDivCanvasList.length; i += 1) {
-				// don't try to do anything in the center div
-				if (i != getKeyByVal(displayDivDict, "centerDiv")) {
-					// create the color block in canvas i
-					currentCanvas = displayDivCanvasList[i];
-					currentContext = displayDivContextList[i];
-					colorBlock = currentContext.createImageData(currentCanvas.width, currentCanvas.height);
-					for (var j = 0; j < colorBlock.data.length; j += 4) {
-						colorBlock.data[j+0] = 255;
-						colorBlock.data[j+1] = 255;
-						colorBlock.data[j+2] = 255;
-						colorBlock.data[j+3] = 255;
-					}
-					currentContext.putImageData(colorBlock, 0, 0);
-				}
-			}*/
-			// whoops, Mark actually already did this lower down in this function
-			
-			// clear out the existing originalEdgesDict info
+			// clear out any existing originalEdgesDict info
 			// reference: https://stackoverflow.com/questions/684575/how-to-quickly-clear-a-javascript-object
 			// using the linear-time solution b/c never more than 4 entries to delete
 			for (var prop in originalEdgesDict) {
@@ -2309,7 +2304,7 @@ function updateMouseCoords(evt) {
 	// adjust for zoom and pan
 	adjustMouseCoords();
 	// debug message
-	if (debugging) {
+	if (verboseDebugging) {
 		console.log("Mouse coordinates: (" + xMouse.toString() + ", " +
 											yMouse.toString() + ")");
 	}

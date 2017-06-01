@@ -33,6 +33,7 @@ var spriteHeight = 30;
 var playerSpawnX = canvasEdge + 374.5;
 var playerSpawnY = canvasEdge + 108;
 var titleTextColor = '#373854';
+var selectedButtonColor = '#99CCFF';
 var panTime = 500; // ms
 //MARK ADDED DATA STRUCTURE THAT OUTLINES THE ENVIRONMENT TILES LOADED
 const initPullPairs = { "-2,-2":{"x":-2,"y":-2},
@@ -158,40 +159,136 @@ Game =
 		// Player setup screen scene
 		Crafty.defineScene('SetupScreen', function()
 		{
+			// load data to carousel
+			loadMyAvatarsToCarousel();
+
 			// Select avatar
 
 			// Left arrow
 			Crafty.e('2D, DOM, Color, Mouse')
-				.attr({x: screenWidth / 6, y: screenHeight / 3, w: 40, h: 40})
+				.attr({x: screenWidth / 6, y: screenHeight / 3 + canvasEdge + 15,
+					w: 40, h: 40})
 				.color('red');
+
+			// placeholder avatar spot
+			// probably will delete, just using it for now to find good placement/size
+			Crafty.e('2D, DOM, Color, Mouse')
+				.attr({x: screenWidth/2 - 45, y: screenHeight / 3 + canvasEdge + 15 - 65,
+					w: 15*6, h: 30*6})
+				.color('blue');
 
 			// Right arrow
 			Crafty.e('2D, DOM, Color, Mouse')
-				.attr({x: (screenWidth / 6) * 5 - 40, y: screenHeight / 3,
-					   w: 40, h: 40})
+				.attr({x: (screenWidth / 6) * 5 - 40, y: screenHeight / 3 + canvasEdge + 15,
+					w: 40, h: 40})
 				.color('red');
 
 			// Selected avatar
 
 			// start Toni's code
-			// add help and quit clickable buttons to this scene
-			// because honestly the hotkeys were a nightmare in the world / gameplay scene
-			// button to enter game world
-			Crafty.e('myButton, 2D, DOM, Color, Mouse, Text, Button')
-				.attr({x: (screenWidth / 2) - 50,
-					y: screenHeight - canvasEdge - canvasEdge/2,
-					w: 100, h: 25})
-				.color(bgroundColor)
-				.text('Start')
+			// button to load the carousel with "My Avatars" data
+			// these are the user-drawn avatars stored via cookie
+			Crafty.e('myButton, myAvatarButton, 2D, DOM, Color, Mouse, Text, Button')
+				.attr({x: canvasEdge*3,
+					y: 10,
+					w: 200, h: 25})
+				.color(selectedButtonColor)
+				.text('Viewing My Avatars')
 				.textAlign('Center')
 				.textFont({family: 'Trebuchet MS', size: '20px'})
 				.bind('Click', function(MouseEvent) {
-					Crafty.enterScene('World');
+					// swap view buttons
+					Crafty('myLibraryButton').color(bgroundColor);
+					Crafty('myLibraryButton').text('View Avatar Library');
+					Crafty('myAvatarButton').color(selectedButtonColor);
+					Crafty('myAvatarButton').text('Viewing My Avatars');
+
+					// turn on delte and submit avatar buttons
+					Crafty('myDeleteButton').bind('Click', deleteLocalAvatar);
+					Crafty('myDeleteButton').text('Delete Avatar');
+					Crafty('myDeleteButton').addComponent('myButton');
+					Crafty('mySubmitButton').bind('Click', submitAvatarToLibrary);
+					Crafty('mySubmitButton').text('Submit Avatar to Public Library');
+					Crafty('mySubmitButton').addComponent('myButton');
+
+					// load data to carousel
+					loadMyAvatarsToCarousel();
 				});
-			// button to return to home screen
+
+			// button to load the carousel with "Avatar Library" data
+			// the default avatars we're offering will always be the first of the ones shown here
+			Crafty.e('myButton, myLibraryButton, 2D, DOM, Color, Mouse, Text, Button')
+				.attr({x: screenWidth - canvasEdge*3 - 200,
+					y: 10,
+					w: 250, h: 25})
+				.color(bgroundColor)
+				.text('View Avatar Library')
+				.textAlign('Center')
+				.textFont({family: 'Trebuchet MS', size: '20px'})
+				.bind('Click', function(MouseEvent) {
+					// swap view buttons
+					Crafty('myAvatarButton').color(bgroundColor);
+					Crafty('myAvatarButton').text('View My Avatars');
+					Crafty('myLibraryButton').color(selectedButtonColor);
+					Crafty('myLibraryButton').text('Viewing Avatar Library');
+
+					// turn off delete and submit avatar buttons
+					Crafty('myDeleteButton').unbind('Click');
+					Crafty('myDeleteButton').text('');
+					Crafty('myDeleteButton').removeComponent('myButton');
+					Crafty('mySubmitButton').unbind('Click');
+					Crafty('mySubmitButton').text('');
+					Crafty('mySubmitButton').removeComponent('myButton');
+
+					// load data to carousel
+					loadLibraryAvatarsToCarousel();
+				});			
+
+			// button to edit the avatar currently selected in the carousel
+			// if the "new avatar" element then load editor blank
+			// else load chosen avatar's data
+			Crafty.e('myButton, 2D, DOM, Color, Mouse, Text, Button')
+				.attr({x: screenWidth/2 - 75,
+					y: canvasEdge,
+					w: 150, h: 25})
+				.color(bgroundColor)
+				.text('Edit Avatar')
+				.textAlign('Center')
+				.textFont({family: 'Trebuchet MS', size: '20px'})
+				.bind('Click', function(MouseEvent) {
+					doAvatarEdit(); // ### modify this to pass what avatar is currently selected
+				});
+
+			// button to send the avatar currently selected in the carousel to the library
+			// only visible/clickable when in "View My Avatars" mode
+			Crafty.e('myButton, mySubmitButton, 2D, DOM, Color, Mouse, Text, Button')
+				.attr({x: screenWidth/2 - 200,
+					y: canvasEdge + 25,
+					w: 400, h: 25})
+				.color(bgroundColor)
+				.text('Submit Avatar to Public Library')
+				.textAlign('Center')
+				.textFont({family: 'Trebuchet MS', size: '20px'})
+				.bind('Click', submitAvatarToLibrary);
+
+			// button to delete the avatar currently selected in the carousel from the local storage
+			// only visible/clickable when in "View My Avatars" mode
+			Crafty.e('myButton, myDeleteButton, 2D, DOM, Color, Mouse, Text, Button')
+				.attr({x: screenWidth/2 - 100,
+					y: canvasEdge + 50,
+					w: 200, h: 25})
+				.color(bgroundColor)
+				.text('Delete Avatar')
+				.textAlign('Center')
+				.textFont({family: 'Trebuchet MS', size: '20px'})
+				.bind('Click', submitAvatarToLibrary);
+
+			// add help and quit clickable buttons to this scene
+			// because honestly the hotkeys were a nightmare in the world / gameplay scene
+			// button to view help screen
 			Crafty.e('myButton, 2D, DOM, Color, Mouse, Text, Button')
 				.attr({x: (screenWidth / 2) - 50,
-					y: screenHeight - canvasEdge,
+					y: screenHeight - 75,
 					w: 100, h: 25})
 				.color(bgroundColor)
 				.text('Help')
@@ -200,10 +297,11 @@ Game =
 				.bind('Click', function(MouseEvent) {
 					displayHelpScreen();
 				});
+
 			// button to return to home screen
 			Crafty.e('myButton, 2D, DOM, Color, Mouse, Text, Button')
 				.attr({x: (screenWidth / 2) - 50,
-					y: screenHeight - canvasEdge + canvasEdge/2,
+					y: screenHeight - 50,
 					w: 100, h: 25})
 				.color(bgroundColor)
 				.text('Quit')
@@ -211,6 +309,21 @@ Game =
 				.textFont({family: 'Trebuchet MS', size: '20px'})
 				.bind('Click', function(MouseEvent) {
 					Crafty.enterScene('HomeScreen');
+				});
+
+			// button to enter game world
+			// ### this button should only work if an avatar is selected
+			// and/or should use a default avatar if none is selected
+			Crafty.e('myButton, 2D, DOM, Color, Mouse, Text, Button')
+				.attr({x: (screenWidth / 2) - 75,
+					y: screenHeight - 25,
+					w: 150, h: 25})
+				.color(bgroundColor)
+				.text('Enter the Blank')
+				.textAlign('Center')
+				.textFont({family: 'Trebuchet MS', size: '20px'})
+				.bind('Click', function(MouseEvent) {
+					Crafty.enterScene('World');
 				});
 			// end Toni's code
 		});
@@ -321,8 +434,15 @@ Game =
 							Crafty.enterScene('HomeScreen');
 						}
 
+						if (e.key == Crafty.keys.T) {
+							// drop a teleportation marker
+							// ### check to make sure one doesn't already exist?
+							// ### create marker at player's current coordinates in the world
+						}
+
 						if (e.key == Crafty.keys.W) {
 							// ### toggle platform viewing mode
+							// turns down the opacity on the art svg groups and shows the platform svg groups
 						}
 					}
 					// end Toni's code
@@ -525,4 +645,29 @@ function initAssetRender(request){
 	}
 	//render new assets in respective tiles
 	assetRender(body);
+}
+
+
+// avatar carousel helper functions
+function loadMyAvatarsToCarousel() {
+	console.log("Loaded My Avatars to avatar carousel.");
+	// ###
+}
+function loadLibraryAvatarsToCarousel() {
+	console.log("Loaded Public Avatar Library to avatar carousel.");
+	// ###
+}
+function deleteLocalAvatar() {
+	console.log("Deleted avatar.");
+	// should use an are you sure? message
+	// ###
+
+	// cause carousel to reload
+	loadMyAvatarsToCarousel();
+}
+function submitAvatarToLibrary() {
+	console.log("Submited avatar to library.");
+	// maybe use an are you sure message?
+	// should have a confirmation message
+	// ###
 }

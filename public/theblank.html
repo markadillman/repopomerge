@@ -26,11 +26,10 @@ http://infiniteblank.com/wordpress/?page_id=20
 		<title>THE BLANK by Capstone Team Aries</title>
 		
 		<meta http-equiv="content-type" content="text/html; charset=utf-8"></meta>
-		<link href="style/sheet.css" rel="stylesheet" type="text/css">
+
+		<link href="style/sheet.css" rel="stylesheet" type="text/css"></link>
 		
 		<!-- library sripts -->
-		<!--<script src="js/svg.js/dist/svg.min.js"></script>
-		<script src="js/jquery-3.2.1.js"></script>-->
 		<script type="text/javascript" src="lib/crafty.js"></script>
 		
 		<!-- game scripts -->
@@ -69,23 +68,23 @@ http://infiniteblank.com/wordpress/?page_id=20
 						<div id="commonControls" style="position: absolute; width: 235px">
 							
 							<input type="button" name="save" value="SAVE"
-								style="width: 55px; position: absolute"
+								style="width: 65px; position: absolute"
 								onclick="saveButton()"></input>
 							<input type="button" name="load" value="LOAD"
-								style="width: 55px; position: absolute; left: 59px"
+								style="width: 65px; position: absolute; left: 69px"
 								onclick="loadButton()"></input>
-							<input type="button" name="submit" value="SUBMIT"
-								style="width: 80px; position: absolute; left: 118px"
-								onclick="submitButton()"></input>
+							<input type="button" name="submit" id="artSubmitBtn" value="SUBMIT"
+								style="width: 65px; position: absolute; left: 138px"
+								onclick="submitAvatarButton()"></input>
 
 							<input type="button" name="undo" value="UNDO"
-								style="width: 55px; position: absolute; top: 24px"
+								style="width: 65px; position: absolute; top: 24px"
 								onclick="undoButton()"></input>
 							<input type="button" name="redo" value="REDO"
-								style="width: 55px; position: absolute; top: 24px; left: 59px"
+								style="width: 65px; position: absolute; top: 24px; left: 69px"
 								onclick="redoButton()"></input>
-							<input type="button" name="exit" value="EXIT TILE"
-								style="width: 80px; position: absolute; top: 24px; left: 118px"
+							<input type="button" name="exit" value="EXIT"
+								style="width: 65px; position: absolute; top: 24px; left: 138px"
 								onclick="exitButton()"></input>
 
 							<label style="position: absolute; top: 59px">
@@ -115,11 +114,13 @@ http://infiniteblank.com/wordpress/?page_id=20
 								style="width: 30px; position: absolute; top: 125px; left: 141px"
 								onclick="panDownButton()"></input>
 								
-							<label style="position: absolute; top: 159px">
-								TOGGLE PLATFORM TOOLS: 
-								<input type="checkbox" id="maskingToggle" name="masking" value="masking"
-									onchange="changeMasking(this.checked)"> </input>
-							</label>
+							<div id="maskingToggleDiv" style="display: none">
+								<label style="position: absolute; top: 159px">
+									TOGGLE PLATFORM TOOLS: 
+									<input type="checkbox" id="maskingToggle" name="masking" value="masking"
+										onchange="changeMasking(this.checked)"> </input>
+								</label>
+							</div>
 							
 							<label style="position: absolute; top: 184px">
 								SELECT STROKE WIDTH: 
@@ -199,7 +200,7 @@ http://infiniteblank.com/wordpress/?page_id=20
 				</form>
 				
 				<div id="displayDiv"
-					style="display: none; position: absolute; top: 60px; left: 275px">
+					style="display: block; position: absolute; top: 60px; left: 275px">
 					<div id="borderArtDiv">
 						<div id="cornerArtDiv">
 							<div id="aboveLeftDiv"></div>
@@ -221,10 +222,6 @@ http://infiniteblank.com/wordpress/?page_id=20
 							onload="initSVG(evt)">
 						</svg>
 					</div>
-				</div>
-				
-				<div id="avatarDisplayDiv""
-					style="display: none; position: absolute; top: 60px; left: 275px">
 				</div>
 			</div>
 		</div>
