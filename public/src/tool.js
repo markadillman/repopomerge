@@ -29,6 +29,7 @@ var helpMode = "help";
 var mapMode = "map";
 var mode = gameMode;	// track what mode is active
 var previousMode = mode; // track what the previous mode was
+var avatarEditing = true;	// track if avatar editing or just tile editing
 var masking = false;	// toggle the platform masking tools
 var musicDiv;		// variables for game music
 var musicAudio;
@@ -626,6 +627,11 @@ function displayHelpScreen() {
 
 	// display correct div
 	showDiv(mode);
+	
+	// debug message
+	if (debugging) {
+		console.log("Displayed help screen.");
+	}
 }
 function doHelpScreenDone() {
 
@@ -635,6 +641,11 @@ function doHelpScreenDone() {
 
 	// display correct div
 	showDiv(mode);
+	
+	// debug message
+	if (debugging) {
+		console.log("Hid help screen.");
+	}
 }
 
 // quit to home screen function
@@ -647,6 +658,11 @@ function doQuitToHomeScreen() {
 
 	// display correct div
 	showDiv(mode);
+	
+	// debug message
+	if (debugging) {
+		console.log("Quit to home screen.");
+	}
 }
 
 
@@ -664,6 +680,11 @@ function displayMessage(msg, okFn, cancelFn, useTextInput) {
 		msgTextInput.style.display = "none";
 	}
 	messageDiv.style.display = "block";
+	
+	// debug message
+	if (debugging) {
+		console.log("Displayed a message.");
+	}
 }
 
 // default handlers for message box buttons
@@ -723,8 +744,12 @@ function redoButton () {
 function removeSelectedPlatform(force) {
 	svgRemoveSelectedPlatform(force);
 }
-function exitButton () {
-	displayMessage("Are you sure you want to exit without submitting your work?", doTileExit, doNothing, false);
+function exitButton() {
+	if (avatarEditing) {
+		displayMessage("Are you sure you want to exit without submitting your work?", doAvatarExit, doNothing, false);
+	} else {
+		displayMessage("Are you sure you want to exit without submitting your work?", doTileExit, doNothing, false);
+	}
 }
 function zoomOutButton() {
 	// set mouse coordinates to center of current viewBox
@@ -771,6 +796,7 @@ function doAvatarEdit() {
 	// set the mode
 	previousMode = mode;
 	mode = artMode;
+	avatarEditing = true;
 	
 	// display correct divs and header
 	maskingToggleDiv.style.display = "none";
@@ -806,9 +832,15 @@ function doAvatarExit() {
 	// set the mode
 	previousMode = mode;
 	mode = gameMode;
+	avatarEditing = false;
 
 	// display correct div
 	showDiv(mode); // handles hiding message box div
+	
+	// debug message
+	if (debugging) {
+		console.log("Exited avatar editing screen.");
+	}
 	
 	// make crafty reload the art assets for the carousel
 	// and put the carousel into My Avatars mode regardless of previous mode
@@ -875,6 +907,11 @@ function doTileExit() {
 
 	// display correct div
 	showDiv(mode); // handles hiding message box div
+	
+	// debug message
+	if (debugging) {
+		console.log("Exited tile editing screen.");
+	}
 	
 	// make crafty reload the art assets for this tile
 	initAssetRequest(xTile, yTile);
@@ -1244,7 +1281,11 @@ function postRequest(url,payload,onload,error){
 		error(request);
 	};
 	request.send(JSON.stringify(payload));
-
+	
+	// debug message
+	if (debugging) {
+		console.log("Posted a request to the server.");
+	}
 }
 //KEEP: HELPER FUNCTION: request error helper
 function postOnError(request){
@@ -1364,6 +1405,11 @@ function surroundingsOnLoad(request){
 		} else {
 			console.error(request.statusText);
 		}
+	}
+	
+	// debug message
+	if (debugging) {
+		console.log("Loaded surroundings for current tile.");
 	}
 }
 // end Mark's code
