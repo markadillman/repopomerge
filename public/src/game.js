@@ -193,9 +193,6 @@ Game =
 		// Player setup screen scene
 		Crafty.defineScene('SetupScreen', function()
 		{
-			// load data to carousel
-			loadMyAvatarsToCarousel();
-
 			// Select avatar
 
 			// Left arrow
@@ -213,6 +210,11 @@ Game =
 			// Selected avatar
 
 			// start Toni's code
+			// the carousel's stage / selected / shown avatar
+			carouselStage = Crafty.e('2D, DOM')
+				.attr({x: 0, y: 0, w: tileWidth, h: tileHeight, z: 1});
+			// load data to carousel
+			loadMyAvatarsToCarousel();
 			// button to load the carousel with "My Avatars" data
 			// these are the user-drawn avatars stored via cookie
 			Crafty.e('myButton, myAvatarButton, 2D, DOM, Color, Mouse, Text, Button')
@@ -716,13 +718,13 @@ function displayAvatarInCarousel (myString) {
 	// reference: http://craftyjs.com/api/Crafty-sprite.html
 	// reference: https://github.com/craftyjs/Crafty/issues/1077
 	var mySprite = Crafty.sprite(url, {myImage: [0, 0, tileWidth, tileHeight]});
-	carouselStage = Crafty.e('2D, DOM, myImage')
-		.attr({x: 0, y: 0, w: tileWidth, h: tileHeight, z: 1});
+	carouselStage.addComponent('myImage');
 }
 function loadMyAvatarsToCarousel() {
 
-	// clear out current carouselData
+	// clear out current carouselData and carouselStage
 	carouselData = [];
+	carouselStage.removeComponent('myImage');
 
 	// set the blank/new element as first
 	carouselData[0] = newAvatarImg;	
@@ -744,6 +746,7 @@ function loadLibraryAvatarsToCarousel() {
 
 	// clear out current carouselData
 	carouselData = [];
+	carouselStage.removeComponent('myImage');
 
 	// ### Mark - your code probably goes here.
 	// need to fill carouselData array with results from server
