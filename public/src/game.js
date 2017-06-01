@@ -742,6 +742,9 @@ function loadMyAvatarsToCarousel() {
 }
 function loadLibraryAvatarsToCarousel() {
 
+	// clear out current carouselData
+	carouselData = [];
+
 	// ### Mark - your code probably goes here.
 	// need to fill carouselData array with results from server
 	// our default avatars should be the early indexed items, e.g. carouselData[0] is Mr Stick
