@@ -30,6 +30,7 @@ var currentUpperLeftX = 0;
 var currentUpperLeftY = 0;
 var spriteWidth = 15;
 var spriteHeight = 30;
+var avatarMultiplier = 5.8;
 var playerSpawnX = canvasEdge + 374.5;
 var playerSpawnY = canvasEdge + 108;
 var titleTextColor = '#373854';
@@ -184,7 +185,7 @@ Game =
 			// probably will delete, just using it for now to find good placement/size
 			Crafty.e('2D, DOM, Color, Mouse')
 				.attr({x: screenWidth/2 - 45, y: screenHeight / 3 + canvasEdge + 15 - 65,
-					w: 15*6, h: 30*6})
+					w: spriteWidth*avatarMultiplier, h: spriteHeight*avatarMultiplier})
 				.color('blue');
 
 			// Right arrow

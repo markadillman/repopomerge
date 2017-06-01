@@ -60,10 +60,10 @@ var messageDiv;			// the message box div
 var messageText;		// the message box text field
 var msgBtnOK;			// the message OK button
 var msgBtnCancel;		// the message Cancel button
-//var 
 var pageHeader;			// the h1 tag for the drawing tool
 var drawingHeader = "CREATE THE BLANK --- Add your art to the world! Don't forget to create platforms before you submit your tile.";
 var avatarHeader = "CREATE YOUR AVATAR --- Edit an existing avatar or draw a new one. For best results, draw to the oval's edges.";
+var avatarEllipse;		// the ellipse border for the avatar drawing area
 var toolDiv;			// the div for the entire drawing tool
 var displayDiv;			// the display divs
 var borderArtDiv;		// the sub-div with just the border art divs in it
@@ -799,8 +799,18 @@ function doAvatarEdit() {
 	avatarEditing = true;
 	
 	// display correct divs and header
+	avatarEllipse = document.createElementNS(svgns, "ellipse");
+	avatarEllipse.setAttribute("id", "avatarEllipse");
+	avatarEllipse.setAttribute("cx", canvasWidth/2);
+	avatarEllipse.setAttribute("cy", canvasHeight/2);
+	avatarEllipse.setAttribute("rx", spriteWidth * avatarMultiplier);
+	avatarEllipse.setAttribute("ry", spriteHeight * avatarMultiplier);
+	avatarEllipse.setAttribute("style", "fill: none; stroke: black");
+	drawingGroup.appendChild(avatarEllipse);
+	drawingGroup.setAttribute("clip-path", "url(#avatarClipPath)");
 	maskingToggleDiv.style.display = "none";
 	pageHeader.innerHTML = avatarHeader;
+	borderArtDiv.style.display = "none";
 	showDiv(mode);
 
 	// set the submit button's function
@@ -835,6 +845,9 @@ function doAvatarExit() {
 	avatarEditing = false;
 
 	// display correct div
+	drawingGroup.removeChild(avatarEllipse);
+	drawingGroup.setAttribute("clip-path", "");
+	borderArtDiv.style.display = "block";
 	showDiv(mode); // handles hiding message box div
 	
 	// debug message
