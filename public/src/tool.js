@@ -458,7 +458,8 @@ function initHTML() {
 	}
 	
 	// load the image data into the non-center display div canvases
-	doLoadSurroundingsFromServer();
+	//doLoadSurroundingsFromServer();
+	// commented out because this is now done per specific request
 	
 	// position all the other display divs inside the overall div
 	var topVal, leftVal;
