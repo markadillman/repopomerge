@@ -380,10 +380,6 @@ Game =
 				.color('#F00')
 				
 				// Enable 2D movement
-				// ### Lucia - all movement controls should only work
-				// if mode == gameMode and playing == true
-				// (these are global variables also used in tool.js)
-				// also, d appears to make the avatar move to the right?
 				.twoway(200)
 				// Set platforms to stop falling player
 				.gravity('Platform')
@@ -394,6 +390,16 @@ Game =
 				// Allow player to drop through platforms
 				.bind('KeyDown', function(e)
 				{
+					// Check for ability to move
+					if (mode == gameMode && playing == true)
+					{
+						this.enableControl();
+					}
+					else
+					{
+						this.disableControl();
+					}
+
 					if(e.key == Crafty.keys.DOWN_ARROW)
 					{
 						this.antigravity();
