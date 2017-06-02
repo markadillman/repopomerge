@@ -210,8 +210,8 @@ Game =
 		{
 			// start Toni's code
 			// left arrow button
-			Crafty.e('myButton, myLeftButton, 2D, DOM, Color, Mouse, Text, Button')
-				.attr({x: screenWidth/6 + 70, y: screenHeight/3 + canvasEdge, w: 40, h: 40})
+			Crafty.e('myButton, 2D, DOM, Color, Mouse, Text, Button')
+				.attr({x: screenWidth/6 + 70, y: screenHeight/3 + canvasEdge, w: 40, h: 100})
 				.color(bgroundColor)
 				.text('<')
 				.textAlign('Center')
@@ -219,8 +219,8 @@ Game =
 				.bind('Click', doLeftButtonClick);
 
 			// right arrow button
-			Crafty.e('myButton, myRightButton, 2D, DOM, Color, Mouse, Text, Button')
-				.attr({x: (screenWidth/6)*5 - 110, y: screenHeight/3 + canvasEdge, w: 40, h: 40})
+			Crafty.e('myButton, 2D, DOM, Color, Mouse, Text, Button')
+				.attr({x: (screenWidth/6)*5 - 110, y: screenHeight/3 + canvasEdge, w: 40, h: 100})
 				.color(bgroundColor)
 				.text('>')
 				.textAlign('Center')
@@ -256,9 +256,7 @@ Game =
 				.text('Edit Avatar')
 				.textAlign('Center')
 				.textFont({family: 'Trebuchet MS', size: '20px'})
-				.bind('Click', function(MouseEvent) {
-					doAvatarEdit(); // ### modify this to pass what avatar is currently selected
-				});
+				.bind('Click', myEditAvatarClick);
 
 			// button to send the avatar currently selected in the carousel to the library
 			// only visible/clickable when in "View My Avatars" mode
@@ -652,6 +650,9 @@ function doLeftButtonClick() {
 	// display at that index
 	displayAvatarInCarousel(carouselData[carouselIndex]);
 	
+	// toggle buttons
+	toggleButtonsOnNew();
+	
 	// debug message
 	if (debugging) {
 		console.log("Moved left one spot in the avatar carousel.");
@@ -667,6 +668,9 @@ function doRightButtonClick() {
 	
 	// display at that index
 	displayAvatarInCarousel(carouselData[carouselIndex]);
+	
+	// toggle buttons
+	toggleButtonsOnNew();
 	
 	// debug message
 	if (debugging) {
@@ -698,6 +702,21 @@ function myLibraryButtonClick() {
 
 	// load data to carousel
 	loadLibraryAvatarsToCarousel(0);
+}
+function toggleButtonsOnNew() {
+	// toggle buttons that should be off when on "New" avatar
+	if (carouselContents == myAvatars) {
+		if (carouselIndex == 0) {
+			// turn off buttons
+			turnOffDeleteSubmitButtons();
+			//turnOffEnterButton();
+			// ### Uncomment the above once avatar loading is working!
+		} else {
+			// turn on buttons
+			turnOnDeleteSubmitButtons();
+			turnOnEnterButton();
+		}
+	}
 }
 function turnOffEnterButton() {
 	// turn off the "Enter the Blank" button
@@ -859,6 +878,7 @@ function doSubmitAvatar() {
 	turnOnViewButtons();
 
 	// ### Mark - your code probably goes here.
+	
 
 	// confirmation message
 	turnOffViewButtons();
@@ -868,5 +888,18 @@ function doSubmitAvatar() {
 	if (debugging) {
 		console.log("Submited avatar to library.");
 	}
+}
+function myEditAvatarClick() {
+	// if in local / My Avatars mode, don't send info for "New" avatar
+	if (carouselContents == myAvatars) {
+		if (carouselIndex != 0) {
+			doAvatarEdit(carouselData[carouselIndex]);
+		} else {
+			doAvatarEdit("");
+		}
+	} else {
+		doAvatarEdit(carouselData[carouselIndex]);
+	}
+	
 }
 // end Toni's code

@@ -796,13 +796,17 @@ function panDownButton() {
 }
 
 // makes sure the drawing tool is set up to enter avatar mode
-function doAvatarEdit() {
+// takes in the svg string of the avatar being edited
+// myAvatarString == "" means blank/new avatar
+function doAvatarEdit(myAvatarString) {
 	
 	// clear out everything from drawing area just in case
 	svgClearAll();
 	
 	// load requested avatar if necessary
-	// ###
+	if (myAvatarString != "") {
+		svgLoadFromString(myAvatarString);
+	}
 	
 	// set the mode
 	previousMode = mode;
