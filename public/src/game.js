@@ -87,8 +87,11 @@ const newAvatarImg = "<!--FROM THE BLANK--><svg xmlns=\"http://www.w3.org/2000/s
 		"#000000; fill-rule: evenodd; stroke: #000000; stroke-width: 5\"/><polygon id=\"o7\" points=\"259.5 " +
 		"49 272.5 36 276.5 45 267.5 54\" style=\"fill: #000000; fill-rule: evenodd; stroke: #000000; " +
 		"stroke-width: 5\"/><polyline id=\"o8\" points=\"243.5 269 357.5 267\" style=\"fill: none; " +
-		"stroke: #000000; stroke-width: 5\"/></g><g xmlns=\"http://www.w3.org/2000/svg\" " +
-		"id=\"platformsGroup\" style=\"visibility: hidden\"/></svg>";
+		"stroke: #000000; stroke-width: 5\"/><polyline id=\"o9\" points=\"259.5 288 340.5 287\" " +
+		"style=\"fill: none; stroke: #000000; stroke-width: 5\"/><polyline id=\"o10\" " +
+		"points=\"269.5 311 326.5 313\" style=\"fill: none; stroke: #000000; stroke-width: " +
+		"5\"/></g><g xmlns=\"http://www.w3.org/2000/svg\" id=\"platformsGroup\" " +
+		"style=\"visibility: hidden\"/></svg>";
 // ugh
 const ovalAvatarImg = "<!--FROM THE BLANK--><svg xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\">" +
 		"<clipPath id=\"avatarClipPath\"><ellipse cx=\"300\" cy=\"175\" rx=\"87\" " +
@@ -220,8 +223,8 @@ Game =
 
 			// start Toni's code
 			// the carousel's stage / selected / shown avatar
-			carouselStage = Crafty.e('2D, DOM, Sprite')
-				.attr({x: screenWidth/6 + canvasEdge*3 + 15, y: screenHeight/3, z: 1});
+			carouselStage = Crafty.e('2D, Canvas, Sprite')
+				.attr({x: screenWidth/6 + canvasEdge*4 - canvasEdge/2, y: screenHeight/3 - 15, z: 1});
 			// load data to carousel
 			loadMyAvatarsToCarousel();
 			// button to load the carousel with "My Avatars" data
@@ -727,10 +730,9 @@ function displayAvatarInCarousel (myString) {
 	// reference: http://craftyjs.com/api/Crafty-sprite.html
 	// reference: https://github.com/craftyjs/Crafty/issues/1077
 	var mySprite = Crafty.sprite(url, {myImage: [210, 0, 390, canvasHeight]});
-	//var mySprite = Crafty.sprite(390, canvasHeight, url, {myImage: [0, 0]}, 210, 20, true);
 	carouselStage.addComponent('myImage');
-	carouselStage.w = 390;
-	carouselStage.h = canvasHeight;
+	carouselStage.w = 390/1.6;
+	carouselStage.h = canvasHeight/1.6;
 }
 function loadMyAvatarsToCarousel() {
 
@@ -739,8 +741,8 @@ function loadMyAvatarsToCarousel() {
 	carouselStage.removeComponent('myImage');
 
 	// set the blank/new element as first
-	//carouselData[0] = newAvatarImg;
-	carouselData[0] = ovalAvatarImg;
+	carouselData[0] = newAvatarImg;
+	//carouselData[0] = ovalAvatarImg;
 
 	// ### Load from cookie storage.
 	// need to fill the rest of the carouselData array with results from cookie data
