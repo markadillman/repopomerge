@@ -320,7 +320,8 @@ Game =
 				
 			// the carousel's stage / selected / shown avatar
 			carouselStage = Crafty.e('2D, Canvas, Sprite')
-				.attr({x: screenWidth/6 + canvasEdge*4 - canvasEdge/2, y: screenHeight/3 - 15, z: 1});
+				.attr({x: screenWidth/6 + canvasEdge*4 - canvasEdge/2, y: screenHeight/3 - 15,
+					   z: 1});
 			// load initial data to carousel
 			loadMyAvatarsToCarousel(0);
 			// end Toni's code
@@ -587,7 +588,8 @@ function assetRender(assets){
 			var tempX = assets[asset]['xcoord'] * tileWidth + canvasEdge;
 			var tempY = assets[asset]['ycoord'] * tileHeight + canvasEdge;
 			var bground = Crafty.e('Background, 2D, DOM, Image')
-			.attr({x: tempX, y : tempY, w: tileWidth, h: tileHeight, tileX: asset['xcoord'], tileY : asset['ycoord']})
+			.attr({x: tempX, y : tempY, w: tileWidth, h: tileHeight, tileX: asset['xcoord'],
+				   tileY : asset['ycoord']})
 			.image(url);
 			bground.z = 0;
 		//};
@@ -852,7 +854,8 @@ function doEnterButton() {
 function deleteLocalAvatar() {
 	// are you sure? message
 	turnOffViewButtons();
-	displayMessage("Are you sure you want to permanently delete this avatar from your computer?", doDeleteAvatar, turnOnViewButtons, false);
+	displayMessage("Are you sure you want to permanently delete this avatar from your computer?",
+				   doDeleteAvatar, turnOnViewButtons, false);
 }
 function doDeleteAvatar() {
 
@@ -876,7 +879,8 @@ function doDeleteAvatar() {
 function submitAvatarToLibrary() {
 	// are you sure? message
 	turnOffViewButtons();
-	displayMessage("Are you sure you want to submit this avatar to the public library?", doSubmitAvatar, turnOnViewButtons, false);
+	displayMessage("Are you sure you want to submit this avatar to the public library?",
+				   doSubmitAvatar, turnOnViewButtons, false);
 }
 function doSubmitAvatar() {
 
@@ -891,7 +895,8 @@ function doSubmitAvatar() {
 
 	// confirmation message
 	turnOffViewButtons();
-	displayMessage("Your avatar has been submitted to the public library.", turnOnViewButtons, turnOnViewButtons, false);
+	displayMessage("Your avatar has been submitted to the public library.", turnOnViewButtons,
+				   turnOnViewButtons, false);
 
 	// debug message
 	if (debugging) {
