@@ -72,7 +72,7 @@ var carouselStage;
 var carouselData = [];
 var carouselIndex = 0;
 // Toni is very sorry this is so ugly, but it's an easy way to have the svg string for the New Avatar image
-const newAvatarImg = "<svg xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\">" +
+const newAvatarImg = "<!--FROM THE BLANK--><svg xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\">" +
 		"<clipPath id=\"avatarClipPath\"><ellipse cx=\"300\" cy=\"175\" rx=\"87\" ry=\"174\">" + 
 		"</ellipse></clipPath><g xmlns=\"http://www.w3.org/2000/svg\" id=\"drawingGroup\" " +
 		"style=\"opacity: 1\" clip-path=\"url(#avatarClipPath)\"><polyline id=\"o1\" " +
@@ -89,7 +89,16 @@ const newAvatarImg = "<svg xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"ht
 		"stroke-width: 5\"/><polyline id=\"o8\" points=\"243.5 269 357.5 267\" style=\"fill: none; " +
 		"stroke: #000000; stroke-width: 5\"/></g><g xmlns=\"http://www.w3.org/2000/svg\" " +
 		"id=\"platformsGroup\" style=\"visibility: hidden\"/></svg>";
-
+// ugh
+const ovalAvatarImg = "<!--FROM THE BLANK--><svg xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\">" +
+		"<clipPath id=\"avatarClipPath\"><ellipse cx=\"300\" cy=\"175\" rx=\"87\" " +
+		"ry=\"174\"></ellipse></clipPath><g xmlns=\"http://www.w3.org/2000/svg\" " +
+		"id=\"drawingGroup\" style=\"opacity: 1\" clip-path=\"url(#avatarClipPath)\">" +
+		"<rect id=\"o1\" x=\"186.5\" y=\"0\" width=\"205\" height=\"351\" " +
+		"style=\"fill: #000000; stroke: #000000; stroke-width: 5\"/></g>" +
+		"<g xmlns=\"http://www.w3.org/2000/svg\" id=\"platformsGroup\" " +
+		"style=\"visibility: hidden\"/></svg>"
+		
 Game =
 {
 	start: function()
@@ -705,7 +714,7 @@ function turnOnViewButtons() {
 	messageDiv.style.display = "none";
 }
 function displayAvatarInCarousel (myString) {
-	// references from Mark's assetRender function
+	// references Mark's assetRender function
 	// displays the given svg data string in the selected position of the carousel
 
 	// generate a URL	
@@ -717,9 +726,10 @@ function displayAvatarInCarousel (myString) {
 	// put it in the scene
 	// reference: http://craftyjs.com/api/Crafty-sprite.html
 	// reference: https://github.com/craftyjs/Crafty/issues/1077
-	var mySprite = Crafty.sprite(url, {myImage: [225, 0, 380, canvasHeight]});
+	var mySprite = Crafty.sprite(url, {myImage: [210, 0, 390, canvasHeight]});
+	//var mySprite = Crafty.sprite(390, canvasHeight, url, {myImage: [0, 0]}, 210, 20, true);
 	carouselStage.addComponent('myImage');
-	carouselStage.w = 380-1;
+	carouselStage.w = 390;
 	carouselStage.h = canvasHeight;
 }
 function loadMyAvatarsToCarousel() {
@@ -729,7 +739,8 @@ function loadMyAvatarsToCarousel() {
 	carouselStage.removeComponent('myImage');
 
 	// set the blank/new element as first
-	carouselData[0] = newAvatarImg;	
+	//carouselData[0] = newAvatarImg;
+	carouselData[0] = ovalAvatarImg;
 
 	// ### Load from cookie storage.
 	// need to fill the rest of the carouselData array with results from cookie data
@@ -746,7 +757,7 @@ function loadMyAvatarsToCarousel() {
 }
 function loadLibraryAvatarsToCarousel() {
 
-	// clear out current carouselData
+	// clear out current carouselData and carouselStage
 	carouselData = [];
 	carouselStage.removeComponent('myImage');
 
