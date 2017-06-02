@@ -1,6 +1,15 @@
 /*
 
-Lucia - maybe add some document info here? Like what I have in tool.js
+Antonina (Toni) York
+Lucia Blackwell
+Mark Dillman
+OSU CS 467 Spring 2017
+Capstone Team Aries
+Main Game Script
+game.js
+
+Uses CraftyJS to create game "scenes" and run
+the client side of The Blank.
 
 */
 
