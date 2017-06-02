@@ -211,8 +211,8 @@ Game =
 
 			// start Toni's code
 			// the carousel's stage / selected / shown avatar
-			carouselStage = Crafty.e('2D, DOM')
-				.attr({x: 0, y: 0, w: tileWidth, h: tileHeight, z: 1});
+			carouselStage = Crafty.e('2D, DOM, Sprite')
+				.attr({x: screenWidth/6 + canvasEdge*3 + 15, y: screenHeight/3, z: 1});
 			// load data to carousel
 			loadMyAvatarsToCarousel();
 			// button to load the carousel with "My Avatars" data
@@ -717,8 +717,10 @@ function displayAvatarInCarousel (myString) {
 	// put it in the scene
 	// reference: http://craftyjs.com/api/Crafty-sprite.html
 	// reference: https://github.com/craftyjs/Crafty/issues/1077
-	var mySprite = Crafty.sprite(url, {myImage: [0, 0, tileWidth, tileHeight]});
+	var mySprite = Crafty.sprite(url, {myImage: [225, 0, 380, canvasHeight]});
 	carouselStage.addComponent('myImage');
+	carouselStage.w = 380-1;
+	carouselStage.h = canvasHeight;
 }
 function loadMyAvatarsToCarousel() {
 
