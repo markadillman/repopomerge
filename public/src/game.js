@@ -41,7 +41,7 @@ var spriteWidth = 15;
 var spriteHeight = 30;
 var avatarMultiplier = 5.8; // factor between avatar size and size of oval in drawing tool
 var playerSpawnX = canvasEdge + 365;	// spawn in hole in tree
-var playerSpawnY = canvasEdge + 70;
+var playerSpawnY = canvasEdge + 75;
 var playerSpawnDelay = 1000; // ms to wait before spawning player on first world entry
 var titleTextColor = '#373854';
 var selectedButtonColor = '#99CCFF';
@@ -385,7 +385,7 @@ function loadPlatforms() {
 		.color('green');
 	// Toni added a platform under the spawn point
 	Crafty.e('Platform, 2D, Canvas, Color')
-		.attr({x: playerSpawnX - 50, y: playerSpawnY + 90, w: 100, h: 10})
+		.attr({x: playerSpawnX - 50, y: playerSpawnY + 150, w: 100, h: 10})
 		.color('green');
 	// Toni added platforms to allow us to get to the top 3 tiles for now
 	Crafty.e('Platform, 2D, Canvas, Color')
