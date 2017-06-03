@@ -1678,7 +1678,7 @@ function svgSubmitToServer(imgCanvas) {
 	// use message box to put up confirmation message
 	// ### Mark - should we make the cancel button actually cancel this action?
 	// or maybe change the displayMessage API to have an option with no Cancel button
-	displayMessage("Your art has been submitted.", doTileExit, doTileExit, false)
+	displayMessage("Your art has been added to the world.", doTileExit, doTileExit, false)
 }
 
 // start Mark's code
@@ -3525,6 +3525,5 @@ function scrollWheel(evt) {
 		} else { // zoom out
 			doZoom(false);
 		}
-		console.log(xMouse, yMouse);
 	} // else do nothing
 }
