@@ -399,19 +399,19 @@ function loadPlatforms() {
 
 // loadPlayer code moved here
 function loadPlayer() {
+	// Toni added code to set player position
+	var xCoord;
+	var yCoord;
+	if (firstWorldEntry) {
+		xCoord = playerSpawnX;
+		yCoord = playerSpawnY;
+	} else {
+		xCoord = currentPlayerX;
+		yCoord = currentPlayerY;
+	}
+	
 	// Player sprite
 	var player = Crafty.e('2D, Canvas, Color, Multiway, Jumper, Gravity')
-
-		// Toni added code to set player position
-		var xCoord;
-		var yCoord;
-		if (firstWorldEntry) {
-			xCoord = playerSpawnX;
-			yCoord = playerSpawnY;
-		} else {
-			xCoord = currentPlayerX;
-			yCoord = currentPlayerY;
-		}
 		
 		// Initial position and size
 		// inside the hole in the tree
