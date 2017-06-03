@@ -503,9 +503,12 @@ function loadPlayer() {
 					// ### create marker at player's current coordinates in the world
 				}
 				if (e.key == Crafty.keys.W) {
-					// ### toggle platform viewing mode
-					// turns down the opacity on the art svg groups and shows the platform svg groups
-					// or... just hides things using z?
+					// toggle platform viewing mode
+					if (bground.strength == 1) {
+						bground.strength = .8;
+					} else {
+						bground.strength = 1;
+					}
 					Crafty('Platform').each(function() {
 						this.z *= -1;
 					});
@@ -666,11 +669,12 @@ function assetRender(assets){
 			var tempX = assets[asset]['xcoord'] * tileWidth + canvasEdge;
 			var tempY = assets[asset]['ycoord'] * tileHeight + canvasEdge;
 			// Toni switched bground from DOM to Canvas b/c it kept rendering on top otherwise
-			var bground = Crafty.e('Background, 2D, Canvas, Image')
+			var bground = Crafty.e('Background, 2D, Canvas, Image, Color')
 			.attr({x: tempX, y : tempY, w: tileWidth, h: tileHeight, xTile: asset['xcoord'],
 				   yTile : asset['ycoord']}) // was tileX and tileY
 			.image(url);
 			bground.z = 0;
+			bground.strength = 1;
 		//};
 		if (verboseDebugging) {
 			console.log("blob svg");
