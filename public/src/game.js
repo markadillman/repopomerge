@@ -42,6 +42,7 @@ var spriteHeight = 30;
 var avatarMultiplier = 5.8; // factor between avatar size and size of oval in drawing tool
 var playerSpawnX = canvasEdge + 374.5;	// spawn in hole in tree
 var playerSpawnY = canvasEdge + 108;
+var playerSpawnDelay = 200; // ms to wait before spawning player on first world entry
 var titleTextColor = '#373854';
 var selectedButtonColor = '#99CCFF';
 var panTime = 500; // ms
@@ -413,7 +414,7 @@ function loadPlayer() {
 		yCoord = playerSpawnY;
 		firstWorldEntry = false;
 		// use a delay to make *sure* the background is loaded first
-		Crafty.e('Delay').delay(function(){}, 150, 0);
+		Crafty.e('Delay').delay(function(){}, playerSpawnDelay, 0);
 	} else {
 		xCoord = currentPlayerX;
 		yCoord = currentPlayerY;
@@ -431,8 +432,8 @@ function loadPlayer() {
 		// which required referencing Crafty's code for how Twoway works
 		.multiway({x: 200}, {RIGHT_ARROW: 0, LEFT_ARROW: 180})
 		// Set platforms to stop falling player
-		.gravity('Platform')
-		.gravityConst(600)
+		//.gravity('Platform')
+		//.gravityConst(600)
 		// Bind spacebar to jump action
 		.jumper(400, [Crafty.keys.SPACE])
 
