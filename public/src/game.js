@@ -435,7 +435,7 @@ function loadPlayer() {
 		.multiway({x: 200}, {RIGHT_ARROW: 0, LEFT_ARROW: 180})
 		// Set platforms to stop falling player
 		.gravity('Platform')
-		.gravityConst(600)!!!
+		.gravityConst(600)
 		// Bind spacebar to jump action
 		.jumper(400, [Crafty.keys.SPACE])
 
