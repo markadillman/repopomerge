@@ -413,10 +413,6 @@ function loadPlayer() {
 		xCoord = playerSpawnX;
 		yCoord = playerSpawnY;
 		firstWorldEntry = false;
-		// use a delay to make *sure* the background is loaded first
-		Crafty.e('Delay').delay(function(){
-			console.log("Waited.");
-		}, playerSpawnDelay, 0);
 	} else {
 		xCoord = currentPlayerX;
 		yCoord = currentPlayerY;
@@ -666,6 +662,10 @@ function assetRender(assets){
 	// start Toni's code
 	// add the calls to update platforms and player here!
 	loadPlatforms();
+	// use a delay to make *sure* the background is loaded first
+		Crafty.e('Delay').delay(function(){
+			console.log("Waited.");
+		}, playerSpawnDelay, 0);
 	loadPlayer();
 	// end Toni's code
 }
