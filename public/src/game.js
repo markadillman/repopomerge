@@ -413,7 +413,7 @@ function loadPlayer() {
 		yCoord = playerSpawnY;
 		firstWorldEntry = false;
 		// use a delay to make *sure* the background is loaded first
-		this.timeout(function(){}, 100);
+		Craft.e('Delay').delay(function(){}, 100, 0);
 	} else {
 		xCoord = currentPlayerX;
 		yCoord = currentPlayerY;
