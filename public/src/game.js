@@ -505,6 +505,10 @@ function loadPlayer() {
 					// turns down the opacity on the art svg groups and shows the platform svg groups
 					// or... just hides things using z
 					Crafty('Platform').z *= -1;
+					// debug message
+					if (debugging) {
+						console.log("Toggled wall view mode.");
+					}
 				}
 			}
 			// end Toni's code
