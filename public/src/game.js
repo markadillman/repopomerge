@@ -348,8 +348,14 @@ Game =
 		}, function() {
 			// start Toni's code
 			// adding an uninit function
-			// in order to set flag from tool.js
+			
+			// set flag from tool.js
 			playing = false;
+			
+			// clear out platforms and player
+			Crafty('Platform').removeComponent('Canvas');
+			Crafty('Player').removeComponent('Canvas');
+			
 			// end Toni's code
 		});
 
@@ -405,13 +411,14 @@ function loadPlayer() {
 	if (firstWorldEntry) {
 		xCoord = playerSpawnX;
 		yCoord = playerSpawnY;
+		firstWorldEntry = false;
 	} else {
 		xCoord = currentPlayerX;
 		yCoord = currentPlayerY;
 	}
 	
 	// Player sprite
-	var player = Crafty.e('2D, Canvas, Color, Multiway, Jumper, Gravity')
+	var player = Crafty.e('Player, 2D, Canvas, Color, Multiway, Jumper, Gravity')
 		
 		// Initial position and size
 		// inside the hole in the tree
