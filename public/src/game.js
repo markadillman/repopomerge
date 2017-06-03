@@ -415,7 +415,7 @@ function loadPlayer() {
 		firstWorldEntry = false;
 		// use a delay to make *sure* the background is loaded first
 		Crafty.e('Delay').delay(function(){
-			console.log("Waited.";
+			console.log("Waited.");
 		}, playerSpawnDelay, 0);
 	} else {
 		xCoord = currentPlayerX;
