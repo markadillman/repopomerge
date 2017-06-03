@@ -680,16 +680,26 @@ function doQuitToHomeScreen() {
 // links up the ok and cancel functions
 // also displays text input element if boolean argument is true
 // these functions should include: messageDiv.style.display = "none";
-function displayMessage(msg, okFn, cancelFn, useTextInput) {
+function displayMessage(msg, okFn, cancelFn, useTextInput, hideCancelButton) {
+	// set given info
 	messageText.innerHTML = msg;
 	msgBtnOK.onclick = okFn;
 	msgBtnCancel.onclick = cancelFn;
+	
+	// use or hide text input element
 	if (useTextInput) { // show the text input element
 		msgTextInput.style.display = "block";
 	} else { // hide it
 		msgTextInput.style.display = "none";
 	}
 	messageDiv.style.display = "block";
+	
+	// use or hide cancel button
+	if (hideCancelButton) { // hide the button
+		msgBtnCancel.style.display = "none";
+	} else { // show the button
+		msgBtnCancel.style.display = "block";
+	}
 	
 	// debug message
 	if (debugging) {
@@ -719,21 +729,20 @@ function hardReload() {
 
 // control button handlers
 function saveButton() {
-	displayMessage("Enter a name for your saved art file.", svgSaveToLocal, doNothing, true);
+	displayMessage("Enter a name for your saved art file.", svgSaveToLocal, doNothing, true, false);
 }
 function loadButton () {
-	displayMessage("Use the dialog to select an art file to load.", svgLoadFromLocal, doNothing, false);
+	displayMessage("Use the dialog to select an art file to load.", svgLoadFromLocal, doNothing, false, false);
 }
 function submitAvatarButton () {
-	// this always submits to local storage
+	// this always submits to local/cookie storage
 	// even if the user was editing an avatar that came from the library
 	// submitting to the library is handled by a helper function in game.js
 	// ###
+	
 
 	// use message box to put up confirmation message
-	// ### Mark - should we make the cancel button actually cancel this action?
-	// or maybe change the displayMessage API to have an option with no Cancel button
-	displayMessage("Your avatar has been saved to your computer.", doAvatarExit, doAvatarExit, false)
+	displayMessage("Your avatar has been saved to your computer.", doAvatarExit, doAvatarExit, false, true)
 }
 function submitTileButton () {
 	// make sure to toggle off platform editing mode if necessary
@@ -756,9 +765,9 @@ function removeSelectedPlatform(force) {
 }
 function exitButton() {
 	if (avatarEditing) {
-		displayMessage("Are you sure you want to exit without submitting your work?", doAvatarExit, doNothing, false);
+		displayMessage("Are you sure you want to exit without submitting your work?", doAvatarExit, doNothing, false, false);
 	} else {
-		displayMessage("Are you sure you want to exit without submitting your work?", doTileExit, doNothing, false);
+		displayMessage("Are you sure you want to exit without submitting your work?", doTileExit, doNothing, false, false);
 	}
 }
 function zoomOutButton() {
@@ -1606,7 +1615,7 @@ function doLoadFromLocal() {
 				messageDiv.style.display = "none";
 			} else { // error message
 				// use custom message box
-				displayMessage("Sorry, that is not a valid file.", doNothing, doNothing, false)
+				displayMessage("Sorry, that is not a valid file.", doNothing, doNothing, false, true)
 			
 				// debug message
 				if (debugging) {
@@ -1676,9 +1685,7 @@ function svgSubmitToServer(imgCanvas) {
 	}
 	
 	// use message box to put up confirmation message
-	// ### Mark - should we make the cancel button actually cancel this action?
-	// or maybe change the displayMessage API to have an option with no Cancel button
-	displayMessage("Your art has been added to the world.", doTileExit, doTileExit, false)
+	displayMessage("Your art has been added to the world.", doTileExit, doTileExit, false, true)
 }
 
 // start Mark's code

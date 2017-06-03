@@ -861,7 +861,7 @@ function deleteLocalAvatar() {
 	// are you sure? message
 	turnOffViewButtons();
 	displayMessage("Are you sure you want to permanently delete this avatar from your computer?",
-				   doDeleteAvatar, turnOnViewButtons, false);
+				   doDeleteAvatar, turnOnViewButtons, false, false);
 }
 function doDeleteAvatar() {
 
@@ -872,6 +872,7 @@ function doDeleteAvatar() {
 	turnOnViewButtons();
 
 	// ### Delete from cookie storage.
+	
 
 	// debug message
 	if (debugging) {
@@ -886,9 +887,11 @@ function submitAvatarToLibrary() {
 	// are you sure? message
 	turnOffViewButtons();
 	displayMessage("Are you sure you want to submit this avatar to the public library?",
-				   doSubmitAvatar, turnOnViewButtons, false);
+				   doSubmitAvatar, turnOnViewButtons, false, false);
 }
 function doSubmitAvatar() {
+	// actually send data of currently selected avatar to the server
+	// get data from carouselData[carouselIndex], will be a valid SVG string
 
 	// hide message box div
 	messageDiv.style.display = "none";
@@ -902,7 +905,7 @@ function doSubmitAvatar() {
 	// confirmation message
 	turnOffViewButtons();
 	displayMessage("Your avatar has been submitted to the public library.", turnOnViewButtons,
-				   turnOnViewButtons, false);
+				   turnOnViewButtons, false, true);
 
 	// debug message
 	if (debugging) {
@@ -920,6 +923,5 @@ function myEditAvatarClick() {
 	} else {
 		doAvatarEdit(carouselData[carouselIndex]);
 	}
-	
 }
 // end Toni's code
