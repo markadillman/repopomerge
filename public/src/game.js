@@ -337,16 +337,7 @@ Game =
 			
 			// load world art using global tile coords from tool.js
 			initAssetRequest(xTile, yTile);
-			
-			// load platforms
-			//loadPlatforms();
-			
-			// moved chunk of code from here to make helper function loadWorld
-			//loadPlayer();
-			// end Toni's code
-
-			//MARK ADDED pull initial art assets
-			//Crafty.trigger('Spawned');
+			// this will now call the code to load platforms and player, too
 				
 		}, function() {
 			// start Toni's code
@@ -411,7 +402,7 @@ function loadPlayer() {
 		
 		// Enable 2D movement 
 		// Toni modified to be via Multiway instead,
-		// which required referencing Crafty's code for Twoway
+		// which required referencing Crafty's code for how Twoway works
 		.multiway({x: 200}, {RIGHT_ARROW: 0, LEFT_ARROW: 180})
 		// Set platforms to stop falling player
 		.gravity('Platform')
@@ -465,20 +456,17 @@ function loadPlayer() {
 					// remember to have map mode have a way to switch
 					// back on another M keypress
 				}
-
 				if (e.key == Crafty.keys.Q) {
 					// quit to home screen
 					// ### server cleanup stuff here?
 					doQuitToHomeScreen(); // tool.js cleanup
 					Crafty.enterScene('HomeScreen');
 				}
-
 				if (e.key == Crafty.keys.T) {
 					// drop a teleportation marker
 					// ### check to make sure one doesn't already exist at these coordinates?
 					// ### create marker at player's current coordinates in the world
 				}
-
 				if (e.key == Crafty.keys.W) {
 					// ### toggle platform viewing mode
 					// turns down the opacity on the art svg groups and shows the platform svg groups
@@ -491,15 +479,10 @@ function loadPlayer() {
 		.bind('Moved', function()
 			{
 				// MARK ADDED get current tile coordinates to orient pull
-				var tileX = Math.floor(currentUpperLeftX / tileWidth);
-				var tileY = Math.floor(currentUpperLeftY / tileHeight);
-				// start Toni's code
-				// make the global versions of these from tool.js match
-				// ### but consider merging them instead at some point
-				xTile = tileX;
-				yTile = tileY;
-				// end Toni's code
-				var payload = {'x' : tileX, 'y': tileY};
+				xTile = Math.floor(currentUpperLeftX / tileWidth);
+				yTile = Math.floor(currentUpperLeftY / tileHeight);
+				// Toni switched the above to using global vars from tool.js
+				var payload = {'x' : xTile, 'y': yTile};
 				if (this.x > currentUpperLeftX + tileWidth)
 				{
 					currentUpperLeftX = currentUpperLeftX + tileWidth;
@@ -537,11 +520,7 @@ function loadPlayer() {
 					dynamicPostRequest('/pulltop',payload,dynamicPostOnLoad,dynamicError);
 					// Destroy assets in outer bottom-most "ring" segment
 				}
-			})
-		//this event added by Mark to pull initial environment
-		.bind('Spawned',function(){
-			//initAssetRequest(this.x,this.y);
-		});
+			});
 		
 	// start Toni's code
 	// generate a URL based on currently selected avatar
@@ -624,8 +603,8 @@ function assetRender(assets){
 			var tempY = assets[asset]['ycoord'] * tileHeight + canvasEdge;
 			// Toni switched bground from DOM to Canvas b/c it kept rendering on top otherwise
 			var bground = Crafty.e('Background, 2D, Canvas, Image')
-			.attr({x: tempX, y : tempY, w: tileWidth, h: tileHeight, tileX: asset['xcoord'],
-				   tileY : asset['ycoord']})
+			.attr({x: tempX, y : tempY, w: tileWidth, h: tileHeight, xTile: asset['xcoord'],
+				   yTile : asset['ycoord']}) // was tileX and tileY
 			.image(url);
 			bground.z = 0;
 		//};
