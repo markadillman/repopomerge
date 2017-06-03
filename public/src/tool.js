@@ -685,10 +685,11 @@ function doHelpScreenDone() {
 // quit to home screen function
 function doQuitToHomeScreen() {
 	
-	// set the mode and playing flag
+	// set the mode and flags
 	previousMode = mode;
 	mode = gameMode;
 	playing = false;
+	firstWorldEntry = true;
 
 	// display correct div
 	showDiv(mode);
