@@ -503,15 +503,20 @@ function loadPlayer() {
 					// ### create marker at player's current coordinates in the world
 				}
 				if (e.key == Crafty.keys.W) {
-					// toggle platform viewing mode
-					if (Crafty('Background').strength == 1) {
-						Crafty('Background').strength = .8;
-					} else {
-						Crafty('Background').strength = 1;
-					}
+					// toggle wall view mode
+					
+					// toggle platforms using z index
 					Crafty('Platform').each(function() {
 						this.z *= -1;
 					});
+					
+					// ### consider adding fade to background art
+					// and toggling that here
+					// just adding Color component to the art and setting its
+					// strength doesn't work... already tried that
+					// will have to do it in the svg instead and reload the art
+					// sounds like a pain, probably won't bother
+					
 					// debug message
 					if (debugging) {
 						console.log("Toggled wall view mode.");
@@ -669,12 +674,11 @@ function assetRender(assets){
 			var tempX = assets[asset]['xcoord'] * tileWidth + canvasEdge;
 			var tempY = assets[asset]['ycoord'] * tileHeight + canvasEdge;
 			// Toni switched bground from DOM to Canvas b/c it kept rendering on top otherwise
-			var bground = Crafty.e('Background, 2D, Canvas, Image, Color')
+			var bground = Crafty.e('Background, 2D, Canvas, Image')
 			.attr({x: tempX, y : tempY, w: tileWidth, h: tileHeight, xTile: asset['xcoord'],
 				   yTile : asset['ycoord']}) // was tileX and tileY
 			.image(url);
 			bground.z = 0;
-			bground.strength = 1;
 		//};
 		if (verboseDebugging) {
 			console.log("blob svg");
