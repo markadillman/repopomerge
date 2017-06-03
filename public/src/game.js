@@ -402,6 +402,11 @@ function loadPlatforms() {
 	Crafty.e('Platform, 2D, Canvas, Color')
 		.attr({x: -4000, y: 590, w: 8000, h: 10})
 		.color('green');
+		
+	// debug message
+	if (debugging) {
+		console.log("Loaded platforms.");
+	}
 }
 
 // loadPlayer code moved here
@@ -587,6 +592,11 @@ function loadPlayer() {
 	
 	//player should be in front of other graphical assets
 	player.z = 2;
+		
+	// debug message
+	if (debugging) {
+		console.log("Loaded player.");
+	}
 }
 
 /*start Mark's code, helper functions to fetch rows of 5 assets:
@@ -665,7 +675,9 @@ function assetRender(assets){
 	// use a delay to make *sure* the background is loaded first
 	if (firstWorldEntry) {
 	Crafty.e('Delay').delay(function(){
-			console.log("Waited.");
+			if (debugging) {
+				console.log("Waited.");
+			}
 			loadPlayer();
 		}, playerSpawnDelay, 0);
 	} else {
