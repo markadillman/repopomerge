@@ -492,10 +492,6 @@ function initHTML() {
 		}
 	}
 	
-	// load the image data into the non-center display div canvases
-	//doLoadSurroundingsFromServer();
-	// commented out because this is now done per specific request
-	
 	// position all the other display divs inside the overall div
 	var topVal, leftVal;
 	for (var i = 0; i < displayDivList.length; i += 1) {
@@ -563,14 +559,6 @@ function initHTML() {
 	
 	// make the overall display div visible
 	displayDiv.style.display = "block";
-	
-	// get the offsets here insetad because these scripts ran in the
-	// opposite order I thought they did after the refactoring
-	// this is broken after refactoring to integrate with gameplay...
-	// need to update these coords when switching into edit mode
-	/*var coords = canvas.getBoundingClientRect();
-	xOffset = coords.left;
-	yOffset = coords.top;*/
 
 	// debug message
 	if (debugging) {
@@ -1801,9 +1789,6 @@ function svgLoadFromServer(xTile, yTile, password) {
 	payload["pw"] = '';
 	postRequest("/retrieve",payload,svgPullCallback,postOnError);
 	// end Mark's code
-
-	// and/or use my helper function
-	//svgLoadFromString(theSVGDataString);
 	
 	// debug message
 	if (debugging) {
@@ -1814,7 +1799,6 @@ function svgLoadFromServer(xTile, yTile, password) {
 	if (!loadingPage) {
 		messageDiv.style.display = "none";
 	}
-	
 }
 
 // close out an in-progress shape first if an option selection changes
