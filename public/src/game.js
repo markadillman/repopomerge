@@ -413,7 +413,7 @@ function loadPlayer() {
 		yCoord = playerSpawnY;
 		firstWorldEntry = false;
 		// use a delay to make *sure* the background is loaded first
-		Crafty.timeout(function(){}, 100);
+		this.timeout(function(){}, 100);
 	} else {
 		xCoord = currentPlayerX;
 		yCoord = currentPlayerY;
