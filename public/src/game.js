@@ -336,9 +336,8 @@ Game =
 			playing = true;
 			// end Toni's code
 			
-			initAssetRequest(xTile, yTile);
-			
 			// Toni moved these up so they load earlier
+			// but that didn't seem to help, ugh
 			// Platforms
 			Crafty.e('Platform, 2D, Canvas, Color')
 				.attr({x: 0, y: 250, w: 250, h: 10})
@@ -510,7 +509,7 @@ Game =
 					})
 				//this event added by Mark to pull initial environment
 				.bind('Spawned',function(){
-					//initAssetRequest(this.x,this.y);
+					initAssetRequest(this.x,this.y);
 				});
 				
 			// start Toni's code
@@ -610,7 +609,7 @@ function assetRender(assets){
 			//adjust coordinates
 			var tempX = assets[asset]['xcoord'] * tileWidth + canvasEdge;
 			var tempY = assets[asset]['ycoord'] * tileHeight + canvasEdge;
-			var bground = Crafty.e('Background, 2D, DOM, Image')
+			var bground = Crafty.e('Background, 2D, Canvas, Image')
 			.attr({x: tempX, y : tempY, w: tileWidth, h: tileHeight, tileX: asset['xcoord'],
 				   tileY : asset['ycoord']})
 			.image(url);
