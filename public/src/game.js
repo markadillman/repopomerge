@@ -353,8 +353,8 @@ Game =
 			playing = false;
 			
 			// clear out platforms and player
-			Crafty('Platform').removeComponent('Canvas');
-			Crafty('Player').removeComponent('Canvas');
+			Crafty('Platform').each().destroy();
+			Crafty('Player').destroy();
 			
 			// end Toni's code
 		});
