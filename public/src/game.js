@@ -336,7 +336,7 @@ Game =
 			playing = true;
 			// end Toni's code
 			
-			initAssetRequest(tileX, tileY);
+			initAssetRequest(xTile, yTile);
 			
 			// Toni moved these up so they load earlier
 			// Platforms
