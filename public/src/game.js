@@ -504,7 +504,7 @@ function loadPlayer() {
 				}
 				if (e.key == Crafty.keys.W) {
 					// toggle platform viewing mode
-					if (bground.strength == 1) {
+					if (Crafty('Background').strength == 1) {
 						Crafty('Background').strength = .8;
 					} else {
 						Crafty('Background').strength = 1;
