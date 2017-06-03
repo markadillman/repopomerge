@@ -527,7 +527,7 @@ Game =
 			player.h = canvasHeight/avatarMultiplier;
 			
 			// set platform z between background and avatar
-			Crafty('Platform').z = 20;
+			Crafty('Platform').z = 1;
 			// end Toni's code, which doesn't work anyway for some reason? ###
 			
 			//player should be in front of other graphical assets
