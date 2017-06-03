@@ -399,8 +399,8 @@ Game =
 					{
 						this.disableControl();
 					}
-
-					if(e.key == Crafty.keys.DOWN_ARROW)
+					// Toni added mode conditions below b/c it was still using down arrow while in art mode
+					if(e.key == Crafty.keys.DOWN_ARROW && mode == gameMode && playing == true)
 					{
 						this.antigravity();
 						this.gravity('Platform');
