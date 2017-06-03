@@ -527,7 +527,7 @@ Game =
 			player.h = canvasHeight/avatarMultiplier;
 			
 			// set platform z between background and avatar
-			Crafty('Platform').z = 1;
+			Crafty('Platform').z = 2;
 			// end Toni's code, which doesn't work anyway for some reason? ###
 			
 			//player should be in front of other graphical assets
@@ -609,6 +609,7 @@ function assetRender(assets){
 			//adjust coordinates
 			var tempX = assets[asset]['xcoord'] * tileWidth + canvasEdge;
 			var tempY = assets[asset]['ycoord'] * tileHeight + canvasEdge;
+			// Toni switched bground from DOM to Canvas b/c it kept rendering on top otherwise
 			var bground = Crafty.e('Background, 2D, Canvas, Image')
 			.attr({x: tempX, y : tempY, w: tileWidth, h: tileHeight, tileX: asset['xcoord'],
 				   tileY : asset['ycoord']})
