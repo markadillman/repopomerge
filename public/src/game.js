@@ -77,6 +77,7 @@ var svgPrefix = "<svg xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://
 var svgPostfix = "</svg>";
 
 // Toni added variables for the avatar carousel
+var numAvatars = 0;
 var myAvatars = "myAvatars";
 var libraryAvatars = "libararyAvatars";
 var carouselContents = myAvatars;
@@ -370,17 +371,16 @@ Game =
 				.color('green');
 				
 			// Player sprite
-			var player = Crafty.e('2D, DOM, Color, Twoway, Gravity')
+			var player = Crafty.e('2D, Canvas, Color, Multiway, Jumper, Gravity')
 
 				// Initial position and size
 				// inside the hole in the tree
-				.attr({x: playerSpawnX, y: playerSpawnY, w: spriteWidth, h: spriteHeight})
-
-				// Color of sprite (to be replaced)
-				.color('#F00')
+				.attr({x: playerSpawnX, y: playerSpawnY})				
 				
-				// Enable 2D movement
-				.twoway(200)
+				// Enable 2D movement 
+				// Toni modified to be via Multiway instead,
+				// which required referencing Crafty's code for Twoway
+				.multiway({x: 200}, {RIGHT_ARROW: 0, LEFT_ARROW: 180})
 				// Set platforms to stop falling player
 				.gravity('Platform')
 				.gravityConst(600)
@@ -408,6 +408,7 @@ Game =
 				})
 				.bind('KeyUp', function(e)
 				{
+					// Toni added mode conditions below b/c it was still using down arrow while in art mode
 					if(e.key == Crafty.keys.DOWN_ARROW && mode == gameMode && playing == true)
 					{
 						this.gravity('Platform');
@@ -418,7 +419,7 @@ Game =
 					if (mode == gameMode) { // only read these if in gameplay mode
 						if (e.key == Crafty.keys.E) {
 							if (verboseDebugging) {
-								//console.log("Go go gadget edit mode!");
+								console.log("Go go gadget edit mode!");
 								console.log("current (x,y)");
 								console.log(Math.floor(currentUpperLeftX / tileWidth));
 								console.log(Math.floor(currentUpperLeftY / tileHeight));
@@ -429,7 +430,8 @@ Game =
 						}
 						if (e.key == Crafty.keys.M) {
 							// ### switch to map mode
-							// remember to have map mode have a way to switch back
+							// remember to have map mode have a way to switch
+							// back on another M keypress
 						}
 
 						if (e.key == Crafty.keys.Q) {
@@ -441,7 +443,7 @@ Game =
 
 						if (e.key == Crafty.keys.T) {
 							// drop a teleportation marker
-							// ### check to make sure one doesn't already exist?
+							// ### check to make sure one doesn't already exist at these coordinates?
 							// ### create marker at player's current coordinates in the world
 						}
 
@@ -510,6 +512,19 @@ Game =
 				});
 				
 			// start Toni's code
+			// generate a URL based on currently selected avatar
+			myString = svgPrefix + carouselData[carouselIndex] + svgPostfix; // just in case the server ones need it
+			var blobSvg = new Blob([myString],{type:"image/svg+xml;charset=utf-8"});
+			var domURL = self.URL || self.webkitURL || self;
+			var url = domURL.createObjectURL(blobSvg);
+
+			// put this into the player as its sprite
+			// reference my displayAvatarInCarousel function above
+			var mySprite = Crafty.sprite(url, {playerSprite: [210, 0, 390, canvasHeight]});
+			player.addComponent('playerSprite');
+			player.w = 390/avatarMultiplier;
+			player.h = canvasHeight/avatarMultiplier;
+			
 			// set platform z between background and avatar
 			Crafty('Platform').z = 1;
 			// end Toni's code, which doesn't work anyway for some reason? ###
@@ -664,7 +679,7 @@ function doLeftButtonClick() {
 		carouselIndex += carouselData.length;
 	}
 	
-	// display at that index
+	// display at that index if the data exists
 	displayAvatarInCarousel(carouselData[carouselIndex]);
 	
 	// toggle buttons
@@ -726,8 +741,7 @@ function toggleButtonsOnNew() {
 		if (carouselIndex == 0) {
 			// turn off buttons
 			turnOffDeleteSubmitButtons();
-			//turnOffEnterButton();
-			// ### Uncomment the above once avatar loading is working!
+			turnOffEnterButton();
 		} else {
 			// turn on buttons
 			turnOnDeleteSubmitButtons();
@@ -782,10 +796,13 @@ function turnOnViewButtons() {
 	// also make sure message box is hidden
 	messageDiv.style.display = "none";
 }
-function displayAvatarInCarousel (myString) {
+function displayAvatarInCarousel(myString) {
 	// references Mark's assetRender function
 	// displays the given svg data string in the selected position of the carousel
 
+	// clear out anything currently in the scene
+	carouselStage.removeComponent('myImage');
+	
 	// generate a URL	
 	myString = svgPrefix + myString + svgPostfix; // just in case the server ones need it
 	var blobSvg = new Blob([myString],{type:"image/svg+xml;charset=utf-8"});
@@ -804,26 +821,37 @@ function loadMyAvatarsToCarousel(myIndex) {
 	// load avatar cookie data and display avatar at myIndex in the carousel
 
 	// clear out current carouselData and carouselStage
-	carouselData = [];
+	carouselData.length = [];
 	carouselStage.removeComponent('myImage');
 
 	// for debugging, try a solid black oval
 	//carouselData[0] = ovalAvatarImg;
 	
-	// set the blank/new element as first
+	// set the blank/new element as first 
 	carouselData[0] = newAvatarImg;
 	
 	// turn off the buttons that don't work on "new avatar" selection
 	turnOffDeleteSubmitButtons();
-	//turnOffEnterButton();
-	// ### Uncomment the above once avatar loading is working!
+	turnOffEnterButton();
 
-	// ### fill the rest of the carouselData array with results from cookie data
+	// fill the rest of the carouselData array with results from local data
+	// get current info out of localStorage
+	var tempObject = JSON.parse(localStorage.myAvatars);
+	var numAvatars = Number(localStorage.myAvatarCount);
 	
+	// put this info into carouselData
+	for (var j = 1; j <= numAvatars; j += 1) {
+		carouselData[j] = tempObject[j];
+	}
 
-	// load carouselData[0] into the carousel's selected position
-	// ### check that myIndex is valid into this array, else use 0
-	carouselIndex = myIndex;
+	// check that myIndex is valid into this array, else use 0
+	if (myIndex >= 0 && myIndex <= numAvatars) {
+		carouselIndex = myIndex;
+	} else {
+		carouselIndex = 0;
+	}
+
+	// load carouselData[carouselIndex] into the carousel's selected position
 	displayAvatarInCarousel(carouselData[carouselIndex]);
 
 	// debug message
@@ -854,9 +882,6 @@ function loadLibraryAvatarsToCarousel(myIndex) {
 		console.log("Loaded Public Avatar Library to avatar carousel.");
 	}
 }
-function doEnterButton() {
-	Crafty.enterScene('World');
-}
 function deleteLocalAvatar() {
 	// are you sure? message
 	turnOffViewButtons();
@@ -871,8 +896,25 @@ function doDeleteAvatar() {
 	// turn view buttons back on
 	turnOnViewButtons();
 
-	// ### Delete from cookie storage.
+	// delete from local data
+	// get current info out of localStorage
+	var tempObject = JSON.parse(localStorage.myAvatars);
+	numAvatars = Number(localStorage.myAvatarCount);
 	
+	// remove currently selected avatar
+	if (carouselIndex > 0 && carouselIndex <= numAvatars) {
+		delete tempObject[carouselIndex];
+		// shift any avatars after that up one index
+		for (var i = carouselIndex; i < numAvatars; i += 1) {
+			tempObject[i] = tempObject[i+1];
+		}
+		// decrement count of avatars
+		numAvatars -= 1;
+	} // else do nothing b/c something is messed up somehow
+	
+	// send result back to localStorage
+	localStorage.myAvatars = JSON.stringify(tempObject);
+	localStorage.myAvatarCount = numAvatars;
 
 	// debug message
 	if (debugging) {
@@ -923,5 +965,9 @@ function myEditAvatarClick() {
 	} else {
 		doAvatarEdit(carouselData[carouselIndex]);
 	}
+}
+function doEnterButton() {
+	// enter the world
+	Crafty.enterScene('World');
 }
 // end Toni's code

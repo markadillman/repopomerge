@@ -340,6 +340,30 @@ function initHTML() {
 	pageHeader = document.getElementById("drawingToolHeader");
 	pageHeader.innerHTML = avatarHeader;
 	
+	// check to make sure local storage is working and set it up if necessary
+	if (typeof(localStorage) != "undefined") {
+		if (localStorage.hello != "world") {
+			// local storage has not yet been set up for this browser, so do set up
+			localStorage.hello = "world";
+			localStorage.myAvatarCount = 0;
+			localStorage.myAvatars = JSON.stringify({});
+			localStorage.myTeleporterCount = 0;
+			localStorage.myTeleporters = JSON.stringify({});
+			// debug message
+			if (debugging) {
+				console.log("Set up localStorage for the first time in this browser.");
+			}
+		} else  { // else it already exists so don't mess with it	
+			// debug message
+			if (debugging) {
+				console.log("Confirmed localStorage ready for use in this browser.");
+			}
+		}
+	} else { // whoops, this browser can't support localStorage
+		console.log("This browser does not support HTML5 Local Storage.");
+		// ### flag this and check that flag every time accessing local storage?
+	}
+	
 	// add the keybard event listener
 	document.addEventListener("keydown", parseKeyHTML);
 
@@ -675,7 +699,6 @@ function doQuitToHomeScreen() {
 	}
 }
 
-
 // display the message box with the given message
 // links up the ok and cancel functions
 // also displays text input element if boolean argument is true
@@ -734,15 +757,29 @@ function saveButton() {
 function loadButton () {
 	displayMessage("Use the dialog to select an art file to load.", svgLoadFromLocal, doNothing, false, false);
 }
-function submitAvatarButton () {
-	// this always submits to local/cookie storage
+function submitAvatarButton() {
+	// this always submits the avatar svg currently in the drawing area to localStorage
 	// even if the user was editing an avatar that came from the library
 	// submitting to the library is handled by a helper function in game.js
-	// ###
 	
+	// get current info out of localStorage
+	var tempObject = JSON.parse(localStorage.myAvatars);
+	numAvatars = Number(localStorage.myAvatarCount) + 1;
+	
+	// add new info
+	tempObject[numAvatars] = svgMinPrepend + artToString() + platformToString() + svgAppend;
+	
+	// send result back to localStorage
+	localStorage.myAvatars = JSON.stringify(tempObject);
+	localStorage.myAvatarCount = numAvatars;
+	
+	// debug message
+	if (debugging) {
+		console.log("Stored avatar in browser's localStorage.");
+	}
 
 	// use message box to put up confirmation message
-	displayMessage("Your avatar has been saved to your computer.", doAvatarExit, doAvatarExit, false, true)
+	displayMessage("Your avatar has been stored.", doAvatarExit, doAvatarExit, false, true)
 }
 function submitTileButton () {
 	// make sure to toggle off platform editing mode if necessary
@@ -750,7 +787,7 @@ function submitTileButton () {
 		changeMasking(false);
 	}
 	
-	// ### Why does this submit hiddenCanvas, especially without updating it first?
+	// ### Mark - why does this submit hiddenCanvas, especially without updating it first?
 	// and yet this seems to work... maybe I'm just tired and not following what's going on
 	svgSubmitToServer(document.getElementById('hiddenCanvas'));
 }
@@ -830,7 +867,7 @@ function doAvatarEdit(myAvatarString) {
 	borderArtDiv.style.display = "none";
 	showDiv(mode);
 
-	// set the submit button's function
+	// set the submit/done button's function
 	document.getElementById("artSubmitBtn").onclick = submitAvatarButton;
 
 	// get the offsets again here
@@ -842,7 +879,6 @@ function doAvatarEdit(myAvatarString) {
 	if (debugging) {
 		console.log("Loaded editor for avatar creation.");
 	}
-	
 }
 
 // exits from the currently edited avatar back into game mode
@@ -874,6 +910,8 @@ function doAvatarExit() {
 	// make crafty reload the art assets for the carousel
 	// and put the carousel into My Avatars mode regardless of previous mode
 	Crafty("myAvatarButton").trigger("Click");
+	loadMyAvatarsToCarousel(numAvatars);
+	toggleButtonsOnNew();
 }
 
 // switches from game mode into tile edit mode
@@ -907,7 +945,7 @@ function doTileEdit(currentX, currentY) {
 	pageHeader.innerHTML = drawingHeader;
 	showDiv(mode);
 
-	// set the submit button's function
+	// set the submit/done button's function
 	document.getElementById("artSubmitBtn").onclick = submitTileButton;
 
 	// get the offsets again here
