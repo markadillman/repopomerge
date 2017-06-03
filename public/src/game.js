@@ -385,7 +385,7 @@ function loadPlatforms() {
 		.color('green');
 	// Toni added a platform under the spawn point
 	Crafty.e('Platform, 2D, Canvas, Color')
-		.attr({x: playerSpawnX - 35, y: playerSpawnY + 115, w: 100, h: 10})
+		.attr({x: playerSpawnX - 35, y: playerSpawnY + 125, w: 100, h: 10})
 		.color('green');
 	// Toni added platforms to allow us to get to the top 3 tiles for now
 	Crafty.e('Platform, 2D, Canvas, Color')
@@ -434,8 +434,8 @@ function loadPlayer() {
 		// which required referencing Crafty's code for how Twoway works
 		.multiway({x: 200}, {RIGHT_ARROW: 0, LEFT_ARROW: 180})
 		// Set platforms to stop falling player
-		//.gravity('Platform')
-		//.gravityConst(600)!!!
+		.gravity('Platform')
+		.gravityConst(600)!!!
 		// Bind spacebar to jump action
 		.jumper(400, [Crafty.keys.SPACE])
 
