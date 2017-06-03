@@ -403,6 +403,9 @@ function loadPlatforms() {
 		.attr({x: -4000, y: 590, w: 8000, h: 10})
 		.color('green');
 		
+	// set platform z between background and avatar
+	Crafty('Platform').z = 1;
+		
 	// debug message
 	if (debugging) {
 		console.log("Loaded platforms.");
@@ -500,6 +503,8 @@ function loadPlayer() {
 				if (e.key == Crafty.keys.W) {
 					// ### toggle platform viewing mode
 					// turns down the opacity on the art svg groups and shows the platform svg groups
+					// or... just hides things using z
+					Crafty('Platform').z *= -1;
 				}
 			}
 			// end Toni's code
@@ -585,10 +590,6 @@ function loadPlayer() {
 	player.addComponent('playerSprite');
 	player.w = 390/avatarMultiplier;
 	player.h = canvasHeight/avatarMultiplier;
-	
-	// set platform z between background and avatar
-	Crafty('Platform').z = 1;
-	// end Toni's code, which doesn't work anyway for some reason? ###
 	
 	//player should be in front of other graphical assets
 	player.z = 2;
