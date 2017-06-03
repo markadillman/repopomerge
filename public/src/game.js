@@ -40,8 +40,8 @@ var currentUpperLeftY = 0;
 var spriteWidth = 15;
 var spriteHeight = 30;
 var avatarMultiplier = 5.8; // factor between avatar size and size of oval in drawing tool
-var playerSpawnX = canvasEdge + 370;	// spawn in hole in tree
-var playerSpawnY = canvasEdge + 100;
+var playerSpawnX = canvasEdge + 365;	// spawn in hole in tree
+var playerSpawnY = canvasEdge + 70;
 var playerSpawnDelay = 1000; // ms to wait before spawning player on first world entry
 var titleTextColor = '#373854';
 var selectedButtonColor = '#99CCFF';
@@ -414,7 +414,9 @@ function loadPlayer() {
 		yCoord = playerSpawnY;
 		firstWorldEntry = false;
 		// use a delay to make *sure* the background is loaded first
-		Crafty.e('Delay').delay(function(){}, playerSpawnDelay, 0);
+		Crafty.e('Delay').delay(function(){
+			console.log("Waited.";
+		}, playerSpawnDelay, 0);
 	} else {
 		xCoord = currentPlayerX;
 		yCoord = currentPlayerY;
