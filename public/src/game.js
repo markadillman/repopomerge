@@ -76,6 +76,12 @@ const initPullPairs = { "-2,-2":{"x":-2,"y":-2},
 var svgPrefix = "<svg xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\">";
 var svgPostfix = "</svg>";
 
+// Toni added a flag for being on first load of avatar or not
+var firstWorldEntry = true;
+// and globals to track player's current position
+var currentPlayerX;
+var currentPlayerY;
+
 // Toni added variables for the avatar carousel
 var numAvatars = 0;
 var myAvatars = "myAvatars";
@@ -396,9 +402,20 @@ function loadPlayer() {
 	// Player sprite
 	var player = Crafty.e('2D, Canvas, Color, Multiway, Jumper, Gravity')
 
+		// Toni added code to set player position
+		var xCoord;
+		var yCoord;
+		if (firstWorldEntry) {
+			xCoord = playerSpawnX;
+			yCoord = playerSpawnY;
+		} else {
+			xCoord = currentPlayerX;
+			yCoord = currentPlayerY;
+		}
+		
 		// Initial position and size
 		// inside the hole in the tree
-		.attr({x: playerSpawnX, y: playerSpawnY})				
+		.attr({x: xCoord, y: yCoord})				
 		
 		// Enable 2D movement 
 		// Toni modified to be via Multiway instead,
@@ -478,15 +495,23 @@ function loadPlayer() {
 		// Move camera when player leaves current tile
 		.bind('Moved', function()
 			{
+				// Toni added code to update current player position
+				currentPlayerX = this.x;
+				currentPlayerY = this.y;
+				
 				// MARK ADDED get current tile coordinates to orient pull
+				// Toni switched these to use the global vars from tool.js
 				xTile = Math.floor(currentUpperLeftX / tileWidth);
 				yTile = Math.floor(currentUpperLeftY / tileHeight);
-				// Toni switched the above to using global vars from tool.js
 				var payload = {'x' : xTile, 'y': yTile};
 				if (this.x > currentUpperLeftX + tileWidth)
 				{
 					currentUpperLeftX = currentUpperLeftX + tileWidth;
 					Crafty.viewport.pan(tileWidth, 0, panTime);
+					
+					// Toni added update of tile coords
+					xTile = Math.floor(currentUpperLeftX / tileWidth);
+					yTile = Math.floor(currentUpperLeftY / tileHeight);
 
 					// Load assets in outer rightmost "ring" segment
 					dynamicPostRequest('/pullright',payload,dynamicPostOnLoad,dynamicError);
@@ -496,6 +521,10 @@ function loadPlayer() {
 				{
 					currentUpperLeftX = currentUpperLeftX - tileWidth;
 					Crafty.viewport.pan(tileWidth*-1, 0, panTime);
+					
+					// Toni added update of tile coords
+					xTile = Math.floor(currentUpperLeftX / tileWidth);
+					yTile = Math.floor(currentUpperLeftY / tileHeight);
 
 					// Load assets in outer leftmost "ring" segment
 					dynamicPostRequest('/pullleft',payload,dynamicPostOnLoad,dynamicError);
@@ -506,6 +535,10 @@ function loadPlayer() {
 				{
 					currentUpperLeftY = currentUpperLeftY + tileHeight;
 					Crafty.viewport.pan(0, tileHeight, panTime);
+					
+					// Toni added update of tile coords
+					xTile = Math.floor(currentUpperLeftX / tileWidth);
+					yTile = Math.floor(currentUpperLeftY / tileHeight);
 
 					// Load assets in outer bottom-most "ring" segment
 					dynamicPostRequest('/pullbottom',payload,dynamicPostOnLoad,dynamicError);
@@ -515,6 +548,10 @@ function loadPlayer() {
 				{
 					currentUpperLeftY = currentUpperLeftY - tileHeight;
 					Crafty.viewport.pan(0, tileHeight*-1, panTime);
+					
+					// Toni added update of tile coords
+					xTile = Math.floor(currentUpperLeftX / tileWidth);
+					yTile = Math.floor(currentUpperLeftY / tileHeight);
 
 					// Load assets in outer top-most "ring" segment
 					dynamicPostRequest('/pulltop',payload,dynamicPostOnLoad,dynamicError);
