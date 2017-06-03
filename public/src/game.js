@@ -408,7 +408,7 @@ Game =
 				})
 				.bind('KeyUp', function(e)
 				{
-					if(e.key == Crafty.keys.DOWN_ARROW)
+					if(e.key == Crafty.keys.DOWN_ARROW && mode == gameMode && playing == true)
 					{
 						this.gravity('Platform');
 					}
