@@ -503,11 +503,12 @@ function loadPlayer() {
 				if (e.key == Crafty.keys.W) {
 					// ### toggle platform viewing mode
 					// turns down the opacity on the art svg groups and shows the platform svg groups
-					// or... just hides things using z
+					// or... just hides things using z?
 					Crafty('Platform').z *= -1;
 					// debug message
 					if (debugging) {
 						console.log("Toggled wall view mode.");
+						console.log(Crafty('Platform').z);
 					}
 				}
 			}
