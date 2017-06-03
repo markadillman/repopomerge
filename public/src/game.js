@@ -336,6 +336,8 @@ Game =
 			playing = true;
 			// end Toni's code
 			
+			initAssetRequest(this.x,this.y);
+			
 			// Toni moved these up so they load earlier
 			// Platforms
 			Crafty.e('Platform, 2D, Canvas, Color')
@@ -508,7 +510,7 @@ Game =
 					})
 				//this event added by Mark to pull initial environment
 				.bind('Spawned',function(){
-					initAssetRequest(this.x,this.y);
+					//initAssetRequest(this.x,this.y);
 				});
 				
 			// start Toni's code
