@@ -40,9 +40,9 @@ var currentUpperLeftY = 0;
 var spriteWidth = 15;
 var spriteHeight = 30;
 var avatarMultiplier = 5.8; // factor between avatar size and size of oval in drawing tool
-var playerSpawnX = canvasEdge + 374.5;	// spawn in hole in tree
-var playerSpawnY = canvasEdge + 108;
-var playerSpawnDelay = 200; // ms to wait before spawning player on first world entry
+var playerSpawnX = canvasEdge + 370;	// spawn in hole in tree
+var playerSpawnY = canvasEdge + 100;
+var playerSpawnDelay = 1000; // ms to wait before spawning player on first world entry
 var titleTextColor = '#373854';
 var selectedButtonColor = '#99CCFF';
 var panTime = 500; // ms
@@ -433,7 +433,7 @@ function loadPlayer() {
 		.multiway({x: 200}, {RIGHT_ARROW: 0, LEFT_ARROW: 180})
 		// Set platforms to stop falling player
 		//.gravity('Platform')
-		//.gravityConst(600)
+		//.gravityConst(600)!!!
 		// Bind spacebar to jump action
 		.jumper(400, [Crafty.keys.SPACE])
 
