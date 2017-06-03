@@ -385,7 +385,7 @@ function loadPlatforms() {
 		.color('green');
 	// Toni added a platform under the spawn point
 	Crafty.e('Platform, 2D, Canvas, Color')
-		.attr({x: playerSpawnX - 50, y: playerSpawnY + 150, w: 100, h: 10})
+		.attr({x: playerSpawnX - 35, y: playerSpawnY + 115, w: 100, h: 10})
 		.color('green');
 	// Toni added platforms to allow us to get to the top 3 tiles for now
 	Crafty.e('Platform, 2D, Canvas, Color')
