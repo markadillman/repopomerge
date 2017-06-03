@@ -404,7 +404,7 @@ function loadPlatforms() {
 		.color('green');
 		
 	// set platform z between background and avatar
-	Crafty('Platform').z = 1;
+	Crafty('Platform').each().z = 1;
 		
 	// debug message
 	if (debugging) {
@@ -504,11 +504,10 @@ function loadPlayer() {
 					// ### toggle platform viewing mode
 					// turns down the opacity on the art svg groups and shows the platform svg groups
 					// or... just hides things using z?
-					Crafty('Platform').z *= -1;
+					Crafty('Platform').each().z *= -1;
 					// debug message
 					if (debugging) {
 						console.log("Toggled wall view mode.");
-						console.log(Crafty('Platform').z);
 					}
 				}
 			}
