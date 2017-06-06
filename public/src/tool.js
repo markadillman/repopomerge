@@ -1867,7 +1867,7 @@ function handleShapeInProgress() {
 			case 2: // polygon
 				// clean up a partly-completed polygon by leaving it a polyline
 
-				// get the current shape and its info, including the marker
+				// get the current shape and its info, including the markers
 				var newPolyline = document.getElementById(objectStr + currentObject.toString());
 				var pointString = newPolyline.getAttribute("points");
 				var numPoints = pointString.split(" ").length-1;
@@ -1960,7 +1960,7 @@ function handleShapeInProgress() {
 
 			case 4: // eraser
 
-				// get the current eraser stroke and its info
+				/*// get the current eraser stroke and its info
 				var eraserObj = document.getElementById(objectStr + currentObject.toString());
 				var pointString = eraserObj.getAttribute("points");
 				var numPoints = pointString.split(" ").length-1;
@@ -1997,7 +1997,7 @@ function handleShapeInProgress() {
 				
 				// increment shape counter and turn off inProgress flag
 				currentObject += 1;
-				inProgress = false;
+				inProgress = false;*/
 				break;
 
 			case 5: // eye dropper
@@ -2008,7 +2008,7 @@ function handleShapeInProgress() {
 
 			case 7: // wall
 
-				// get the current wall stroke and its info
+				/*// get the current wall stroke and its info
 				var wallObj = document.getElementById(platformStr + currentPlatform.toString());
 				var pointString = wallObj.getAttribute("points");
 				var numPoints = pointString.split(" ").length-1;
@@ -2046,11 +2046,65 @@ function handleShapeInProgress() {
 				// increment shape counter and turn off inProgress flag
 				currentPlatform += 1;
 				inProgress = false;
+				break;*/ // previous code commented out from when wall was a brush tool
+
+				// wall is now a polygon tool, so...
+				// clean up a partly-completed wall polygon by closing it, or deleting it if invalid
+
+				// get the current shape and its info, including the markers
+				var newPolyline = document.getElementById(platformStr + currentPlatform.toString());
+				var pointString = newPolyline.getAttribute("points");
+				var numPoints = pointString.split(" ").length / 2;
+				var startMarker = document.getElementById(polygonStartMarker);
+				var pointMarker = document.getElementById(polygonPointMarker);
+		
+				// remove the polygon point markers from the DOM
+				platformsGroup.removeChild(startMarker);
+				platformsGroup.removeChild(pointMarker);
+
+				// delete the polyline
+				platformsGroup.removeChild(newPolyline);
+		
+				// handle the case where there are less than three points
+				if (numPoints < 3) {
+					// do nothing to replace the polyline because this was not a valid shape
+			
+					// debug message
+					if (debugging) {
+						console.log("Deleted incomplete wall polygon.");
+					}
+					
+					// set flag to false, but do not increment counter
+					inProgress = false;
+				} else { // replace the polyline with a closed polygon
+					
+					// create a closed polygon to replace the polyline
+					var newPolygon = document.createElementNS(svgns, "polygon");
+					newPolygon.setAttribute("id", platformStr + currentPlatform.toString());
+					newPolygon.setAttribute("points", pointString);
+					newPolygon.setAttribute("style", "fill: " + wallColor + 
+						"; fill-rule: evenodd; stroke: " + wallColor + 
+						"; stroke-width: 1");
+					platformsGroup.appendChild(newPolygon);
+
+					// debug message
+					if (debugging) {
+						console.log(platformStr + currentPlatform.toString() +
+						": Made a wall at points: " + pointString + ".");
+					}
+					
+					// add the index of the new wall to the platform actions list
+					platformActionsList.push(currentPlatform);
+
+					// increment counter and set flag to false
+					currentPlatform += 1;
+					inProgress = false;
+				}
 				break;
 
 			case 8: // ladder
 
-				// get the current ladder stroke and its info
+				/*// get the current ladder stroke and its info
 				var ladderObj = document.getElementById(platformStr + currentPlatform.toString());
 				var pointString = ladderObj.getAttribute("points");
 				var numPoints = pointString.split(" ").length-1;
@@ -2088,6 +2142,60 @@ function handleShapeInProgress() {
 				// increment shape counter and turn off inProgress flag
 				currentPlatform += 1;
 				inProgress = false;
+				break;*/ // previous code commented out from when wall was a brush tool
+
+				// ladder is now a polygon tool, so...
+				// clean up a partly-completed ladder polygon by closing it, or deleting it if invalid
+
+				// get the current shape and its info, including the markers
+				var newPolyline = document.getElementById(platformStr + currentPlatform.toString());
+				var pointString = newPolyline.getAttribute("points");
+				var numPoints = pointString.split(" ").length / 2;
+				var startMarker = document.getElementById(polygonStartMarker);
+				var pointMarker = document.getElementById(polygonPointMarker);
+		
+				// remove the polygon point markers from the DOM
+				platformsGroup.removeChild(startMarker);
+				platformsGroup.removeChild(pointMarker);
+
+				// delete the polyline
+				platformsGroup.removeChild(newPolyline);
+		
+				// handle the case where there are less than three points
+				if (numPoints < 3) {
+					// do nothing to replace the polyline because this was not a valid shape
+			
+					// debug message
+					if (debugging) {
+						console.log("Deleted incomplete ladder polygon.");
+					}
+					
+					// set flag to false, but do not increment counter
+					inProgress = false;
+				} else { // replace the polyline with a closed polygon
+					
+					// create a closed polygon to replace the polyline
+					var newPolygon = document.createElementNS(svgns, "polygon");
+					newPolygon.setAttribute("id", platformStr + currentPlatform.toString());
+					newPolygon.setAttribute("points", pointString);
+					newPolygon.setAttribute("style", "fill: " + ladderColor + 
+						"; fill-rule: evenodd; stroke: " + ladderColor + 
+						"; stroke-width: 1");
+					platformsGroup.appendChild(newPolygon);
+
+					// debug message
+					if (debugging) {
+						console.log(platformStr + currentPlatform.toString() +
+						": Made a ladder at points: " + pointString + ".");
+					}
+
+					// add the index of the new ladder to the platform actions list
+					platformActionsList.push(currentPlatform);
+
+					// increment counter and set flag to false
+					currentPlatform += 1;
+					inProgress = false;
+				}
 				break;
 
 			case 9: // platform select
@@ -2533,7 +2641,7 @@ function mouseDown(evt) {
 
 				case 4: // eraser
 				
-					// clear out current undo/redo lists to avoid branching
+					/*// clear out current undo/redo lists to avoid branching
 					clearUndoRedoLists();
 				
 					// get mouse coordinates in the canvas
@@ -2556,7 +2664,7 @@ function mouseDown(evt) {
 						
 					// append polyline to canvas and turn on inProgress flag
 					drawingGroup.appendChild(newShape);
-					inProgress = true;
+					inProgress = true;*/
 					break;
 
 				case 5: // eye dropper
@@ -2567,7 +2675,7 @@ function mouseDown(evt) {
 
 				case 7: // wall
 				
-					// clear out current undo/redo lists to avoid branching
+					/*// clear out current undo/redo lists to avoid branching
 					clearUndoRedoLists();
 					
 					// get mouse coordinates in the canvas
@@ -2590,12 +2698,14 @@ function mouseDown(evt) {
 					
 					// append polyline to platforms and turn on inProgress flag
 					platformsGroup.appendChild(newShape);
-					inProgress = true;
+					inProgress = true;*/
+
+					// do nothing, switched this tool to be a polygon tool instead of a brush
 					break;
 				
 				case 8: // ladder
 				
-					// clear out current undo/redo lists to avoid branching
+					/*// clear out current undo/redo lists to avoid branching
 					clearUndoRedoLists();
 					
 					// get mouse coordinates in the canvas
@@ -2618,7 +2728,9 @@ function mouseDown(evt) {
 					
 					// append polyline to platforms and turn on inProgress flag
 					platformsGroup.appendChild(newShape);
-					inProgress = true;
+					inProgress = true;*/
+
+					// do nothing, switched this tool to be a polygon tool instead of a brush
 					break;
 					
 				case 9: // platform select
@@ -2713,7 +2825,7 @@ function mouseMove(evt) {
 
 			case 4: // eraser
 				
-				// only do this if a shape is currently in progress
+				/*// only do this if a shape is currently in progress
 				if(inProgress) {
 					// get the mouse coordinates in the canvas
 					updateMouseCoords(evt);
@@ -2725,7 +2837,7 @@ function mouseMove(evt) {
 					// add current point to the polyline
 					pointString += " " + xMouse.toString() + " " + yMouse.toString();
 					shapeInProgress.setAttribute("points", pointString);
-				}
+				}*/
 				break;
 
 			case 5: // eye dropper
@@ -2736,7 +2848,7 @@ function mouseMove(evt) {
 
 			case 7: // wall
 			
-				// only do this if a shape is currently in progress
+				/*// only do this if a shape is currently in progress
 				if(inProgress) {
 					// get the mouse coordinates in the canvas
 					updateMouseCoords(evt);
@@ -2748,12 +2860,14 @@ function mouseMove(evt) {
 					// add current point to the polyline
 					pointString += " " + xMouse.toString() + " " + yMouse.toString();
 					shapeInProgress.setAttribute("points", pointString);
-				}
+				}*/
+
+				// do nothing, switched this tool to be a polygon tool instead of a brush
 				break;
 				
 			case 8: // ladder
 			
-				// only do this if a shape is currently in progress
+				/*// only do this if a shape is currently in progress
 				if(inProgress) {
 					// get the mouse coordinates in the canvas
 					updateMouseCoords(evt);
@@ -2765,7 +2879,9 @@ function mouseMove(evt) {
 					// add current point to the polyline
 					pointString += " " + xMouse.toString() + " " + yMouse.toString();
 					shapeInProgress.setAttribute("points", pointString);
-				}
+				}*/
+
+				// do nothing, switched this tool to be a polygon tool instead of a brush
 				break;
 				
 			case 9: // platform select
@@ -2887,7 +3003,7 @@ function mouseUp(evt) {
 
 				case 4: // eraser
 				
-					// get the current eraser stroke and its info
+					/*// get the current eraser stroke and its info
 					var eraserObj = document.getElementById(objectStr + currentObject.toString());
 					var pointString = eraserObj.getAttribute("points");
 					var numPoints = pointString.split(" ").length-1;
@@ -2924,7 +3040,7 @@ function mouseUp(evt) {
 					
 					// increment shape counter and turn off inProgress flag
 					currentObject += 1;
-					inProgress = false;
+					inProgress = false;*/
 					break;
 
 				case 5: // eye dropper
@@ -2935,7 +3051,7 @@ function mouseUp(evt) {
 
 				case 7: // wall
 				
-					// get the current wall stroke and its info
+					/*// get the current wall stroke and its info
 					var wallObj = document.getElementById(platformStr + currentPlatform.toString());
 					var pointString = wallObj.getAttribute("points");
 					var numPoints = pointString.split(" ").length-1;
@@ -2972,12 +3088,14 @@ function mouseUp(evt) {
 					
 					// increment shape counter and turn off inProgress flag
 					currentPlatform += 1;
-					inProgress = false;
+					inProgress = false;*/
+
+					// do nothing, switched this tool to be a polygon tool instead of a brush
 					break;
 					
 				case 8: // ladder
 				
-					// get the current ladder stroke and its info
+					/*// get the current ladder stroke and its info
 					var ladderObj = document.getElementById(platformStr + currentPlatform.toString());
 					var pointString = ladderObj.getAttribute("points");
 					var numPoints = pointString.split(" ").length-1;
@@ -3014,7 +3132,9 @@ function mouseUp(evt) {
 					
 					// increment shape counter and turn off inProgress flag
 					currentPlatform += 1;
-					inProgress = false;
+					inProgress = false;*/
+
+					// do nothing, switched this tool to be a polygon tool instead of a brush
 					break;
 					
 				case 9: // platform select
@@ -3170,9 +3290,215 @@ function mouseClick(evt) {
 					break;
 
 				case 7: // wall
+
+					// clear out current undo/redo lists to avoid branching
+					// but only do this at first click of polygon to avoid redundancy
+					if (!inProgress) {
+						clearUndoRedoLists();
+					}
+			
+					// get mouse coordinates in the canvas
+					updateMouseCoords(evt);
+
+					if (!inProgress) { // start a new polyline
+						// create a polyline starting at the current mouse point
+						xStart = xMouse;
+						yStart = yMouse;
+						var newPolyline = document.createElementNS(svgns, "polyline");
+						newPolyline.setAttribute("id", platformStr + currentPlatform.toString());
+						newPolyline.setAttribute("points", xStart.toString() + " " +
+									yStart.toString());
+						shapeFillChoiceString = shapeFillNone; // no fill until done
+						newPolyline.setAttribute("style", "fill: " +
+							shapeFillChoiceString + "; stroke: " + 
+							wallColor + "; stroke-width: 1");
+						platformsGroup.appendChild(newPolyline);
+					
+						// create the polygon start point marker
+						var startMarker = document.createElementNS(svgns, "ellipse");
+						startMarker.setAttribute("id", polygonStartMarker);
+						startMarker.setAttribute("cx", xStart);
+						startMarker.setAttribute("cy", yStart);
+						startMarker.setAttribute("rx", polygonMarkerRadius);
+						startMarker.setAttribute("ry", polygonMarkerRadius);
+						startMarker.setAttribute("style", "font-family: sans-serif; " +
+							"font-size: 14pt; stroke: " + wallColor + "; fill: " +
+							wallColor);
+						platformsGroup.appendChild(startMarker);
+
+						// create the polygon current point marker
+						var pointMarker = document.createElementNS(svgns, "ellipse");
+						pointMarker.setAttribute("id", polygonPointMarker);
+						pointMarker.setAttribute("cx", xStart);
+						pointMarker.setAttribute("cy", yStart);
+						pointMarker.setAttribute("rx", polygonMarkerRadius);
+						pointMarker.setAttribute("ry", polygonMarkerRadius);
+						pointMarker.setAttribute("style", "font-family: sans-serif; " +
+							"font-size: 14pt; stroke: " + wallColor + "; fill: " +
+							wallColor);
+						platformsGroup.appendChild(pointMarker);
+
+						// mark that a shape is in progress
+						inProgress = true;
+
+					} else { // continue the polyline in progress
+						// get the current shape and its info, including the marker
+						var newPolyline = document.getElementById(platformStr + currentPlatform.toString());
+						var pointString = newPolyline.getAttribute("points");
+						var startMarker = document.getElementById(polygonStartMarker);
+						var pointMarker = document.getElementById(polygonPointMarker);
+					
+						// check for the polygon being done/closed
+						if ((Math.abs(xStart - xMouse) <= polygonCloseGap) && (
+							Math.abs(yStart - yMouse) <= polygonCloseGap)) {
+							// remove the polyline from the DOM
+							platformsGroup.removeChild(newPolyline);
+
+							// remove the polygon point markers from the DOM
+							platformsGroup.removeChild(startMarker);
+							platformsGroup.removeChild(pointMarker);
+
+							// create a closed polygon to replace the polyline
+							var newPolygon = document.createElementNS(svgns, "polygon");
+							newPolygon.setAttribute("id", platformStr + currentPlatform.toString());
+							newPolygon.setAttribute("points", pointString);
+							newPolygon.setAttribute("style", "fill: " + wallColor + 
+								"; fill-rule: evenodd; stroke: " + wallColor + 
+								"; stroke-width: 1");
+							platformsGroup.appendChild(newPolygon);
+
+							// mark that the shape is complete
+							if (debugging) {
+								console.log(platformStr + currentPlatform.toString() +
+								": Made a wall at points: "+
+								newPolygon.getAttribute("points") + ".");
+							}
+							
+							// add the index of the new wall to the platform actions list
+							platformActionsList.push(currentPlatform);
+							
+							// increment counter and set flag
+							currentPlatform += 1;
+							inProgress = false;
+						} else { // try to add new point to polyline
+							// first check to make sure this doesn't turn the shape concave
+							pointString += " " + xMouse.toString() + " " + yMouse.toString();
+							if (isConvex(pointString)) {
+								// new point okay, so update the points string
+								newPolyline.setAttribute("points", pointString);
+
+								// and update the polygon current point marker
+								pointMarker.setAttribute("cx", xMouse);
+								pointMarker.setAttribute("cy", yMouse);
+							} // else to nothing with this click b/c it is invalid
+						}
+					}
 					break;
 				
 				case 8: // ladder
+
+					// clear out current undo/redo lists to avoid branching
+					// but only do this at first click of polygon to avoid redundancy
+					if (!inProgress) {
+						clearUndoRedoLists();
+					}
+			
+					// get mouse coordinates in the canvas
+					updateMouseCoords(evt);
+
+					if (!inProgress) { // start a new polyline
+						// create a polyline starting at the current mouse point
+						xStart = xMouse;
+						yStart = yMouse;
+						var newPolyline = document.createElementNS(svgns, "polyline");
+						newPolyline.setAttribute("id", platformStr + currentPlatform.toString());
+						newPolyline.setAttribute("points", xStart.toString() + " " +
+									yStart.toString());
+						shapeFillChoiceString = shapeFillNone; // no fill until done
+						newPolyline.setAttribute("style", "fill: " +
+							shapeFillChoiceString + "; stroke: " + 
+							ladderColor + "; stroke-width: 1");
+						platformsGroup.appendChild(newPolyline);
+					
+						// create the polygon start point marker
+						var startMarker = document.createElementNS(svgns, "ellipse");
+						startMarker.setAttribute("id", polygonStartMarker);
+						startMarker.setAttribute("cx", xStart);
+						startMarker.setAttribute("cy", yStart);
+						startMarker.setAttribute("rx", polygonMarkerRadius);
+						startMarker.setAttribute("ry", polygonMarkerRadius);
+						startMarker.setAttribute("style", "font-family: sans-serif; " +
+							"font-size: 14pt; stroke: " + ladderColor + "; fill: " +
+							ladderColor);
+						platformsGroup.appendChild(startMarker);
+
+						// create the polygon current point marker
+						var pointMarker = document.createElementNS(svgns, "ellipse");
+						pointMarker.setAttribute("id", polygonPointMarker);
+						pointMarker.setAttribute("cx", xStart);
+						pointMarker.setAttribute("cy", yStart);
+						pointMarker.setAttribute("rx", polygonMarkerRadius);
+						pointMarker.setAttribute("ry", polygonMarkerRadius);
+						pointMarker.setAttribute("style", "font-family: sans-serif; " +
+							"font-size: 14pt; stroke: " + ladderColor + "; fill: " +
+							ladderColor);
+						platformsGroup.appendChild(pointMarker);
+
+						// mark that a shape is in progress
+						inProgress = true;
+
+					} else { // continue the polyline in progress
+						// get the current shape and its info, including the marker
+						var newPolyline = document.getElementById(platformStr + currentPlatform.toString());
+						var pointString = newPolyline.getAttribute("points");
+						var startMarker = document.getElementById(polygonStartMarker);
+						var pointMarker = document.getElementById(polygonPointMarker);
+					
+						// check for the polygon being done/closed
+						if ((Math.abs(xStart - xMouse) <= polygonCloseGap) && (
+							Math.abs(yStart - yMouse) <= polygonCloseGap)) {
+							// remove the polyline from the DOM
+							platformsGroup.removeChild(newPolyline);
+
+							// remove the polygon point markers from the DOM
+							platformsGroup.removeChild(startMarker);
+							platformsGroup.removeChild(pointMarker);
+
+							// create a closed polygon to replace the polyline
+							var newPolygon = document.createElementNS(svgns, "polygon");
+							newPolygon.setAttribute("id", platformStr + currentPlatform.toString());
+							newPolygon.setAttribute("points", pointString);
+							newPolygon.setAttribute("style", "fill: " + ladderColor + 
+								"; fill-rule: evenodd; stroke: " + ladderColor + 
+								"; stroke-width: 1");
+							platformsGroup.appendChild(newPolygon);
+
+							// mark that the shape is complete
+							if (debugging) {
+								console.log(platformStr + currentPlatform.toString() +
+								": Made a ladder at points: "+
+								newPolygon.getAttribute("points") + ".");
+							}
+							
+							// add the index of the new ladder to the platform actions list
+							platformActionsList.push(currentPlatform);
+							
+							// increment counter and set flag
+							currentPlatform += 1;
+							inProgress = false;
+						} else { // try to add new point to polyline
+							// first check to make sure this doesn't turn the shape concave
+							pointString += " " + xMouse.toString() + " " + yMouse.toString();
+							if (isConvex(pointString)) {
+								// new point okay, so update the points string
+								newPolyline.setAttribute("points", pointString);
+
+								// and update the polygon current point marker
+								pointMarker.setAttribute("cx", xMouse);
+								pointMarker.setAttribute("cy", yMouse);
+							} // else to nothing with this click b/c it is invalid
+						}
+					}
 					break;
 				
 				case 9: // platform select
@@ -3183,6 +3509,50 @@ function mouseClick(evt) {
 			}
 		} // else do nothing
 	} // else do nothing
+}
+
+// helper function that determines if the given string of points describes a convex polygon or not
+// returns true if polygon is convex, else false
+// references: http://svgdiscovery.com/C060/svg-convex-polygon-test.htm
+// references: https://stackoverflow.com/questions/471962/how-do-determine-if-a-polygon-is-complex-convex-nonconvex
+function isConvex(points) {
+	// get the string of points into a 2D array structure
+	var pointsList = points.split(" ");
+	var pointsArray = [];
+	for (var j = 0; j < pointsList.length; j += 2) {
+		pointsArray.push([Number(pointsList[j]), Number(pointsList[j + 1])]);
+	}
+
+	// set up for test
+	var sign = false;
+	var n = pointsArray.length;
+	
+	// boundary case of too few points -> assume convex
+	if (n < 4) {
+		return true;
+	}
+
+	// calculate n sets of cross products
+	for (var i = 0; i < n; i++) {
+		var dx1 = pointsArray[(i + 1) % n][0] - pointsArray[(i) % n][0];
+		var dy1 = pointsArray[(i + 1) % n][1] - pointsArray[(i) % n][1];
+		var dx2 = pointsArray[(i + 2) % n][0] - pointsArray[(i + 1) % n][0];
+		var dy2 = pointsArray[(i + 2) % n][1] - pointsArray[(i + 1) % n][1];
+		var zcrossproduct = dx1 * dy2 - dy1 * dx2;
+		
+		// and keep a running comparison of their signs
+		if (i == 0) {
+			sign = zcrossproduct > 0;
+		} else {
+			if (sign != (zcrossproduct > 0)) {
+				// sign mismatch -> this shape is not convex
+				return false;
+			}
+		}
+	}
+	
+	// no sign mismatch found -> this shape is convex
+	return true;
 }
 
 // platform click event handler
