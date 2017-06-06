@@ -477,7 +477,7 @@ function loadPlatforms() {
 }
 
 // loadPlayer code moved here
-function loadPlayer(socket) {
+function loadPlayer(argsocket) {
 	// Toni added code to set player position
 	var xCoord;
 	var yCoord;
@@ -591,15 +591,14 @@ function loadPlayer(socket) {
 	    .bind('SceneLoaded',function(eventData){
 			//function to handle the initial admission to the player pool
 			if (!(eventData === null)){
-				tempSocket = eventData.socket;
 				if (verboseDebugging)
 				{
 					console.log("in scene loaded event. Event data:");
 					console.log(eventData);
 					console.log("Socket info");
-					console.log(socket);
+					console.log(argsocket);
 				}
-				tempSocket.emit('init position',{x : eventData.x , y : eventData.y});
+				argsocket.emit('init position',{x : eventData.x , y : eventData.y});
 			}
 	    })
 	    .bind('NewPlayer',function(eventData){
@@ -852,7 +851,7 @@ function dynamicPostRequest(url,payload,onload,error){
 }
 
 //this will render assets formatted as a returned query from the server
-function assetRender(assets){
+function assetRender(assets,argsocket){
 	for (asset in assets){
 		//SVG tags added so that it can be a standalone, valid XML file for URL
 		var myGroupString = svgPrefix + assets[asset]['svg'] + svgPostfix;
@@ -897,7 +896,7 @@ function assetRender(assets){
 			if (debugging) {
 				console.log("Waited.");
 			}
-			loadPlayer();
+			loadPlayer(argsocket);
 		}, playerSpawnDelay, 0);
 	}
 	// end Toni's code
