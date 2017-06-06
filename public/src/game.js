@@ -686,7 +686,7 @@ function loadPlayer() {
 	      		socket.emit('changeCoords', {x : this.x , y : this.y , id : socketId});
 	      		socket.emit('position request');
 	      	}
-	    });
+	    })
 		// Move camera when player leaves current tile
 		.bind('Moved', function()
 			{
