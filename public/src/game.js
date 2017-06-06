@@ -156,18 +156,17 @@ function loadScript(url, callback)
 	//create socket.io connection DIFFERENT ON LOCAL AND SERVER. ADJUST.
 }
 
-//CANNOT FIGURE OUT WHERE TO PUT THIS FOR PROPER SCOPE. LET'S TRY HERE
-socket = io('http://192.168.2.50:8080');
-socket.on('assign id', function(data){
-	socketId = data.id;
-	console.log("GOT SOCKET ID:");
-	console.log(data.id);
-});
-
 Game =
 {
 	start: function()
 	{
+		//CANNOT FIGURE OUT WHERE TO PUT THIS FOR PROPER SCOPE. LET'S TRY HERE
+		socket = io('http://192.168.2.50:8080');
+		socket.on('assign id', function(data){
+			socketId = data.id;
+			console.log("GOT SOCKET ID:");
+			console.log(data.id);
+		});
 		Crafty.init(screenWidth, screenHeight, document.getElementById('gameDiv'));
 		Crafty.background(bgroundColor);
 
