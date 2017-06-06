@@ -154,11 +154,15 @@ function loadScript(url, callback)
     //create the socket io and assign to global variable
     //BEGIN CODE ADDED BY MARK
 	//create socket.io connection DIFFERENT ON LOCAL AND SERVER. ADJUST.
-	socket = io('http://192.168.2.50:8080');
-	socket.on('assign id', function(data){
-		socketId = data.id;
-	});
 }
+
+//CANNOT FIGURE OUT WHERE TO PUT THIS FOR PROPER SCOPE. LET'S TRY HERE
+socket = io('http://192.168.2.50:8080');
+socket.on('assign id', function(data){
+	socketId = data.id;
+	console.log("GOT SOCKET ID:");
+	console.log(data.id);
+});
 
 Game =
 {
