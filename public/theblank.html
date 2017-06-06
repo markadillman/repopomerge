@@ -35,7 +35,12 @@ http://infiniteblank.com/wordpress/?page_id=20
 		<!-- game scripts -->
 		<script type="text/javascript" src="src/game.js"></script>
 		<script type="text/javascript" src="src/tool.js"></script>
-
+		<script type="text/javascript">
+      		window.onload = loadScript('https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.1/socket.io.js', function(){
+        		console.log('Onload triggered.');
+        		window.addEventListener('load', Game.start);
+      		});
+    	</script>
 	</head>
 
 	<body onload="initHTML()">
@@ -313,7 +318,7 @@ http://infiniteblank.com/wordpress/?page_id=20
 		</div>
 
 		<!--PASSWORD SET DIV ADDED BY MARK-->
-		
+
 		<div id="passwordDiv" style="display:none; width: 1031px; margin: auto">
 			<div id="passwordFormatDiv" style="width: 985px; height: 474px; position: absolute; top: 53px">
 				<form id="pwdControls" onsubmit="return onFormSubmit(this)" style="position: absolute">
