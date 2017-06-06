@@ -2240,14 +2240,28 @@ function editPasswordApproved(xcoord,ycoord,pw){
 function svgSubmitToServer(imgCanvas) {
 	handleShapeInProgress();
 	
-	// start Mark's code
+	// BELOW CODE MOVED TO HELPER FUNCTION ABOVE start Mark's code
 	//form payload request
-	var payload = {};
+	//var payload = {};
 	//fill out coordinate fields
-	payload["xcoord"] = xTile;
-	payload["ycoord"] = yTile;
+	//payload["xcoord"] = xTile;
+	//payload["ycoord"] = yTile;
 	// ### TO CHANGE: EVERYTHING CURRENTLY HAS NO PASSWORD
-	payload["pw"] = '';
+	//if reprompt password flag is set, ask user to re-enter password
+	console.log("reprompt at submission:");
+	console.log(passwordReprompt);
+	if (passwordReprompt){
+		//takes care of refreshing the prompt, etc. If fail once, add to message.
+		var initCoords = {};
+		initCoords.xcoord  = xTile;
+		initCoords.ycoord = yTile;
+		promptPWOnEdit(passwordReenterPrompt,initCoords);
+	}
+	else {
+		editPasswordApproved(xTile,yTile);
+	}
+	//below commented code is moved to helper function directly above
+	/*payload["pw"] = '';
 	//add svg to payload
 	payload["svg"] = svgMinPrepend + artToString() + platformToString() + svgAppend;
 	if (verboseDebugging){
@@ -2263,7 +2277,7 @@ function svgSubmitToServer(imgCanvas) {
 	}
 	
 	// use message box to put up confirmation message
-	displayMessage("Your art has been added to the world.", doTileExit, doTileExit, false, true)
+	displayMessage("Your art has been added to the world.", doTileExit, doTileExit, false, true)*/
 }
 
 // start Mark's code
