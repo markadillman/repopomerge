@@ -947,12 +947,9 @@ function doAvatarEdit(myAvatarString) {
 	document.getElementById("artSubmitBtn").onclick = submitAvatarButton;
 
 	// get the offsets here insetad because these scripts ran in the
-	// opposite order I thought they did after the refactoring
-	// this is broken after refactoring to integrate with gameplay...
-	// need to update these coords when switching into edit mode
-	/*var coords = canvas.getBoundingClientRect();
+	var coords = canvas.getBoundingClientRect();
 	xOffset = coords.left;
-	yOffset = coords.top;*/
+	yOffset = coords.top;
 	
 	// debug message
 	if (debugging) {
