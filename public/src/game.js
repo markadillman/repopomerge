@@ -160,21 +160,12 @@ Game =
 {
 	start: function()
 	{
-		//CANNOT FIGURE OUT WHERE TO PUT THIS FOR PROPER SCOPE. LET'S TRY HERE
-		socket = io('http://192.168.2.50:8080');
-		socket.on('assign id', function(data){
-			socketId = data.id;
-			console.log("GOT SOCKET ID:");
-			console.log(data.id);
-		});
 		Crafty.init(screenWidth, screenHeight, document.getElementById('gameDiv'));
 		Crafty.background(bgroundColor);
 
 		// Start screen scene
 		Crafty.defineScene('HomeScreen', function()
 		{
-			//END CODE ADDED BY MARK
-
 			// Title
 			Crafty.e('myText, 2D, DOM, Text')
 				.attr({x: 0, y: screenHeight / 3,
@@ -385,8 +376,16 @@ Game =
 			// set playing flag from tool.js
 			playing = true;
 			
+			//CANNOT FIGURE OUT WHERE TO PUT THIS FOR PROPER SCOPE. LET'S TRY HERE
+			socket = io('http://192.168.2.50:8080');
+			socket.on('assign id', function(data){
+				socketId = data.id;
+				console.log("GOT SOCKET ID:");
+				console.log(data.id);
+			});
+
 			// load world art using global tile coords from tool.js
-			initAssetRequest(xTile, yTile);
+			initAssetRequest(xTile, yTile,socket);
 			// this will now call the code to load platforms and player, too
 				
 		}, function() {
@@ -710,8 +709,8 @@ function loadPlayer(argsocket) {
 	      			console.log("x: " + this.x.toString() + " y : " + this.y.toString() + " id: " + socketId);
 	      		}
 	      		//END DEBUG
-	      		socket.emit('changeCoords', {x : this.x , y : this.y , id : socketId});
-	      		socket.emit('position request');
+	      		argsocket.emit('changeCoords', {x : this.x , y : this.y , id : socketId});
+	      		argsocket.emit('position request');
 	      	}
 	    })
 		// Move camera when player leaves current tile
@@ -814,7 +813,7 @@ function loadPlayer(argsocket) {
 	}
 
 	//trigger the player creation event
-	player.trigger('SceneLoaded',{x:player.x,y:player.y,id:socketId,socket:socket/*,avatar:*/});
+	player.trigger('SceneLoaded',{x:player.x,y:player.y,id:socketId,socket:argsocket/*,avatar:*/});
 }
 
 /*start Mark's code, helper functions to fetch rows of 5 assets:
@@ -825,7 +824,7 @@ function loadPlayer(argsocket) {
 	onload will render the environment into the correct coordinates. Must pass
 	the data structure key as an arg to the callback ("top pull", etc.)
 */
-function dynamicPostRequest(url,payload,onload,error){
+function dynamicPostRequest(url,payload,onload,error,args){
 	if (verboseDebugging) {
 		console.log("Dynamic post payload:");
 		console.log(payload);
@@ -837,7 +836,12 @@ function dynamicPostRequest(url,payload,onload,error){
 	request.onload = function(){
 		if (request.readyState === 4){
 			if (request.status === 200 || request.status === 242) {
-				onload(request);
+				if (args){
+					onload(request,args);
+				}
+				else {
+					onload(request);
+				}
 			} else {
 				console.error(request.statusText);
 				error(request);
@@ -923,7 +927,7 @@ function dynamicError(request){
 	console.error(request.statusText);
 }
 
-function initAssetRequest(playerX,playerY){
+function initAssetRequest(playerX,playerY,argsocket){
 	//update player tile (if teleport, this should be called post teleport coords)
 	var playerTileX = Math.floor(playerX/tileWidth);
 	var playerTileY= Math.floor(playerY/tileHeight);
@@ -934,10 +938,10 @@ function initAssetRequest(playerX,playerY){
 		console.log("Init request center tile:");
 		console.log(body);
 	}
-	dynamicPostRequest('/initpull',body,initAssetRender,dynamicError);
+	dynamicPostRequest('/initpull',body,initAssetRender,dynamicError,argsocket);
 }
 
-function initAssetRender(request){
+function initAssetRender(request,argsocket){
 	//parse the response body and render it
 	var body = JSON.parse(request.responseText);
 	if (verboseDebugging) {
@@ -945,7 +949,7 @@ function initAssetRender(request){
 		console.log(body);
 	}
 	//render new assets in respective tiles
-	assetRender(body);
+	assetRender(body,argsocket);
 }
 // end Mark's code
 
