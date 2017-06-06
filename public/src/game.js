@@ -668,7 +668,7 @@ function loadPlayer(argsocket) {
 	      				.attr({x: eventData[key]['x'], y: eventData[key]['y'], w: 10, h: 50})
 	      				// Color of sprite (to be replaced)
 	      				.color('#F41')
-	      				.twoway(200)
+	      				//.twoway(200) //EXPERIMENTAL EDIT
 	      				// Set platforms to stop falling other player
 	      				.gravity('Platform')
 	      				.gravityConst(600);
