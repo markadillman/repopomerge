@@ -591,6 +591,7 @@ function loadPlayer(socket) {
 	    .bind('SceneLoaded',function(eventData){
 			//function to handle the initial admission to the player pool
 			if (!(eventData === null)){
+				tempSocket = eventData.socket;
 				if (verboseDebugging)
 				{
 					console.log("in scene loaded event. Event data:");
@@ -598,7 +599,7 @@ function loadPlayer(socket) {
 					console.log("Socket info");
 					console.log(socket);
 				}
-				socket.emit('init position',{x : eventData.x , y : eventData.y});
+				tempSocket.emit('init position',{x : eventData.x , y : eventData.y});
 			}
 	    })
 	    .bind('NewPlayer',function(eventData){
@@ -814,7 +815,7 @@ function loadPlayer(socket) {
 	}
 
 	//trigger the player creation event
-	player.trigger('SceneLoaded',{x:player.x,y:player.y,id:socketId});
+	player.trigger('SceneLoaded',{x:player.x,y:player.y,id:socketId,socket:socket/*,avatar:*/});
 }
 
 /*start Mark's code, helper functions to fetch rows of 5 assets:
