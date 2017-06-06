@@ -1095,7 +1095,7 @@ function passwordResponse(request,pw,initCoords){
 		initCoords.xcoord = body.xcoord;
 		initCoords.ycoord = body.ycoord;
 		//
-		displayMessage(repromptPassword,passwordSubmit,doTileExit,true,false,true,initCoords);
+		displayMessage(repromptPassword,passwordSubmit,doTileExit,true,false,false,true,initCoords);
 	}
 	//else password is confirmed.
 	else if (request.status === 224){
