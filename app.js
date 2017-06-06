@@ -100,11 +100,11 @@ socketUniversal.on('connection',function(socket){
 	socket.on('init position',function(data){
 		//add player to list of active players
 		console.log(util.inspect(data));
-		playerPositionMap[socket.id.toString()] = {x:data.x,y:data.y,};
+		playerPositionMap[socket.id.toString()] = {coords:{x:data.x,y:data.y,},avatar:data.avatar};
 		console.log("Player added to position map.");
 		console.log(util.inspect(playerPositionMap));
 		//broadcast new player to other active players
-		socketUniversal.emit('new player',{x:data.x,y:data.y,id:socket.id});
+		socketUniversal.emit('new player',{x:data.x,y:data.y,id:socket.id,avatar:data.avatar});
 	});
 	socket.on('changeCoords',function(data){
 		//console.log(data);
@@ -121,6 +121,7 @@ socketUniversal.on('connection',function(socket){
 		console.log(util.inspect(playerPositionMap));
 		socket.emit('position response',playerPositionMap);
 	});
+	socket.on('avatar lookup')
 });
 
 //HELPER FUNCTION FOR SVG VALIDITY

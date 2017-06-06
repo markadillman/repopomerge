@@ -1532,7 +1532,7 @@ function initSVG(evt) {
 	canvas.addEventListener("wheel", scrollWheel);
 
 	// load data from the server
-	svgLoadFromServer(xTile, yTile, password);
+	//svgLoadFromServer(xTile, yTile, password);
 	
 	// debug message
 	if (debugging) {

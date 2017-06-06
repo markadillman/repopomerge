@@ -32,7 +32,7 @@ var tileWidth = 600;
 var tileHeight = 350;
 var canvasEdge = 50;
 var screenWidth = tileWidth + (2 * canvasEdge);
-var screenHeight = tileHeight + (2 * canvasEdge);
+var screenHeight = tileHeight + (2 * canvasEdge);	
 var currentCenterX = 0;
 var currentCenterY = 0;
 var currentUpperLeftX = 0;
@@ -596,7 +596,7 @@ function loadPlayer(argsocket) {
 					console.log("Socket info");
 					console.log(argsocket);
 				}
-				argsocket.emit('init position',{x : eventData.x , y : eventData.y});
+				argsocket.emit('init position',{x : eventData.x , y : eventData.y, avatar: eventData.avatar});
 			}
 	    })
 	    .bind('NewPlayer',function(eventData){
@@ -612,6 +612,8 @@ function loadPlayer(argsocket) {
 	      			// Set platforms to stop falling other player
 	      			//.gravity('Platform')
 	      			//.gravityConst(600);
+	      			//AVATAR STUFF
+
 	      		//add a field that ties this player to an id
 	      		otherPlayer.friendId = eventData.id;
 	      		//set the Crafty id as a field
@@ -792,6 +794,15 @@ function loadPlayer(argsocket) {
 	player.addComponent('playerSprite');
 	player.w = 390/avatarMultiplier;
 	player.h = canvasHeight/avatarMultiplier;
+
+	if (verboseDebugging)
+	{
+		console.log("check out the sprite");
+		console.log("mySprite");
+		console.log(mySprite);
+		console.log("myString");
+		console.log(myString);
+	}
 	
 	//player should be in front of other graphical assets
 	player.z = 2;
@@ -812,7 +823,7 @@ function loadPlayer(argsocket) {
 	}
 
 	//trigger the player creation event
-	player.trigger('SceneLoaded',{x:player.x,y:player.y,id:socketId,socket:argsocket/*,avatar:*/});
+	player.trigger('SceneLoaded',{x:player.x,y:player.y,id:socketId,socket:argsocket,avatar:myString});
 }
 
 /*start Mark's code, helper functions to fetch rows of 5 assets:
