@@ -150,6 +150,14 @@ function loadScript(url, callback)
 
     // Fire the loading
     head.appendChild(script);
+
+    //create the socket io and assign to global variable
+    //BEGIN CODE ADDED BY MARK
+	//create socket.io connection DIFFERENT ON LOCAL AND SERVER. ADJUST.
+	socket = io('http://192.168.2.50:8080');
+	socket.on('assign id', function(data){
+		socketId = data.id;
+	});
 }
 
 Game =
@@ -162,12 +170,6 @@ Game =
 		// Start screen scene
 		Crafty.defineScene('HomeScreen', function()
 		{
-			//BEGIN CODE ADDED BY MARK
-			//create socket.io connection DIFFERENT ON LOCAL AND SERVER. ADJUST.
-			socket = io('http://192.168.2.50:8080');
-			socket.on('assign id', function(data){
-			socketId = data.id;
-			});
 			//END CODE ADDED BY MARK
 
 			// Title
