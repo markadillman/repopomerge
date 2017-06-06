@@ -54,7 +54,7 @@ var socket;
 var socketId;
 var playerGlob;
 //global constant to determine number of logical frames per network frame
-const netFrameRate = 20;
+const netFrameRate = 50;
 var playerPositionMap = {};
 //END CODE ADDED BY MARK
 
