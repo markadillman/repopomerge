@@ -697,9 +697,9 @@ function assetRender(assets){
 			}
 			loadPlayer();
 		}, playerSpawnDelay, 0);
-	} else {
+	}/* else {
 		loadPlayer();
-	}
+	}*/
 	// end Toni's code
 }
 
