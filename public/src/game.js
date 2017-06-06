@@ -164,7 +164,7 @@ Game =
 		{
 			//BEGIN CODE ADDED BY MARK
 			//create socket.io connection DIFFERENT ON LOCAL AND SERVER. ADJUST.
-			var socket = io('http://192.168.2.50:8080');
+			socket = io('http://192.168.2.50:8080');
 			socket.on('assign id', function(data){
 			socketId = data.id;
 			});
@@ -472,7 +472,7 @@ function loadPlatforms() {
 }
 
 // loadPlayer code moved here
-function loadPlayer() {
+function loadPlayer(socket) {
 	// Toni added code to set player position
 	var xCoord;
 	var yCoord;
