@@ -311,5 +311,36 @@ http://infiniteblank.com/wordpress/?page_id=20
 				</form>
 			</div>
 		</div>
+
+		<!--PASSWORD SET DIV ADDED BY MARK-->
+		
+		<div id="passwordDiv" style="display:none; width: 1031px; margin: auto">
+			<div id="passwordFormatDiv" style="width: 985px; height: 474px; position: absolute; top: 53px">
+				<form id="pwdControls" onsubmit="return onFormSubmit(this)" style="position: absolute">
+					<h1 id="passwordSetText"
+						style="font-size: 240%; width: 1002px; text-align: center; position: absolute; top: 100px">
+					</h1>
+					<label for="firstPassword" style="position: absolute; top: 200px; left: 380px"> Enter Password:</label>
+					<input type="password" id="firstPassword" 
+						style="display: block; width: 235px; position: absolute; top: 275px; left: 380px">
+					</input>
+					<label for="secondPassword" style="position: absolute; top: 350px; left: 380px">Repeat Password:</label>
+					<input type="password" id="secondPassword" 
+						style="display: block; width: 235px; position: absolute; top: 425px; left: 380px">
+					</input>
+					<input type="button" id="pwdBtnOK" value="Submit Password"
+						style="display: block; width: 80px; position: absolute; top: 500px; left: 380px">
+					</input>
+					<input type="button" id="pwdBtnSkip" value="Don't Change"
+						style="display: block; width: 80px; position: absolute; top: 500px; left: 470px">
+					</input>
+					<input type="button" id="pwdBtnPublic" value="Make Public"
+						style="display: block; width: 80px; position: absolute; top: 500px; left: 560px">
+					</input>
+					<input type="button" id="pwdBtnCancel" value="Cancel"
+						style="display: block; width: 80px; position: absolute; top: 500px; left: 650px">
+					</input>
+				</form>
+			</div>
 	</body>
 </html>

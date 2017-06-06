@@ -10,7 +10,7 @@ var xmlParse = require('xml2js').parseString;
 const util = require('util');
 var MongoClient = require('mongodb').MongoClient, assert = require('assert');
 //database url
-var dbUrl = 'mongodb://172.31.34.164:27017/test'
+var dbUrl = 'mongodb://127.0.0.1:27017/test'
 
 var index = require('./routes/index');
 var users = require('./routes/users');
@@ -105,7 +105,24 @@ function isValidSvg(svgString){
 app.post('/edit',function(req,res){
 	var xcoord = parseInt(req.body.xcoord);
 	var ycoord = parseInt(req.body.ycoord);
-	var pw = req.body.pw;
+	//var graphic = req.body.graphic //UNCOMMENT LATER
+	var isBeingEdited;
+	if (req.body.isBeingEdited){
+		isBeingEdited = req.body.isBeingEdited;
+	}
+	else {
+		//if this value is assigned by a spoofed request it won't matter unless
+		//they know the password.
+		isBeingEdited = false;
+	}
+	var pw;
+	if (req.body.pw)
+	{
+		pw = req.body.pw;
+	}
+	else {
+		pw = "";
+	}
 	var rawSVG = req.body.svg;
 	//if tile coordinates are not a number or out of bounds, reject
 	if (!(Number.isInteger(xcoord)&&Number.isInteger(ycoord))){
@@ -128,15 +145,18 @@ app.post('/edit',function(req,res){
 	insertDoc['ycoord'] = ycoord;
 	insertDoc['pw'] = pw;
 	insertDoc['svg'] = rawSVG;
+	insertDoc['isBeingEdited'] = isBeingEdited;
+	//insertDoc['graphic'] = graphic //UNCOMMENT LATER
 	var filter = {};
 	filter['xcoord'] = xcoord;
 	filter['ycoord'] = ycoord;
+	filter['pw'] = pw;
 	console.log(util.inspect(insertDoc,false,null));
 	MongoClient.connect(dbUrl,function(err,db){
 		//test for errors, pop out if there are errors present
 		assert.equal(null,err);
 		console.log("connected succesfully to server");
-		insertDocument(db,insertDoc,filter,res,insertCallback);
+		insertDocument(db,insertDoc,filter,res,insertCallback,insertDoc);
 	});
 });
 
@@ -153,26 +173,93 @@ var insertDocument = function(db,insertDoc,filter,res,callback){
 		else {
 			console.log(err);
 		}
-		callback(db,res);
+		callback(db,res,insertDoc);
 	});
 }
 
-var insertCallback = function(db,res){
+
+var insertCallback = function(db,res,initCoords){
 	console.log("in callback");
 	db.close();
-	res.sendStatus(200);
+	var sendCoords = {};
+	sendCoords.xcoord = initCoords.xcoord;
+	sendCoords.ycoord = initCoords.ycoord;
+	console.log();
+	res.status(200).send(JSON.stringify(sendCoords));
+}
+
+var insertDocumentNoCallback = function(db,insertDoc,filter,res){
+	var collection = db.collection('tiles');
+	//insert the document
+	console.log("About to insert:");
+	console.log(util.inspect(insertDoc));
+	collection.update(filter,insertDoc,{upsert:true},function(err,result){
+		if (err === null){
+			console.log("Inserted tile into database");
+			console.log(result);
+		}
+		else {
+			console.log(err);
+		}
+		db.close();
+	});
 }
 
 var findDocument = function(db,query,req,res,callback,initCoords,setname){
 	var collection = db.collection('tiles');
+	console.log("FOR");
+	console.log(callback.toString());
 	console.log(util.inspect(query));
-	collection.find(query).toArray(function(err,docs){
+	var fields = {};
+	fields.xcoord = 1;
+	fields.ycoord = 1;
+	fields.svg = 1;
+	fields.isBeingEdited = 1;
+	//fields.graphic = 1; //'UNEDIT THIS LATER'
+	collection.find(query,fields).toArray(function(err,docs){
 		//if error, pop
 		assert.equal(err,null);
-		//console.log("Found following records:");
-		//console.log(docs);
-		//console.log("Size of docs:");
-		//console.log(docs.length);
+		console.log("Found following records:");
+		console.log(docs);
+		console.log("Size of docs:");
+		console.log(docs.length);
+		if (initCoords && setname){
+			console.log("logic1");
+			callback(db,req,res,docs,initCoords,setname);
+		}
+		else if (initCoords){
+			console.log("logic1");
+			callback(db,req,res,docs,initCoords);
+		} else {
+			console.log("logic1");
+			callback(db,req,res,docs);
+		}
+		console.log("---end callback");
+	});
+}
+
+//same as findDocument but will return the password. NEVER RETURN A LIST OF DOCS
+//GENERATED FROM THIS QUERY HELPER TO THE CLIENT. IT WILL RESULT IN A PLAINTEXT
+//PASSWORD LEAK. Separating these functions by function name avoids fancy arg
+//overloading that could cause leaks.
+var findDocumentPW = function(db,query,req,res,callback,initCoords,setname){
+	var collection = db.collection('tiles');
+	console.log("this query gon return passwords:");
+	console.log(util.inspect(query));
+	var fields = {};
+	fields.xcoord = 1;
+	fields.ycoord = 1;
+	fields.svg = 1;
+	fields.isBeingEdited = 1;
+	fields.pw = 1;
+	//fields.graphic = 1;
+	collection.find(query,fields).toArray(function(err,docs){
+		//if error, pop
+		assert.equal(err,null);
+		console.log("Found following records:");
+		console.log(docs);
+		console.log("Size of docs:");
+		console.log(docs.length);
 		if (initCoords && setname){
 			callback(db,req,res,docs,initCoords,setname);
 		}
@@ -186,10 +273,17 @@ var findDocument = function(db,query,req,res,callback,initCoords,setname){
 
 var findCallback = function(db,req,res,docs,initCoords){
 	if (docs.length === 1){
+		//now that the doc is retrieved, set as being edited.
+		var xcoord = docs[0]['xcoord'];
+		var ycoord = docs[0]['ycoord'];
+		setEdited(xcoord,ycoord,true);
+		//construct header
 		res.setHeader('Content-Type','application/json');
-		console.log(docs[0]);
-		res.status(200);
-		res.status(200).send(JSON.stringify(docs[0]));
+		console.log("shippin out some troublin docs.");
+		console.log(util.inspect(docs));
+		console.log("docs array accessor");
+		console.log(util.inspect(docs[0]));
+		res.status(200).send(JSON.stringify(docs));
 	}
 	else if (docs.length === 0) {
 		res.status(242).send("No coordinate / password matches found.");
@@ -200,6 +294,38 @@ var findCallback = function(db,req,res,docs,initCoords){
 	db.close();
 }
 
+//helper function to adjust the editing status of a tile with coordinates
+var setEdited = function(xcoord,ycoord,editStatus){
+	//if any coordinates are not legit, exit the function
+	if ((xcoord === null || xcoord === undefined)|| (ycoord === null || ycoord === undefined)){
+		return;
+	}
+	var insertDoc = {$set : {isBeingEdited : editStatus}};
+	var filter = {};
+	filter.xcoord = xcoord;
+	filter.ycoord = ycoord;
+	//console.log("edit status filter");
+	//console.log(util.inspect(filter));
+	MongoClient.connect(dbUrl,function(err,db){
+		//test for errors, pop out if there are errors present
+		assert.equal(null,err);
+		//console.log("connected succesfully to server");
+		//perform update
+		var collection = db.collection('tiles');
+		//insert the document
+		//console.log("About to update edit:");
+		//console.log(util.inspect(insertDoc));
+		collection.update(filter,insertDoc,{upsert:true},function(err,result){
+			if (err === null){
+				//console.log("Updated editing status");
+				//console.log(result);
+			}
+			else {
+				//console.log(err);
+			}
+		});
+	});
+}
 
 /*this pull takes 8 sets of coordinates. Payload body format, coordinates as integer pairs
 -----"ul":{<upper left coords>}
@@ -249,11 +375,18 @@ app.post('/retrieve',function(req,res){
 	query['ycoord'] = req.body.ycoord;
 	if (req.body.pw){
 		query['pw'] = req.body.pw;
+		console.log("pw in da body");
+		console.log(req.body.pw);
+		console.log("query in retrieve");
+		console.log(util.inspect(query));
 	}
 	else {
 		query['pw']="";
+		console.log("dere wud no pw so pw now");
 	}
 	if (!(Number.isInteger(query['xcoord'])&&Number.isInteger(query['ycoord']))){
+		console.log("NOT A FUCKIN NUMBER FOR SOME REASON. THE QUERY M'LORD:");
+		console.log(util.inspect(query));
 		res.status(527).send("Tile coordinates invalid or out of bounds.");
 		return;
 	}
@@ -262,6 +395,8 @@ app.post('/retrieve',function(req,res){
 		assert.equal(null,err);
 		console.log("connected succesfully to server");
 		//perform lookup
+		console.log("rye b4 query");
+		console.log(util.inspect(query));
 		findDocument(db,query,req,res,findCallback);
 	});
 });
@@ -298,12 +433,6 @@ var initPullCallback = function(db,req,res,docs,initCoords){
 	//send response
 	res.setHeader('Content-Type','application/json');
 	res.status(200);
-	console.log("res status:");
-	console.log(JSON.stringify(res._headers));
-	console.log("docs:");
-	console.log(util.inspect(docs));
-	console.log("response body:");
-	console.log(JSON.stringify(docs));
 	res.status(200).send(JSON.stringify(docs));
 }
 
@@ -378,6 +507,244 @@ var pullHelper = function(req,res,setname,initCoords){
 		findDocument(db,query,req,res,dynamicPullCallback,initCoords,setname);
 	});
 };
+
+//callbacks for editcheck and pwcheck functions
+var editCheckCallback = function(db,req,res,docs,initCoords){
+	//if no match, this tile is good to edit. (coordinates in bounds verified earlier)
+	var payload = {};
+	if (docs.length === 0 || docs.length === undefined){
+		payload.message = "Tile available for immediate edit: no previous owner";
+		//create the tile
+		newTile = {};
+		newTile.xcoord = initCoords.xcoord;
+		newTile.ycoord = initCoords.ycoord;
+		var coords = {};
+		coords.xcoord = initCoords.xcoord;
+		coords.ycoord = initCoords.ycoord;
+		newTile.pw = "";
+		newTile.isBeingEdited = true;
+		//add it to the db
+		insertDocumentNoCallback(db,newTile,coords,res);
+		payload.xcoord = initCoords.xcoord;
+		payload.ycoord = initCoords.ycoord;
+		res.status(224).send(JSON.stringify(payload));
+	}
+	//if previously edited, check for a password. If password is not blank, prompt
+	//user to enter password with response.
+	else if (docs.length === 1){
+		//make sure not to pass doc directly. since it contains password
+		payload.xcoord = docs[0]['xcoord'];
+		payload.ycoord = docs[0]['ycoord'];
+		//these logic checks will not be null after length is confirmed to be one
+		if (docs[0]['isBeingEdited'] === true){
+			//notify of document being edited
+			console.log("schtuff dun gettin edited");
+			payload.message = "This tile is currently being edited by another player.";
+			res.status(242).send(JSON.stringify(payload));
+		}
+		//if password is blank, send an approval to edit
+		else if (docs[0]['pw'] === ''){
+			console.log("no dadgum password man, go hed");
+			payload.message = "No password set on this tile: edit OK.";
+			console.log("224 loggie");
+			console.log(util.inspect(payload));
+			res.status(224).send(JSON.stringify(payload));
+		}
+		//else password is set. Tell client to collect user password and compare
+		//in password check middleware.
+		else {
+			console.log("we in the realm of the password check.");
+			payload.message = "Please enter the password for this tile to begin editing.";
+			payload.xcoord = docs[0]['xcoord'];
+			payload.ycoord = docs[0]['ycoord'];
+			res.status(233).send(JSON.stringify(payload));
+		}
+	}
+	else {
+		res.status(500);
+		res.send();
+	}
+};
+
+var pwCheckCallback = function(db,req,res,docs,args){
+	//if no match, this tile is good to edit. (coordinates in bounds verified earlier)
+	var payload = {};
+	if (docs.length === 1){
+		//these logic checks will not be null after length is confirmed to be one
+		payload.xcoord = docs[0]['xcoord'];
+		payload.ycoord = docs[0]['ycoord'];
+		if (docs[0]['isBeingEdited'] === true){
+			//notify of document being edited
+			payload.message = "This tile is currently being edited by another player.";
+			res.status(242).send(JSON.stringify(payload));
+		}
+		//if password matches, send approval to edit
+		else if (docs[0]['pw'] === args.pw || docs[0][pw] === ''){
+			payload.message = "Passwords match.";
+			res.status(224).send(JSON.stringify(payload));
+		}
+		//else password is set. Tell client to collect user password and compare
+		//in password check middleware.
+		else {
+			payload.message = "The password does not match.";
+			payload.xcoord = args.xcoord;
+			payload.ycoord = args.ycoord;
+			res.status(299).send(JSON.stringify(payload));
+		}
+	}
+	else {
+		payload.message = "The password does not match.";
+		payload.xcoord = args.xcoord;
+		payload.ycoord = args.ycoord;
+		res.status(299);
+		res.send(JSON.stringify(payload));
+	}
+};
+
+/*This function compares the password of an owned cell to that provided by a client:
+Data structure is:
+{pw:password,xcoord:x,ycoord:y}
+*/
+app.post('/pwcheck',function(req,res){
+	var args = {};
+	args.xcoord = req.body.x;
+	args.ycoord = req.body.y;
+	args.pw = req.body.pw;
+	MongoClient.connect(dbUrl,function(err,db){
+		//test for errors, pop out if there are errors present
+		assert.equal(null,err);
+		console.log("connected succesfully to server");
+		//perform lookup
+		findDocumentPW(db,args,req,res,pwCheckCallback,args);
+	});
+});
+
+//callback for the final submission password check
+var finalPwCheckCallback = function(db,req,res,docs,args){
+	//if no match, this tile is good to edit. (coordinates in bounds verified earlier)
+	var payload = {};
+	if (docs.length === 1){
+		if (docs[0]['pw'] === args.pw || docs[0][pw] === ''){
+			payload.message = "Passwords match.";
+			res.status(224).send(JSON.stringify(payload));
+		}
+		//else password is set. Tell client to collect user password and compare
+		//in password check middleware.
+		else {
+			payload.message = "The password does not match.";
+			payload.xcoord = args.xcoord;
+			payload.ycoord = args.ycoord;
+			res.status(299).send(JSON.stringify(payload));
+		}
+	}
+	else {
+		payload.message = "The password does not match.";
+		payload.xcoord = args.xcoord;
+		payload.ycoord = args.ycoord;
+		res.status(299);
+		res.send(JSON.stringify(payload));
+	}
+};
+
+//same as pwcheck middleware but disregards editing status as it will always be true
+app.post('/finalpwcheck',function(req,res){
+	var args = {};
+	args.xcoord = req.body.x;
+	args.ycoord = req.body.y;
+	args.pw = req.body.pw;
+	MongoClient.connect(dbUrl,function(err,db){
+		//test for errors, pop out if there are errors present
+		assert.equal(null,err);
+		console.log("connected succesfully to server");
+		//perform lookup
+		findDocumentPW(db,args,req,res,finalPwCheckCallback,args);
+	});
+});
+
+/* This function is involved in setting a password for the first time. It is only
+   used wehen the password is set, not every time a user decides to keep a tile
+   edit-locked with a password.
+   {xcoord,ycoord,pw,newpw}
+*/
+app.post('/pwset',function(req,res){
+	//query on the old password as a password check
+	var args = {};
+	args.xcoord = req.body.xcoord;
+	args.ycoord = req.body.ycoord;
+	if (req.body.pw)
+	{
+		args.pw = req.body.pw;
+	}
+	else {
+		args.pw = '';
+	}
+	if (args.pw === null || args.pw === undefined){
+		args.pw = '';
+	}
+	//the set field will be the new password
+
+	if (!(req.body.newpw === undefined) && !(req.body.newpw === null)){
+		var setField = {$set : {pw : req.body.newpw}};
+	}
+	else {
+		var setField = {$set : {pw : ''}};
+	}
+	MongoClient.connect(dbUrl,function(err,db){
+		//test for errors, pop out if there are errors present
+		assert.equal(null,err);
+		console.log("connected succesfully to server");
+		//perform lookup
+		updatePw(db,args,setField,req,res,pwSetCallback,args);
+	});
+});
+
+//helper function updatePw filters database and changes applicable setFields 
+var updatePw = function(db,filter,setField,req,res,callback,args){
+	var collection = db.collection('tiles');
+	//insert the document
+	console.log("About to insert:");
+	console.log(util.inspect(setField));
+	console.log("pwd update filters:");
+	console.log(util.inspect(filter));
+	collection.update(filter,setField,{upsert:false},function(err,result){
+		if (err === null){
+			console.log(util.inspect(result));
+			callback(db,res);
+		}
+		else {
+			console.log(err);
+			callback(db,res,err);
+		}
+	});
+}
+
+//callback function for password update
+var pwSetCallback = function (db,res,err){
+	if (err){
+		res.status(588).send(JSON.stringify(err));
+	}
+	else {
+		res.status(200).send();
+	}
+}
+
+/*this function checks to see if a cell is owned at all, or, if it is, is it currently being edited.
+If no docs are returned, then create a doc with the tile coordinates and 
+Data structure is:
+{xcoord:x,ycoord:y}
+*/
+app.post('/editcheck',function(req,res){
+	var initCoords = {};
+	initCoords.xcoord = req.body.xcoord;
+	initCoords.ycoord = req.body.ycoord;
+	MongoClient.connect(dbUrl,function(err,db){
+		//test for errors, pop out if there are errors present
+		assert.equal(null,err);
+		console.log("connected succesfully to server");
+		//perform lookup
+		findDocumentPW(db,initCoords,req,res,editCheckCallback,initCoords);
+	});
+});
 
 //multiple routes using helper function.
 app.post('/pulltop',function(req,res){
