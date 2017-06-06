@@ -593,7 +593,10 @@ function loadPlayer(socket) {
 			if (!(eventData === null)){
 				if (verboseDebugging)
 				{
+					console.log("in scene loaded event. Event data:");
 					console.log(eventData);
+					console.log("Socket info");
+					console.log(socket);
 				}
 				socket.emit('init position',{x : eventData.x , y : eventData.y});
 			}
