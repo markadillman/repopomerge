@@ -387,7 +387,24 @@ Game =
 			// load world art using global tile coords from tool.js
 			initAssetRequest(xTile, yTile,socket);
 			// this will now call the code to load platforms and player, too
-				
+
+			//BEGIN CODE ADDED BY MARK
+	    	//this will trigger the player to call the function that adds to list of known players
+	    	socket.on('new player',function(data){
+	        	//actual event trigger
+	       		player.trigger('NewPlayer',data);
+	    	});
+	    	//this will trigger when server responds with updated positions
+	    	socket.on('position response',function(data){
+	       		//actual event trigger
+	       		player.trigger('UpdateMap',data);
+	    	});
+	    	//this will trigger when a player logs off
+	    	socket.on('player logoff',function(data){
+	       		//actual event trigger
+	       		player.trigger('OtherPlayerLogoff',data);
+	    	});
+	    	//END CODE ADDED BY MARK		
 		}, function() {
 			// start Toni's code
 			// adding an uninit function
@@ -408,24 +425,6 @@ Game =
 		// Start game on home screen
 		Crafty.enterScene('HomeScreen');
 
-
-	    //BEGIN CODE ADDED BY MARK
-	    //this will trigger the player to call the function that adds to list of known players
-	    socket.on('new player',function(data){
-	        //actual event trigger
-	       	player.trigger('NewPlayer',data);
-	    });
-	    //this will trigger when server responds with updated positions
-	    socket.on('position response',function(data){
-	       	//actual event trigger
-	       	player.trigger('UpdateMap',data);
-	    });
-	    //this will trigger when a player logs off
-	    socket.on('player logoff',function(data){
-	       	//actual event trigger
-	       	player.trigger('OtherPlayerLogoff',data);
-	    });
-	    //END CODE ADDED BY MARK
 	}
 }
 
