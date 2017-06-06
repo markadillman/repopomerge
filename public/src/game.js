@@ -54,7 +54,7 @@ var socket;
 var socketId;
 var playerGlob;
 //global constant to determine number of logical frames per network frame
-const netFrameRate = 50;
+const netFrameRate = 20;
 var playerPositionMap = {};
 //END CODE ADDED BY MARK
 
@@ -608,10 +608,10 @@ function loadPlayer(argsocket) {
 	      			.attr({x: eventData.x, y: eventData.y, w: 10, h: 50})
 	      			// Color of sprite (to be replaced)
 	      			.color('#F41')
-	      			.twoway(200)
+	      			//.twoway(200)
 	      			// Set platforms to stop falling other player
-	      			.gravity('Platform')
-	      			.gravityConst(600);
+	      			//.gravity('Platform')
+	      			//.gravityConst(600);
 	      		//add a field that ties this player to an id
 	      		otherPlayer.friendId = eventData.id;
 	      		//set the Crafty id as a field
@@ -670,8 +670,8 @@ function loadPlayer(argsocket) {
 	      				.color('#F41')
 	      				//.twoway(200) //EXPERIMENTAL EDIT
 	      				// Set platforms to stop falling other player
-	      				.gravity('Platform')
-	      				.gravityConst(600);
+	      				//.gravity('Platform')
+	      				//.gravityConst(600);
 	      			//add a field that ties this player to an id
 	      			oldPlayer.friendId = key;
 	      			//set the Crafty id as a field
