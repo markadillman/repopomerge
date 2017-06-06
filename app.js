@@ -7,15 +7,31 @@ var bodyParser = require('body-parser');
 var styles = require('stylus');
 var SVG = require('svg.js');
 var xmlParse = require('xml2js').parseString;
+var http = require('http');
 const util = require('util');
 var MongoClient = require('mongodb').MongoClient, assert = require('assert');
 //database url
-var dbUrl = 'mongodb://172.31.34.164:27017/test'
+var dbUrl = 'mongodb://127.0.0.1:27017/test'
+var socketioPort = 8080;
 
 var index = require('./routes/index');
 var users = require('./routes/users');
 
 var app = express();
+
+var server = http.createServer(app);
+var io = require('socket.io');
+server.listen(socketioPort);
+var socketUniversal = io.listen(server);
+//data structure for Namespace (room) of players to poll for position.
+//declaring here allows for prototyping at server initialization.
+function Player(x,y,id) {
+	this.x = x,
+	this.y = y,
+	this.id = id
+};
+//player position map keyed by player id
+var playerPositionMap = {};
 
 //make process trackable
 process.title = "ariesApp";
@@ -76,6 +92,36 @@ const pullSets = {	"top pull" : {0:{"x":-2,"y":-3},1:{"x":-1,"y":-3},2:{"x":0,"y
 					"left pull" : {0:{"x":-3,"y":-2},1:{"x":-3,"y":-1},2:{"x":-3,"y":0},3:{"x":-3,"y":1},4:{"x":-3,"y":2}},
 					"right pull" : {0:{"x":3,"y":-2},1:{"x":3,"y":-1},2:{"x":3,"y":0},3:{"x":3,"y":1},4:{"x":3,"y":2}}
 				};
+
+//socket.io on connect event code
+socketUniversal.on('connection',function(socket){
+	console.log('socketio connection made');
+	socket.emit('assign id',{id : socket.id});
+	socket.on('init position',function(data){
+		//add player to list of active players
+		console.log(util.inspect(data));
+		playerPositionMap[socket.id.toString()] = {x:data.x,y:data.y,};
+		console.log("Player added to position map.");
+		console.log(util.inspect(playerPositionMap));
+		//broadcast new player to other active players
+		socketUniversal.emit('new player',{x:data.x,y:data.y,id:socket.id});
+	});
+	socket.on('changeCoords',function(data){
+		//console.log(data);
+		playerPositionMap[data.id]['x'] = data.x;
+		playerPositionMap[data.id]['y'] = data.y;
+	});
+	socket.on('disconnect',function(){
+		delete playerPositionMap[socket.id.toString()];
+		console.log(util.inspect(playerPositionMap));
+		socketUniversal.emit('player logoff',{id:socket.id});
+	})
+	socket.on('position request',function(){
+		console.log("position request payload");
+		console.log(util.inspect(playerPositionMap));
+		socket.emit('position response',playerPositionMap);
+	});
+});
 
 //HELPER FUNCTION FOR SVG VALIDITY
 function isValidSvg(svgString){
