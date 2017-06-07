@@ -610,7 +610,7 @@ function loadPlayer(argsocket) {
 	      		}
 	      		//this function will either create a different colored rectangle or, in the future,
 	      		//load the player's avatar into memory and start rendering it over their hitbox
-	      		var otherPlayer = Crafty.e('2D, DOM, Color, Twoway, Gravity')
+	      		var otherPlayer = Crafty.e('2D, Canvas, Color, Twoway, Gravity')
 	      			// Initial position and size
 	      			.attr({x: eventData.x, y: eventData.y, w: 10, h: 50})
 	      			// Color of sprite (to be replaced)
@@ -690,7 +690,7 @@ function loadPlayer(argsocket) {
 	      			}
 	      			//this function will either create a different colored rectangle or, in the future,
 	      			//load the player's avatar into memory and start rendering it over their hitbox
-	      			var oldPlayer = Crafty.e('2D, DOM, Color, Twoway, Gravity')
+	      			var oldPlayer = Crafty.e('2D, Canvas, Color, Twoway, Gravity')
 	      				// Initial position and size
 	      				.attr({x: eventData[key]['x'], y: eventData[key]['y'], w: 10, h: 50})
 	      				// Color of sprite (to be replaced)
@@ -731,7 +731,7 @@ function loadPlayer(argsocket) {
 		.bind("AvatarSet",function(eventData){
 			if (verboseDebugging){
 				console.log("Avatar set event data");
-				console.log(eventData.avatar);
+				console.log(eventData);
 			}
 			var targetPlayer = Crafty(playerPositionMap[eventData.id]);
 			//AVATAR STUFF
