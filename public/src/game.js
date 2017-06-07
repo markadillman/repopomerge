@@ -604,13 +604,17 @@ function loadPlayer(argsocket) {
 	    })
 	    .bind('NewPlayer',function(eventData){
 	      	if (!(eventData.id === socketId)){
+	      		if (verboseDebugging){
+	      			console.log("New player triggered");
+	      			console.log(eventData.avatar);
+	      		}
 	      		//this function will either create a different colored rectangle or, in the future,
 	      		//load the player's avatar into memory and start rendering it over their hitbox
 	      		var otherPlayer = Crafty.e('2D, DOM, Color, Twoway, Gravity')
 	      			// Initial position and size
 	      			.attr({x: eventData.x, y: eventData.y, w: 10, h: 50})
 	      			// Color of sprite (to be replaced)
-	      			.color('#F41')
+	      			//.color('#F41')
 	      			//.twoway(200)
 	      			// Set platforms to stop falling other player
 	      			//.gravity('Platform')
@@ -725,6 +729,10 @@ function loadPlayer(argsocket) {
 		//callback to add avatar to another player when it is retrieved
 		//data will be {id,avatar} both as strings
 		.bind("AvatarSet",function(eventData){
+			if (verboseDebugging){
+				console.log("Avatar set event data");
+				console.log(eventData.avatar);
+			}
 			var targetPlayer = Crafty(eventData.id);
 			//AVATAR STUFF
 	      	// generate a URL based on player's avatar
@@ -748,7 +756,8 @@ function loadPlayer(argsocket) {
 	      			//console.clear();
 	      			if (verboseDebugging)
 	      			{
-	      				console.log("x: " + this.x.toString() + " y : " + this.y.toString() + " id: " + socketId);
+	      				console.log("player position map");
+	      				console.log(playerPositionMap);
 	      			}
 	      			//END DEBUG
 	      			argsocket.emit('changeCoords', {x : this.x , y : this.y , id : socketId});
