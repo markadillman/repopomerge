@@ -127,7 +127,7 @@ socketUniversal.on('connection',function(socket){
 		var avatarString = playerPositionMap[data.id]['avatar'];
 		console.log("found avatar:");
 		console.log(avatarString);
-		socket.emit('avatar lookup response',{avatar:,id:data.id})
+		socket.emit('avatar lookup response',{avatar:avatarString,id:data.id})
 	});
 });
 
