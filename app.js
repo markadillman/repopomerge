@@ -800,6 +800,13 @@ app.post('/editcheck',function(req,res){
 	});
 });
 
+/* This function frees the tile at the current request position.
+*/
+app.post('/freetile',function(req,res){
+	setEdited(req.body.xcoord,req.body.ycoord,false);
+	res.status(200).send("Tile freed.");
+});
+
 //multiple routes using helper function.
 app.post('/pulltop',function(req,res){
 	console.log(req.body);

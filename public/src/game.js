@@ -735,9 +735,9 @@ function loadPlayer(argsocket) {
 			// put this into the player as its sprite
 			// reference my displayAvatarInCarousel function above
 			var otherSprite = Crafty.sprite(url, {playerSprite: [210, 0, 390, canvasHeight]});
-			otherPlayer.addComponent('playerSprite');
-			otherPlayer.w = 390/avatarMultiplier;
-			otherPlayer.h = canvasHeight/avatarMultiplier;
+			targetPlayer.addComponent('playerSprite');
+			targetPlayer.w = 390/avatarMultiplier;
+			targetPlayer.h = canvasHeight/avatarMultiplier;
 		})
 	    //update with new coordinates every second (50 fps)
 	    .bind("EnterFrame",function(eventData){

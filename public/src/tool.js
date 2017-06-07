@@ -1206,7 +1206,15 @@ function doTileEdit(currentX, currentY) {
 function doTileExit() {
 	//make sure to return repromptPassword flag to default if changes
 	repromptPassword = false;
-	
+
+	//send a request to free up the tile for editing again
+	var payload = {};
+	payload.xcoord = xTile;
+	payload.ycoord = yTIle;
+	postRequest('/freetile',payload,exitCallback,postOnError);
+}
+
+function exitCallback(){
 	// clear out all the current SVG
 	svgClearAll();
 	
