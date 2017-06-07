@@ -676,8 +676,10 @@ function loadPlayer(argsocket) {
 	      			console.log("socket id");
 	      			console.log(socketId);
 	      		}
-	      		//if the ID is not in the current mapping data structure
-	      		if (playerPositionMap[key] === undefined && !(key === socketId)){
+	      		//if the ID is not in the current mapping data structure and if map structure aint empty
+	      		if (playerPositionMap[key] === undefined && !(key === socketId) && 
+	      			//and if there is another player in the position map
+	      			!(Object.keys(playerPositionMap).length === 0 && playerPositionMap.constructor === Object){
 	      			if (verboseDebugging)
 	      			{
 	      				console.log("SHOULDNT BE HERE WITHOUT ANOTHER PLAYER");
@@ -693,7 +695,7 @@ function loadPlayer(argsocket) {
 	      				// Initial position and size
 	      				.attr({x: eventData[key]['x'], y: eventData[key]['y'], w: 10, h: 50})
 	      				// Color of sprite (to be replaced)
-	      				.color('#F41')
+	      				//.color('#F41')
 	      				//.twoway(200) //EXPERIMENTAL EDIT
 	      				// Set platforms to stop falling other player
 	      				//.gravity('Platform')
@@ -718,7 +720,6 @@ function loadPlayer(argsocket) {
 	      			var targetPlayer = Crafty(playerPositionMap[key]);
 	      			targetPlayer.x = eventData[key]['x'];
 	      			targetPlayer.y = eventData[key]['y'];
-	      			argsocket.emit('avatar lookup',{id:key});
 	      			if (verboseDebugging)
 	      			{
 	      				console.log(playerPositionMap);	
@@ -733,7 +734,7 @@ function loadPlayer(argsocket) {
 				console.log("Avatar set event data");
 				console.log(eventData.avatar);
 			}
-			var targetPlayer = Crafty(eventData.id);
+			var targetPlayer = Crafty(playerPositionMap[eventData.id]);
 			//AVATAR STUFF
 	      	// generate a URL based on player's avatar
 			var otherAvatarString = eventData.avatar; // just in case the server ones need it
