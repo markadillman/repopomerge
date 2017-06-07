@@ -1204,6 +1204,9 @@ function doTileEdit(currentX, currentY) {
 // exits from the currently edited tile back into game mode
 // does not save the current edits!
 function doTileExit() {
+	messageDiv.style.display = "none";
+	passwordDiv.style.display = "none";
+
 	//make sure to return repromptPassword flag to default if changes
 	repromptPassword = false;
 
@@ -1211,6 +1214,10 @@ function doTileExit() {
 	var payload = {};
 	payload.xcoord = xTile;
 	payload.ycoord = yTIle;
+	if (verboseDebugging){
+		console.log("Payload to freetile");
+		console.log(payload);
+	}
 	postRequest('/freetile',payload,exitCallback,postOnError);
 }
 
