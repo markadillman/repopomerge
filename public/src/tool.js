@@ -1220,7 +1220,7 @@ function doTileExit() {
 	//send a request to free up the tile for editing again
 	var payload = {};
 	payload.xcoord = xTile;
-	payload.ycoord = yTIle;
+	payload.ycoord = yTile;
 	if (verboseDebugging){
 		console.log("Payload to freetile");
 		console.log(payload);
