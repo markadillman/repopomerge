@@ -1037,7 +1037,7 @@ function tileEditCallback(request){
 		if (verboseDebugging){
 			console.log("Edit authorization failed: Currently being edited.");
 		}
-		displayMessage(body.message,doTileExit,doTileExit,false,false);
+		displayMessage(body.message,doTileExitNoFree,doTileExitNoFree,false,false);
 		return request.status;
 	}
 	else if (request.status === 233){
@@ -1085,7 +1085,7 @@ function passwordResponse(request,pw,initCoords){
 			console.log("Edit authorization failed: Currently being edited.");
 		}
 
-		displayMessage(body.message,doTileExit,doTileExit,false,true,false);
+		displayMessage(body.message,doTileExitNoFree,doTileExitNoFree,false,true,false);
 		return request.status;
 	}
 	//299 is code for incorrect password
@@ -1098,7 +1098,7 @@ function passwordResponse(request,pw,initCoords){
 		initCoords.xcoord = body.xcoord;
 		initCoords.ycoord = body.ycoord;
 		//
-		displayMessage(repromptPassword,passwordSubmit,doTileExit,true,false,false,true,initCoords);
+		displayMessage(repromptPassword,passwordSubmit,doTileExitNoFree,true,false,false,true,initCoords);
 	}
 	//else password is confirmed.
 	else if (request.status === 224){
@@ -1226,6 +1226,32 @@ function doTileExit() {
 		console.log(payload);
 	}
 	postRequest('/freetile',payload,exitCallback,postOnError);
+}
+
+// exits from the currently edited tile back into game mode
+// does not save the current edits! Save as above but no free
+// because edit wasnt set. Mainly used for cancels so that people
+// cannot use a cancel to steal a tile before they gain edit access
+// if someone else is editing.
+function doTileExitNoFree() {
+	if (verboseDebugging){
+		console.log("in doTileExit debugging");
+		console.log("this is good");
+	}
+	messageDiv.style.display = "none";
+	passwordDiv.style.display = "none";
+
+	//make sure to return repromptPassword flag to default if changes
+	repromptPassword = false;
+
+	//send a request to free up the tile for editing again
+	var payload = {};
+	payload.xcoord = xTile;
+	payload.ycoord = yTile;
+	if (verboseDebugging){
+		console.log("Payload to freetile");
+		console.log(payload);
+	}
 }
 
 function exitCallback(request){
