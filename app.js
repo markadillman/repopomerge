@@ -32,6 +32,8 @@ function Player(x,y,id) {
 };
 //player position map keyed by player id
 var playerPositionMap = {};
+//player avatar map keyed by player id
+var playerAvatarMap = {};
 
 //make process trackable
 process.title = "ariesApp";
@@ -100,18 +102,22 @@ socketUniversal.on('connection',function(socket){
 	socket.on('init position',function(data){
 		//add player to list of active players
 		console.log(util.inspect(data));
-		playerPositionMap[socket.id.toString()] = {coords:{x:data.x,y:data.y,},avatar:data.avatar};
+		//put in position map
+		playerPositionMap[socket.id.toString()] = {x:data.x,y:data.y};
 		console.log("Player added to position map.");
 		console.log(util.inspect(playerPositionMap));
+		//put in avatar map
+		playerAvatarMap[socket.id.toString()] = data.avatar;
 		//broadcast new player to other active players
 		socketUniversal.emit('new player',{x:data.x,y:data.y,id:socket.id,avatar:data.avatar});
 	});
 	socket.on('changeCoords',function(data){
 		//console.log(data);
-		playerPositionMap[data.id]['coords']['x'] = data.x;
-		playerPositionMap[data.id]['coords']['y'] = data.y;
+		playerPositionMap[data.id]['x'] = data.x;
+		playerPositionMap[data.id]['y'] = data.y;
 	});
 	socket.on('disconnect',function(){
+		delete playerPositionMap[socket.id.toString()];
 		delete playerPositionMap[socket.id.toString()];
 		console.log(util.inspect(playerPositionMap));
 		socketUniversal.emit('player logoff',{id:socket.id});
@@ -124,7 +130,7 @@ socketUniversal.on('connection',function(socket){
 	socket.on('avatar lookup',function(data){
 		console.log("avatar lookup stuff");
 		console.log(util.inspect(data));
-		var avatarString = playerPositionMap[data.id]['avatar'];
+		var avatarString = playerAvatarMap[data.id];
 		console.log("found avatar:");
 		console.log(avatarString);
 		socket.emit('avatar lookup response',{avatar:avatarString,id:data.id})
