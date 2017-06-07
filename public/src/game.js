@@ -743,7 +743,7 @@ function loadPlayer(argsocket) {
 	    //in play mode
 	    .bind("EnterFrame",function(eventData){
 	      	if (eventData.frame % netFrameRate === 0){
-	      		if (mode === gameMode && playiing === true){
+	      		if (mode === gameMode && playing === true){
 	      			//DEBUG
 	      			//console.clear();
 	      			if (verboseDebugging)
