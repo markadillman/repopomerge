@@ -606,7 +606,7 @@ function loadPlayer(argsocket) {
 	      	if (!(eventData.id === socketId)){
 	      		if (verboseDebugging){
 	      			console.log("New player triggered");
-	      			console.log(eventData.avatar);
+	      			console.log(eventData);
 	      		}
 	      		//this function will either create a different colored rectangle or, in the future,
 	      		//load the player's avatar into memory and start rendering it over their hitbox
