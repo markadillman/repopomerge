@@ -803,6 +803,8 @@ app.post('/editcheck',function(req,res){
 /* This function frees the tile at the current request position.
 */
 app.post('/freetile',function(req,res){
+	console.log("tile freed");
+	console.log(util.inspect(req.body));
 	setEdited(req.body.xcoord,req.body.ycoord,false);
 	res.status(200).send("Tile freed.");
 });
