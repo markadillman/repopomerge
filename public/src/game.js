@@ -678,9 +678,10 @@ function loadPlayer(argsocket) {
 	      		}
 	      		//if the ID is not in the current mapping data structure and if map structure aint empty
 	      		if (playerPositionMap[key] === undefined && !(key === socketId) && 
-	      			!(Object.keys(playerPositionMap).length === 0) && playerPositionMap.constructor === Object){
+	      			!(Object.keys(playerPositionMap).length === 0)){
 	      			if (verboseDebugging)
 	      			{
+	      				console.log("SEARCH FOR THIS!");
 	      				console.log("SHOULDNT BE HERE WITHOUT ANOTHER PLAYER");
 	      			}
 	      			//query for the avatar
