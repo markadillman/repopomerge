@@ -1221,7 +1221,7 @@ function doTileExit() {
 	postRequest('/freetile',payload,exitCallback,postOnError);
 }
 
-function exitCallback(){
+function exitCallback(request){
 	// clear out all the current SVG
 	svgClearAll();
 	
