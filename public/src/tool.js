@@ -878,8 +878,11 @@ function removeSelectedPlatform(force) {
 }
 function exitButton() {
 	if (avatarEditing) {
+		if (verboseDebugging){console.log("This is avatar exiting.");}
 		displayMessage("Are you sure you want to exit without submitting your work?", doAvatarExit, doNothing, false, false);
 	} else {
+		if (verboseDebugging)
+		{console.log("This is tile editing.");}
 		displayMessage("Are you sure you want to exit without submitting your work?", doTileExit, doNothing, false, false);
 	}
 }
@@ -1204,6 +1207,10 @@ function doTileEdit(currentX, currentY) {
 // exits from the currently edited tile back into game mode
 // does not save the current edits!
 function doTileExit() {
+	if (verboseDebugging){
+		console.log("in doTileExit debugging");
+		console.log("this is good");
+	}
 	messageDiv.style.display = "none";
 	passwordDiv.style.display = "none";
 
