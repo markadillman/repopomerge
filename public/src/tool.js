@@ -1273,6 +1273,7 @@ function artToString(){
 		return groupToString(targetNum);
 	}
 }
+
 function platformToString(){
 	//using jQuery nodes, art group is index 3, platform 4
 	//find id
@@ -1295,6 +1296,7 @@ function platformToString(){
 		return groupToString(targetNum);
 	}
 }
+
 function groupToString(groupnum){
 	//using nodes, art group is index 3, platform 4
 	// slight modification by Toni to use extant canvas variable

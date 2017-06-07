@@ -404,6 +404,9 @@ Game =
 	       		//actual event trigger
 	       		playerGlob.trigger('OtherPlayerLogoff',data);
 	    	});
+	    	socket.on('avatar lookup response',function(data){
+	    		playerGlob.trigger('AvatarSet',data);
+	    	})
 	    	//END CODE ADDED BY MARK		
 		}, function() {
 			// start Toni's code
@@ -613,6 +616,18 @@ function loadPlayer(argsocket) {
 	      			//.gravity('Platform')
 	      			//.gravityConst(600);
 	      			//AVATAR STUFF
+	      			// generate a URL based on player's avatar
+					var otherAvatarString = eventData.avatar; // just in case the server ones need it
+					var blobSvg = new Blob([otherAvatarString],{type:"image/svg+xml;charset=utf-8"});
+					var domURL = self.URL || self.webkitURL || self;
+					var url = domURL.createObjectURL(blobSvg);
+					// put this into the player as its sprite
+					// reference my displayAvatarInCarousel function above
+					var otherSprite = Crafty.sprite(url, {playerSprite: [210, 0, 390, canvasHeight]});
+					otherPlayer.addComponent('playerSprite');
+					otherPlayer.w = 390/avatarMultiplier;
+					otherPlayer.h = canvasHeight/avatarMultiplier;
+
 
 	      		//add a field that ties this player to an id
 	      		otherPlayer.friendId = eventData.id;
@@ -663,6 +678,11 @@ function loadPlayer(argsocket) {
 	      			{
 	      				console.log("SHOULDNT BE HERE WITHOUT ANOTHER PLAYER");
 	      			}
+	      			//query for the avatar
+	      			if (verboseDebugging){
+	      				console.log("Yo who dis guy already");
+	      				console.log(key);
+	      			}
 	      			//this function will either create a different colored rectangle or, in the future,
 	      			//load the player's avatar into memory and start rendering it over their hitbox
 	      			var oldPlayer = Crafty.e('2D, DOM, Color, Twoway, Gravity')
@@ -679,7 +699,8 @@ function loadPlayer(argsocket) {
 	      			//set the Crafty id as a field
 	      			oldPlayer.craftyId = oldPlayer.getId();
 	      			//add this to player position map
-	      			playerPositionMap[oldPlayer.friendId] = oldPlayer.craftyId;			
+	      			playerPositionMap[oldPlayer.friendId] = oldPlayer.craftyId;	
+	      			argsocket.emit('avatar lookup',{id:key});
 	      		}
 	      		//if player is pre-existing player that does not have an avatar, make one
 	      		else {
@@ -693,6 +714,7 @@ function loadPlayer(argsocket) {
 	      			var targetPlayer = Crafty(playerPositionMap[key]);
 	      			targetPlayer.x = eventData[key]['x'];
 	      			targetPlayer.y = eventData[key]['y'];
+	      			argsocket.emit('avatar lookup',{id:key});
 	      			if (verboseDebugging)
 	      			{
 	      				console.log(playerPositionMap);	
@@ -700,6 +722,23 @@ function loadPlayer(argsocket) {
 	      		}
 	      	}
 	    })
+		//callback to add avatar to another player when it is retrieved
+		//data will be {id,avatar} both as strings
+		.bind("AvatarSet",function(eventData){
+			var targetPlayer = Crafty(eventData.id);
+			//AVATAR STUFF
+	      	// generate a URL based on player's avatar
+			var otherAvatarString = eventData.avatar; // just in case the server ones need it
+			var blobSvg = new Blob([otherAvatarString],{type:"image/svg+xml;charset=utf-8"});
+			var domURL = self.URL || self.webkitURL || self;
+			var url = domURL.createObjectURL(blobSvg);
+			// put this into the player as its sprite
+			// reference my displayAvatarInCarousel function above
+			var otherSprite = Crafty.sprite(url, {playerSprite: [210, 0, 390, canvasHeight]});
+			otherPlayer.addComponent('playerSprite');
+			otherPlayer.w = 390/avatarMultiplier;
+			otherPlayer.h = canvasHeight/avatarMultiplier;
+		})
 	    //update with new coordinates every second (50 fps)
 	    .bind("EnterFrame",function(eventData){
 	      	if (eventData.frame % netFrameRate === 0){

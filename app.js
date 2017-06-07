@@ -108,20 +108,27 @@ socketUniversal.on('connection',function(socket){
 	});
 	socket.on('changeCoords',function(data){
 		//console.log(data);
-		playerPositionMap[data.id]['x'] = data.x;
-		playerPositionMap[data.id]['y'] = data.y;
+		playerPositionMap[data.id]['coords']['x'] = data.x;
+		playerPositionMap[data.id]['coords']['y'] = data.y;
 	});
 	socket.on('disconnect',function(){
 		delete playerPositionMap[socket.id.toString()];
 		console.log(util.inspect(playerPositionMap));
 		socketUniversal.emit('player logoff',{id:socket.id});
 	})
-	socket.on('position request',function(){
+	socket.on('position request',function(data){
 		console.log("position request payload");
 		console.log(util.inspect(playerPositionMap));
 		socket.emit('position response',playerPositionMap);
 	});
-	socket.on('avatar lookup')
+	socket.on('avatar lookup',function(data){
+		console.log("avatar lookup stuff");
+		console.log(util.inspect(data));
+		var avatarString = playerPositionMap[data.id]['avatar'];
+		console.log("found avatar:");
+		console.log(avatarString);
+		socket.emit('avatar lookup response',{avatar:,id:data.id})
+	});
 });
 
 //HELPER FUNCTION FOR SVG VALIDITY
