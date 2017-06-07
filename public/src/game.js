@@ -678,8 +678,7 @@ function loadPlayer(argsocket) {
 	      		}
 	      		//if the ID is not in the current mapping data structure and if map structure aint empty
 	      		if (playerPositionMap[key] === undefined && !(key === socketId) && 
-	      			//and if there is another player in the position map
-	      			!(Object.keys(playerPositionMap).length === 0 && playerPositionMap.constructor === Object){
+	      			!(Object.keys(playerPositionMap).length === 0) && playerPositionMap.constructor === Object){
 	      			if (verboseDebugging)
 	      			{
 	      				console.log("SHOULDNT BE HERE WITHOUT ANOTHER PLAYER");
