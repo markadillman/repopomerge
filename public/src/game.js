@@ -742,8 +742,8 @@ function loadPlayer(argsocket) {
 	    //update with new coordinates every second (50 fps) MARK ADDED code to make this only active
 	    //in play mode
 	    .bind("EnterFrame",function(eventData){
-	    	if ()
-	      		if (eventData.frame % netFrameRate === 0){
+	      	if (eventData.frame % netFrameRate === 0){
+	      		if (mode === gameMode && playiing === true){
 	      			//DEBUG
 	      			//console.clear();
 	      			if (verboseDebugging)
