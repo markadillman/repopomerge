@@ -739,18 +739,21 @@ function loadPlayer(argsocket) {
 			targetPlayer.w = 390/avatarMultiplier;
 			targetPlayer.h = canvasHeight/avatarMultiplier;
 		})
-	    //update with new coordinates every second (50 fps)
+	    //update with new coordinates every second (50 fps) MARK ADDED code to make this only active
+	    //in play mode
 	    .bind("EnterFrame",function(eventData){
-	      	if (eventData.frame % netFrameRate === 0){
-	      		//DEBUG
-	      		//console.clear();
-	      		if (verboseDebugging)
-	      		{
-	      			console.log("x: " + this.x.toString() + " y : " + this.y.toString() + " id: " + socketId);
+	    	if ()
+	      		if (eventData.frame % netFrameRate === 0){
+	      			//DEBUG
+	      			//console.clear();
+	      			if (verboseDebugging)
+	      			{
+	      				console.log("x: " + this.x.toString() + " y : " + this.y.toString() + " id: " + socketId);
+	      			}
+	      			//END DEBUG
+	      			argsocket.emit('changeCoords', {x : this.x , y : this.y , id : socketId});
+	      			argsocket.emit('position request');
 	      		}
-	      		//END DEBUG
-	      		argsocket.emit('changeCoords', {x : this.x , y : this.y , id : socketId});
-	      		argsocket.emit('position request');
 	      	}
 	    })
 		// Move camera when player leaves current tile
