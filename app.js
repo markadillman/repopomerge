@@ -113,8 +113,24 @@ socketUniversal.on('connection',function(socket){
 	});
 	socket.on('changeCoords',function(data){
 		//console.log(data);
-		playerPositionMap[data.id]['x'] = data.x;
-		playerPositionMap[data.id]['y'] = data.y;
+		//if the player is in the player position map, update it
+		if (!(playerPositionMap[data.id] === undefined))
+			{
+				playerPositionMap[data.id]['x'] = data.x;
+				playerPositionMap[data.id]['y'] = data.y;
+			}
+			//else if there is anything in data, add that person back to player
+			//position map. This is meant to be a recovery from unsteady states
+			//like wifi loss, etc. without page reload. Can be improved, probably.
+		else {
+			if ((!(data.id === undefined)) && (!(data.id === null)) &&
+				(!(data.x === undefined)) && (!(data.x === null)) &&
+				(!(data.y === undefined)) && (!(data.y === null)))
+			{
+				playerPositionMap[socket.id.toString()] = {x:data.x,y:data.y};
+			}
+			//else do nothing because the payload is total junk
+		}
 	});
 	socket.on('disconnect',function(){
 		delete playerPositionMap[socket.id.toString()];
