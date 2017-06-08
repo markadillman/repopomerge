@@ -677,8 +677,7 @@ function loadPlayer(argsocket) {
 	      			console.log(socketId);
 	      		}
 	      		//if the ID is not in the current mapping data structure and if map structure aint empty
-	      		if (playerPositionMap[key] === undefined && !(key === socketId) && 
-	      			!(Object.keys(playerPositionMap).length === 0)){
+	      		if (playerPositionMap[key] === undefined && !(key === socketId)){
 	      			if (verboseDebugging)
 	      			{
 	      				console.log("SEARCH FOR THIS!");
@@ -689,9 +688,9 @@ function loadPlayer(argsocket) {
 	      				console.log("Yo who dis guy already");
 	      				console.log(key);
 	      			}
-	      			//this function will either create a different colored rectangle or, in the future,
-	      			//load the player's avatar into memory and start rendering it over their hitbox
-	      			var oldPlayer = Crafty.e('2D, Canvas, Color, Twoway, Gravity')
+	      				//this function will either create a different colored rectangle or, in the future,
+	      				//load the player's avatar into memory and start rendering it over their hitbox
+	      				var oldPlayer = Crafty.e('2D, Canvas, Color, Twoway, Gravity')
 	      				// Initial position and size
 	      				.attr({x: eventData[key]['x'], y: eventData[key]['y'], w: 10, h: 50})
 	      				// Color of sprite (to be replaced)

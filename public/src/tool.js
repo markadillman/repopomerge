@@ -1050,7 +1050,7 @@ function tileEditCallback(request){
 		args.xcoord = body.xcoord;
 		args.ycoord = body.ycoord;
 		//both of the button functions contain ways of returning text field to normal
-		displayMessage(body.message,passwordSubmit,doTileExit,true,false,false,true,args);
+		displayMessage(body.message,passwordSubmit,doTileExitNoFree,true,false,false,true,args);
 	}
 }
 
